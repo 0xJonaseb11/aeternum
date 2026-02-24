@@ -1,6 +1,6 @@
 # Aeternum — Permanent, Private, Verifiable Evidence Vault
 
-![Aeternum Logo](./logo.png)
+<!-- ![Aeternum Logo](./logo.png) -->
 
 **Tagline:** Permanent. Private. Verifiable.
 
