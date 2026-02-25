@@ -21,3 +21,10 @@ node_modules
 
 # cli
 dist
+
+.agents/
+.claude/
+.cursor/
+CLAUDE.md
+AGENTS.md
+
