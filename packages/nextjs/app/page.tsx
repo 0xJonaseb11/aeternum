@@ -16,6 +16,8 @@ import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { UploadEvidence } from "~~/components/vault/UploadEvidence";
+import { EvidenceList } from "~~/components/vault/EvidenceList";
 
 const Home: NextPage = () => {
   const { address: connectedAddress, isConnecting } = useAccount();
