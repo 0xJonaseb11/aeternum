@@ -14,14 +14,14 @@ typechain-types
 
 # hardhat files
 cache
-artifacts
+# artifacts
 
 # zkSync files
 artifacts-zk
 cache-zk
 
 # deployments
-deployments/localhost
+# deployments/localhost
 
 # typescript
 *.tsbuildinfo
