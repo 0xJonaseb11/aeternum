@@ -7,6 +7,11 @@ export type BaseConfig = {
   rpcOverrides?: Record<number, string>;
   walletConnectProjectId: string;
   onlyLocalBurnerWallet: boolean;
+  deployedAddresses?: {
+    EvidenceVault: string;
+    CommitmentVerifier: string;
+    Groth16VerifierWrapper: string;
+  };
 };
 
 export type ScaffoldConfig = BaseConfig;
