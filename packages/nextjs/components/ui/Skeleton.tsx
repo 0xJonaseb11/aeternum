@@ -2,25 +2,16 @@
 
 import { type HTMLAttributes } from "react";
 
-type SkeletonProps = HTMLAttributes<HTMLDivElement> & {
-  /** Optional class for the shimmer box */
-  className?: string;
-};
+type SkeletonProps = HTMLAttributes<HTMLDivElement> & { className?: string };
 
-/**
- * Base skeleton primitive. Use for loading states only (CLAUDE 2.1).
- * Reflects content structure; combine multiple for cards, lists, forms.
- */
 export function Skeleton({ className = "", ...props }: SkeletonProps) {
   return <div aria-hidden className={`animate-pulse rounded-md bg-base-300 ${className}`} {...props} />;
 }
 
-/** Skeleton for a single-line text block */
 export function SkeletonLine({ className = "" }: { className?: string }) {
   return <Skeleton className={`h-4 w-full max-w-[theme(spacing.48)] ${className}`} />;
 }
 
-/** Skeleton for a proof card in list/grid */
 export function ProofCardSkeleton() {
   return (
     <div className="card bg-base-100 rounded-box border border-base-300 shadow-sm overflow-hidden">
@@ -40,7 +31,6 @@ export function ProofCardSkeleton() {
   );
 }
 
-/** Skeleton for a section of proof cards (e.g. "Your proofs") */
 export function ProofListSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +41,6 @@ export function ProofListSkeleton({ count = 3 }: { count?: number }) {
   );
 }
 
-/** Skeleton for hero / page title area */
 export function HeroSkeleton() {
   return (
     <div className="flex flex-col items-center gap-4 text-center">

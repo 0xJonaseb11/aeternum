@@ -22,7 +22,6 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col grow">
-      {/* Hero */}
       <section className="relative overflow-hidden bg-pattern py-16 sm:py-20 lg:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
           <h1 className="text-3xl font-semibold tracking-tight text-base-content sm:text-4xl lg:text-5xl">
@@ -51,7 +50,6 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* Your proofs — skeleton when loading or no data yet */}
       <section id="vault" className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-6xl">
         <h2 className="text-xl font-semibold text-base-content mb-6">Your proofs</h2>
         {isConnecting ? (
@@ -71,7 +69,6 @@ const Home: NextPage = () => {
         )}
       </section>
 
-      {/* Action cards */}
       <section className="border-t border-base-300 bg-base-200/30 py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

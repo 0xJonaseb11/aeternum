@@ -6263,6 +6263,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/circomlibjs@npm:^0":
+  version: 0.1.6
+  resolution: "@types/circomlibjs@npm:0.1.6"
+  checksum: c1626380bd46f6da6ab45c59338a91f0166933ae987a03eda2ae09c490457aa010e412c46192502198b7b41054ee0129bece3d3edcbabdb05ea226582f772cc4
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:^3.4.33":
   version: 3.4.38
   resolution: "@types/connect@npm:3.4.38"
@@ -6472,6 +6479,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 29c9fd4c2687f323ef546eac4b25676ebe62b74ecfb88d595b0bda26bdf5da2bcc35ee178c333aa024e696434b0ae97930e5fab05f4813c4895e7272fc0bc2d4
+  languageName: node
+  linkType: hard
+
+"@types/snarkjs@npm:^0":
+  version: 0.7.9
+  resolution: "@types/snarkjs@npm:0.7.9"
+  checksum: 21d22153810056b0385700ea9af6be1b32902966c7a4b8fdf103a40a12c8353e438bd4924fe039a1b5136989e81575897818a8e1a01201c6c258a7b76e61958d
   languageName: node
   linkType: hard
 
@@ -18244,9 +18258,13 @@ __metadata:
   resolution: "se-2@workspace:."
   dependencies:
     "@types/chai": ~4.3.19
+    "@types/circomlibjs": ^0
+    "@types/snarkjs": ^0
     "@vercel/analytics": ^1.6.1
+    circomlibjs: ^0.1.7
     husky: ~9.1.6
     lint-staged: ~13.2.2
+    snarkjs: ^0.7.6
   languageName: unknown
   linkType: soft
 
@@ -18633,7 +18651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snarkjs@npm:^0.7.0":
+"snarkjs@npm:^0.7.0, snarkjs@npm:^0.7.6":
   version: 0.7.6
   resolution: "snarkjs@npm:0.7.6"
   dependencies:

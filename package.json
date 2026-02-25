@@ -55,6 +55,8 @@
   },
   "devDependencies": {
     "@types/chai": "~4.3.19",
+    "@types/circomlibjs": "^0",
+    "@types/snarkjs": "^0",
     "husky": "~9.1.6",
     "lint-staged": "~13.2.2"
   },
@@ -63,6 +65,8 @@
     "node": ">=20.18.3"
   },
   "dependencies": {
-    "@vercel/analytics": "^1.6.1"
+    "@vercel/analytics": "^1.6.1",
+    "circomlibjs": "^0.1.7",
+    "snarkjs": "^0.7.6"
   }
 }
