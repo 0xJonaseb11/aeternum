@@ -1,6 +1,29 @@
 # dependencies
 node_modules
 
+# env files
+*.env
+.env.local
+
+# coverage
+coverage/
+coverage.json
+
+# typechain
+typechain/
+typechain-types/
+
+# hardhat files
+cache/
+artifacts/
+
+# zkSync files
+artifacts-zk/
+cache-zk/
+
+# deployments
+deployments/localhost/
+
 # yarn
 .yarn/*
 !.yarn/patches
@@ -20,8 +43,9 @@ node_modules
 .idea
 
 # cli
-dist
+dist/
 
+# agents
 .agents/
 .claude/
 .cursor/
