@@ -88,7 +88,7 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault 
+    * @inheritdoc IEvidenceVault
     */
     function addBackup(bytes32 fileHash, string calldata ipfsCid) external override nonReentrant whenNotPaused {
         Proof storage p = _proofs[fileHash];
@@ -119,7 +119,7 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault 
+    * @inheritdoc IEvidenceVault
     */
     function grantAccess(bytes32 fileHash, address grantee) external override nonReentrant {
         Proof storage p = _proofs[fileHash];

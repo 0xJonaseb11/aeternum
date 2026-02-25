@@ -49,7 +49,7 @@ async function setup() {
 
   // 1. Compile the Circom circuit
   console.log("\n[1/6] Compiling commitment.circom...");
-  execSync(`circom ${CIRCUIT} --r1cs --wasm --sym --c --output ${BUILD_DIR} -l ${ROOT}/node_modules`, {
+  execSync(`circom ${CIRCUIT} --r1cs --wasm --sym --c --output ${BUILD_DIR} -l ${ROOT}`, {
     stdio: "inherit",
   });
   console.log("      ✓ Circuit compiled");
