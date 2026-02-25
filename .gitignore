@@ -25,6 +25,7 @@ dist
 .agents/
 .claude/
 .cursor/
+.opencode/
+.vscode/
 CLAUDE.md
 AGENTS.md
-
