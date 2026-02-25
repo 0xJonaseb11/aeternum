@@ -3683,8 +3683,8 @@ __metadata:
   version: 5.5.0
   resolution: "@openzeppelin/contracts-upgradeable@npm:5.5.0"
   peerDependencies:
-    "@openzeppelin/contracts": 5.5.0
-  checksum: 04b1258d761be5be3493130adca7ec9324cf002add93cac0c53310f43afc35ffd485bf95acffabd93c49470e2b471e3fdc6996e9177818520f63b8138bded53b
+    "@openzeppelin/contracts": 5.0.2
+  checksum: 7d1dbd6bcb45fb6fccf2dc51253afd044b9f77b01d34e11f7cf4c3e17c860df31ddc2c831be7ac463e2955eaea9620cec1c38cdffed7fcf235eb1fdc7ceb3716
   languageName: node
   linkType: hard
 
