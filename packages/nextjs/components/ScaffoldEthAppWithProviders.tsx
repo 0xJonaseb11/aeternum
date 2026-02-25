@@ -47,9 +47,15 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           avatar={BlockieAvatar}
-          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+          theme={
+            mounted
+              ? isDarkMode
+                ? darkTheme({ accentColor: "#e91e63", borderRadius: "medium" })
+                : lightTheme({ accentColor: "#c2185b", borderRadius: "medium" })
+              : lightTheme({ accentColor: "#c2185b", borderRadius: "medium" })
+          }
         >
-          <ProgressBar height="3px" color="#2299dd" />
+          <ProgressBar height="3px" color="var(--color-primary, #e91e63)" />
           <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>
       </QueryClientProvider>
