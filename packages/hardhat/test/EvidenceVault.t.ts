@@ -70,6 +70,7 @@ describe("EvidenceVault", function () {
     vault = await upgrades.deployProxy(Factory, [owner.address], {
       initializer: "initialize",
       kind: "uups",
+      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
     });
     await vault.waitForDeployment();
   });
@@ -89,7 +90,9 @@ describe("EvidenceVault", function () {
       const Factory = await ethers.getContractFactory("EvidenceVault");
       await expect(
         upgrades.deployProxy(Factory, [ethers.ZeroAddress], {
-          initializer: "initialize", kind: "uups",
+          initializer: "initialize",
+          kind: "uups",
+          unsafeAllow: ["constructor"],
         })
       ).to.be.reverted;
     });
@@ -364,14 +367,14 @@ describe("EvidenceVault", function () {
     it("non-owner cannot upgrade", async () => {
       const V2 = await ethers.getContractFactory("EvidenceVault");
       await expect(
-        upgrades.upgradeProxy(await vault.getAddress(), V2.connect(alice), { kind: "uups" })
+        upgrades.upgradeProxy(await vault.getAddress(), V2.connect(alice), { kind: "uups", unsafeAllow: ["constructor"] })
       ).to.be.reverted;
     });
 
     it("owner can upgrade to new implementation", async () => {
       const V2      = await ethers.getContractFactory("EvidenceVault");
       const proxyAddr = await vault.getAddress();
-      const upgraded  = await upgrades.upgradeProxy(proxyAddr, V2, { kind: "uups" });
+      const upgraded  = await upgrades.upgradeProxy(proxyAddr, V2, { kind: "uups", unsafeAllow: ["constructor"] });
       const newImpl   = await upgrades.erc1967.getImplementationAddress(proxyAddr);
       expect(newImpl).to.be.properAddress;
       // State is preserved across upgrade
