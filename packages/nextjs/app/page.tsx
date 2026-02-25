@@ -5,76 +5,149 @@ import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  BugAntIcon,
+  DocumentArrowUpIcon,
+  MagnifyingGlassIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+  const { address: connectedAddress, isConnecting } = useAccount();
   const { targetNetwork } = useTargetNetwork();
 
   return (
-    <>
-      <div className="flex items-center flex-col grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
+    <div className="flex flex-col grow">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-pattern py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+          <h1 className="text-3xl font-semibold tracking-tight text-base-content sm:text-4xl lg:text-5xl">
+            Private, permanent evidence vault
           </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address
-              address={connectedAddress}
-              chain={targetNetwork}
-              blockExplorerAddressLink={
-                targetNetwork.id === hardhat.id ? `/blockexplorer/address/${connectedAddress}` : undefined
-              }
-            />
-          </div>
-
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
+          <p className="mt-4 text-base text-base-content/80 sm:text-lg">
+            Store cryptographic proofs of your files on-chain. Encrypt locally, upload to Arweave, verify ownership
+            with zero-knowledge — without revealing secrets.
           </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
-
-        <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            {connectedAddress ? (
+              <div className="flex flex-col items-center gap-2 rounded-box border border-base-300 bg-base-100/80 px-6 py-4">
+                <span className="text-sm font-medium text-base-content/70">Connected</span>
+                <Address
+                  address={connectedAddress}
+                  chain={targetNetwork}
+                  blockExplorerAddressLink={
+                    targetNetwork.id === hardhat.id ? `/blockexplorer/address/${connectedAddress}` : undefined
+                  }
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-base-content/70">
+                Connect your wallet to create and view proofs.
               </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
+            )}
           </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* Your proofs — skeleton when loading or no data yet */}
+      <section id="vault" className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-6xl">
+        <h2 className="text-xl font-semibold text-base-content mb-6">Your proofs</h2>
+        {isConnecting ? (
+          <ProofListSkeleton count={3} />
+        ) : connectedAddress ? (
+          <div className="rounded-box border border-base-300 bg-base-100 py-12 text-center">
+            <p className="text-base-content/70">No proofs yet. Upload a file to create your first proof.</p>
+            <Link href="/#vault" passHref className="btn btn-primary btn-sm mt-4 gap-2">
+              <DocumentArrowUpIcon className="h-4 w-4" />
+              <span>Upload proof</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="rounded-box border border-dashed border-base-300 bg-base-200/50 py-12 text-center">
+            <p className="text-base-content/70">Connect your wallet to see your proofs.</p>
+          </div>
+        )}
+      </section>
+
+      {/* Action cards */}
+      <section className="border-t border-base-300 bg-base-200/30 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Link
+              href="/#vault"
+              passHref
+              className="card rounded-box border border-base-300 bg-base-100 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="card-body gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <DocumentArrowUpIcon className="h-5 w-5" />
+                </span>
+                <h3 className="font-semibold text-base-content">Upload proof</h3>
+                <p className="text-sm text-base-content/70">Encrypt a file and register its proof on-chain.</p>
+                <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-primary">
+                  <span>Go</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+            <Link
+              href="/#vault"
+              passHref
+              className="card rounded-box border border-base-300 bg-base-100 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="card-body gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary/20 text-secondary-content">
+                  <ShieldCheckIcon className="h-5 w-5" />
+                </span>
+                <h3 className="font-semibold text-base-content">Verify</h3>
+                <p className="text-sm text-base-content/70">Check proof existence or verify ownership with ZK.</p>
+                <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-secondary-content">
+                  <span>Verify</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+            <Link
+              href="/blockexplorer"
+              passHref
+              className="card rounded-box border border-base-300 bg-base-100 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="card-body gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-base-300 text-base-content">
+                  <MagnifyingGlassIcon className="h-5 w-5" />
+                </span>
+                <h3 className="font-semibold text-base-content">Block Explorer</h3>
+                <p className="text-sm text-base-content/70">Browse addresses and transactions.</p>
+                <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-base-content/80">
+                  <span>Explore</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+            <Link
+              href="/debug"
+              passHref
+              className="card rounded-box border border-base-300 bg-base-100 shadow-sm transition-shadow hover:shadow-md"
+            >
+              <div className="card-body gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-base-300 text-base-content">
+                  <BugAntIcon className="h-5 w-5" />
+                </span>
+                <h3 className="font-semibold text-base-content">Debug</h3>
+                <p className="text-sm text-base-content/70">Inspect and call contracts.</p>
+                <span className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-base-content/80">
+                  <span>Open</span>
+                  <ArrowRightIcon className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
