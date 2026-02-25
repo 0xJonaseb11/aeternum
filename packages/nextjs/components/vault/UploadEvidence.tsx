@@ -56,8 +56,9 @@ export const UploadEvidence = () => {
           </div>
           <div>
             <h3 className="font-bold text-lg text-base-content leading-none">Upload New Evidence</h3>
-            <p className="text-xs text-base-content/50 mt-1 uppercase tracking-widest font-bold">
-              Secure Local Encryption
+            <p className="text-xs text-base-content/50 mt-1 uppercase tracking-widest font-bold flex items-center gap-2">
+              <span>Secure Local Encryption</span>
+              <span className="badge badge-secondary badge-xs py-2 px-2 text-[8px] font-bold">FEAT INCOMING</span>
             </p>
           </div>
         </div>
@@ -109,9 +110,12 @@ export const UploadEvidence = () => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-base-300">
-              <div className="flex items-center gap-2 mb-4 text-xs font-bold text-success uppercase tracking-widest">
-                <ShieldCheckIcon className="h-4 w-4" />
-                <span>AES-256-GCM Encryption Ready</span>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 text-xs font-bold text-success uppercase tracking-widest">
+                  <ShieldCheckIcon className="h-4 w-4" />
+                  <span>AES-256-GCM Encryption Ready</span>
+                </div>
+                <span className="text-[10px] text-base-content/40 font-bold italic">Network integration pending</span>
               </div>
               <button
                 onClick={handleUpload}
