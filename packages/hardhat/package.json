@@ -27,7 +27,10 @@
     "@typechain/ethers-v6": "~0.5.1",
     "dotenv": "~16.4.5",
     "envfile": "~7.1.0",
-    "qrcode": "~1.5.4"
+    "qrcode": "~1.5.4",
+    "@openzeppelin/contracts-upgradeable": "^5.0.0",
+    "circomlibjs": "^0.1.7",
+    "snarkjs": "^0.7.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "~5.7.0",
@@ -54,10 +57,15 @@
     "hardhat-deploy-ethers": "~0.4.2",
     "hardhat-gas-reporter": "~2.2.1",
     "prettier": "^3.5.3",
+    "@nomicfoundation/hardhat-toolbox":   "^4.0.0",
+    "@openzeppelin/hardhat-upgrades":     "^3.0.0",
+    "@types/node":                        "^20.0.0",
+    "hardhat-contract-sizer":             "^2.10.0",
+    "solhint":                            "^5.0.0",
     "prettier-plugin-solidity": "~1.4.1",
     "solidity-coverage": "~0.8.13",
     "ts-node": "~10.9.1",
     "typechain": "~8.3.2",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
   }
 }
