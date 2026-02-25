@@ -1,3 +1,3 @@
 {
-  "installCommand": "yarn install"
+  "installCommand": "cd ../.. && yarn workspaces focus @se-2/nextjs"
 }
