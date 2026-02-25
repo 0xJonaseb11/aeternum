@@ -4,6 +4,10 @@
     "context7": {
       "type": "remote",
       "url": "https://mcp.context7.com/mcp"
+    },
+    "local-ai": {
+      "type": "local",
+      "path": "./local-ai"
     }
   }
 }
