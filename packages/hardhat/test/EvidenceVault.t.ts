@@ -1,6 +1,6 @@
-import { expect }            from "chai";
-import { ethers, upgrades }  from "hardhat";
-import { SignerWithAddress }  from "@nomicfoundation/hardhat-ethers/signers";
+import { expect } from "chai";
+import { ethers, upgrades } from "hardhat";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Helpers
@@ -9,17 +9,12 @@ import { SignerWithAddress }  from "@nomicfoundation/hardhat-ethers/signers";
 /** Simulate Poseidon(fileHash, secret) off-chain with keccak for testing.
  *  In production the real Poseidon hash (circomlibjs) is used. */
 function mockCommitment(fileHash: string, secret: string): string {
-  return ethers.keccak256(
-    ethers.AbiCoder.defaultAbiCoder().encode(
-      ["bytes32", "bytes32"],
-      [fileHash, secret]
-    )
-  );
+  return ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(["bytes32", "bytes32"], [fileHash, secret]));
 }
 
-const ARWEAVE_TX_ID = "a".repeat(43);   // valid 43-char Arweave TxID
-const IPFS_CID      = "QmTestCIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const BN254_P       = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+const ARWEAVE_TX_ID = "a".repeat(43); // valid 43-char Arweave TxID
+const IPFS_CID = "QmTestCIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const BN254_P = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Mock ZK Verifier (always returns true / false based on constructor arg)
@@ -46,22 +41,19 @@ async function deployMockVerifier(shouldPass: boolean) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe("EvidenceVault", function () {
-  let vault:  any;
-  let owner:  SignerWithAddress;
-  let alice:  SignerWithAddress;
-  let bob:    SignerWithAddress;
-  let auditor:SignerWithAddress;
+  let vault: any;
+  let owner: SignerWithAddress;
+  let alice: SignerWithAddress;
+  let bob: SignerWithAddress;
+  let auditor: SignerWithAddress;
 
-  const fileHash   = ethers.keccak256(ethers.toUtf8Bytes("my-evidence-file"));
-  const secret     = ethers.hexlify(ethers.randomBytes(32));
+  const fileHash = ethers.keccak256(ethers.toUtf8Bytes("my-evidence-file"));
+  const secret = ethers.hexlify(ethers.randomBytes(32));
   const commitment = mockCommitment(fileHash, secret);
 
   // Encode a fake ZK proof (32*8 = 256 bytes)
-  const fakeProof  = ethers.zeroPadBytes("0x" + "ab".repeat(128), 256);
-  const publicInputs = [
-    BigInt(fileHash),
-    BigInt(commitment)
-  ];
+  const fakeProof = ethers.zeroPadBytes("0x" + "ab".repeat(128), 256);
+  const publicInputs = [BigInt(fileHash), BigInt(commitment)];
 
   beforeEach(async () => {
     [owner, alice, bob, auditor] = await ethers.getSigners();
@@ -82,8 +74,7 @@ describe("EvidenceVault", function () {
     });
 
     it("reverts on re-initialization", async () => {
-      await expect(vault.initialize(owner.address))
-        .to.be.revertedWithCustomError(vault, "InvalidInitialization");
+      await expect(vault.initialize(owner.address)).to.be.revertedWithCustomError(vault, "InvalidInitialization");
     });
 
     it("reverts if initialOwner is zero address", async () => {
@@ -93,7 +84,7 @@ describe("EvidenceVault", function () {
           initializer: "initialize",
           kind: "uups",
           unsafeAllow: ["constructor"],
-        })
+        }),
       ).to.be.reverted;
     });
   });
@@ -101,9 +92,7 @@ describe("EvidenceVault", function () {
   // ─── createProof ────────────────────────────────────────────────────────
   describe("createProof()", () => {
     it("creates a proof and emits ProofCreated", async () => {
-      const tx = await vault.connect(alice).createProof(
-        fileHash, commitment, ARWEAVE_TX_ID, ""
-      );
+      const tx = await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
       const block = await ethers.provider.getBlock(tx.blockNumber);
 
       await expect(tx)
@@ -130,40 +119,39 @@ describe("EvidenceVault", function () {
     it("reverts with ProofAlreadyExists on duplicate fileHash", async () => {
       await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
       await expect(
-        vault.connect(bob).createProof(fileHash, commitment, ARWEAVE_TX_ID, "")
+        vault.connect(bob).createProof(fileHash, commitment, ARWEAVE_TX_ID, ""),
       ).to.be.revertedWithCustomError(vault, "ProofAlreadyExists");
     });
 
     it("reverts with InvalidInput for zero fileHash", async () => {
       await expect(
-        vault.connect(alice).createProof(
-          ethers.ZeroHash, commitment, ARWEAVE_TX_ID, ""
-        )
+        vault.connect(alice).createProof(ethers.ZeroHash, commitment, ARWEAVE_TX_ID, ""),
       ).to.be.revertedWithCustomError(vault, "InvalidInput");
     });
 
     it("reverts with InvalidInput for zero commitment", async () => {
       await expect(
-        vault.connect(alice).createProof(fileHash, ethers.ZeroHash, ARWEAVE_TX_ID, "")
+        vault.connect(alice).createProof(fileHash, ethers.ZeroHash, ARWEAVE_TX_ID, ""),
       ).to.be.revertedWithCustomError(vault, "InvalidInput");
     });
 
     it("reverts with StorageIdTooLong for wrong arweave length", async () => {
-      await expect(
-        vault.connect(alice).createProof(fileHash, commitment, "short", "")
-      ).to.be.revertedWithCustomError(vault, "StorageIdTooLong");
+      await expect(vault.connect(alice).createProof(fileHash, commitment, "short", "")).to.be.revertedWithCustomError(
+        vault,
+        "StorageIdTooLong",
+      );
     });
 
     it("reverts with StorageIdTooLong for oversized IPFS CID", async () => {
       await expect(
-        vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "x".repeat(129))
+        vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "x".repeat(129)),
       ).to.be.revertedWithCustomError(vault, "StorageIdTooLong");
     });
 
     it("reverts when paused", async () => {
       await vault.connect(owner).pause();
       await expect(
-        vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "")
+        vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, ""),
       ).to.be.revertedWithCustomError(vault, "EnforcedPause");
     });
   });
@@ -184,15 +172,17 @@ describe("EvidenceVault", function () {
 
     it("reverts BackupAlreadySet on second call", async () => {
       await vault.connect(alice).addBackup(fileHash, IPFS_CID);
-      await expect(
-        vault.connect(alice).addBackup(fileHash, IPFS_CID)
-      ).to.be.revertedWithCustomError(vault, "BackupAlreadySet");
+      await expect(vault.connect(alice).addBackup(fileHash, IPFS_CID)).to.be.revertedWithCustomError(
+        vault,
+        "BackupAlreadySet",
+      );
     });
 
     it("reverts NotProofOwner for non-owner", async () => {
-      await expect(
-        vault.connect(bob).addBackup(fileHash, IPFS_CID)
-      ).to.be.revertedWithCustomError(vault, "NotProofOwner");
+      await expect(vault.connect(bob).addBackup(fileHash, IPFS_CID)).to.be.revertedWithCustomError(
+        vault,
+        "NotProofOwner",
+      );
     });
   });
 
@@ -220,16 +210,12 @@ describe("EvidenceVault", function () {
     });
 
     it("reverts NotProofOwner for non-owner", async () => {
-      await expect(
-        vault.connect(bob).revokeProof(fileHash)
-      ).to.be.revertedWithCustomError(vault, "NotProofOwner");
+      await expect(vault.connect(bob).revokeProof(fileHash)).to.be.revertedWithCustomError(vault, "NotProofOwner");
     });
 
     it("reverts ProofIsRevoked on double revocation", async () => {
       await vault.connect(alice).revokeProof(fileHash);
-      await expect(
-        vault.connect(alice).revokeProof(fileHash)
-      ).to.be.revertedWithCustomError(vault, "ProofIsRevoked");
+      await expect(vault.connect(alice).revokeProof(fileHash)).to.be.revertedWithCustomError(vault, "ProofIsRevoked");
     });
   });
 
@@ -252,17 +238,13 @@ describe("EvidenceVault", function () {
     });
 
     it("non-grantee cannot read proof", async () => {
-      await expect(
-        vault.connect(bob).getProof(fileHash)
-      ).to.be.revertedWithCustomError(vault, "AccessDenied");
+      await expect(vault.connect(bob).getProof(fileHash)).to.be.revertedWithCustomError(vault, "AccessDenied");
     });
 
     it("owner can revoke access", async () => {
       await vault.connect(alice).grantAccess(fileHash, auditor.address);
       await vault.connect(alice).revokeAccess(fileHash, auditor.address);
-      await expect(
-        vault.connect(auditor).getProof(fileHash)
-      ).to.be.revertedWithCustomError(vault, "AccessDenied");
+      await expect(vault.connect(auditor).getProof(fileHash)).to.be.revertedWithCustomError(vault, "AccessDenied");
     });
 
     it("hasAccess returns correct values", async () => {
@@ -284,7 +266,7 @@ describe("EvidenceVault", function () {
 
     it("reverts ZKVerifierNotSet when no verifier is configured", async () => {
       await expect(
-        vault.connect(alice).verifyOwnership(fileHash, fakeProof, publicInputs)
+        vault.connect(alice).verifyOwnership(fileHash, fakeProof, publicInputs),
       ).to.be.revertedWithCustomError(vault, "ZKVerifierNotSet");
     });
 
@@ -302,9 +284,10 @@ describe("EvidenceVault", function () {
       const mockV = await MockVerifier.deploy(false);
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
-      await expect(
-        vault.verifyOwnership(fileHash, fakeProof, publicInputs)
-      ).to.be.revertedWithCustomError(vault, "ZKProofInvalid");
+      await expect(vault.verifyOwnership(fileHash, fakeProof, publicInputs)).to.be.revertedWithCustomError(
+        vault,
+        "ZKProofInvalid",
+      );
     });
 
     it("reverts InvalidInput if publicInputs[0] doesn't match fileHash", async () => {
@@ -313,9 +296,10 @@ describe("EvidenceVault", function () {
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
       const wrongInputs = [BigInt(fileHash) + 1n, BigInt(commitment)];
-      await expect(
-        vault.verifyOwnership(fileHash, fakeProof, wrongInputs)
-      ).to.be.revertedWithCustomError(vault, "InvalidInput");
+      await expect(vault.verifyOwnership(fileHash, fakeProof, wrongInputs)).to.be.revertedWithCustomError(
+        vault,
+        "InvalidInput",
+      );
     });
 
     it("reverts InvalidInput if publicInputs[1] doesn't match stored commitment", async () => {
@@ -324,9 +308,10 @@ describe("EvidenceVault", function () {
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
       const wrongInputs = [BigInt(fileHash), BigInt(commitment) + 1n];
-      await expect(
-        vault.verifyOwnership(fileHash, fakeProof, wrongInputs)
-      ).to.be.revertedWithCustomError(vault, "InvalidInput");
+      await expect(vault.verifyOwnership(fileHash, fakeProof, wrongInputs)).to.be.revertedWithCustomError(
+        vault,
+        "InvalidInput",
+      );
     });
 
     it("reverts ProofIsRevoked on revoked proof", async () => {
@@ -335,23 +320,24 @@ describe("EvidenceVault", function () {
       const mockV = await MockVerifier.deploy(true);
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
-      await expect(
-        vault.verifyOwnership(fileHash, fakeProof, publicInputs)
-      ).to.be.revertedWithCustomError(vault, "ProofIsRevoked");
+      await expect(vault.verifyOwnership(fileHash, fakeProof, publicInputs)).to.be.revertedWithCustomError(
+        vault,
+        "ProofIsRevoked",
+      );
     });
   });
 
   // ─── Admin ──────────────────────────────────────────────────────────────
   describe("Admin", () => {
     it("non-owner cannot setZKVerifier", async () => {
-      await expect(
-        vault.connect(alice).setZKVerifier(ethers.ZeroAddress)
-      ).to.be.revertedWithCustomError(vault, "OwnableUnauthorizedAccount");
+      await expect(vault.connect(alice).setZKVerifier(ethers.ZeroAddress)).to.be.revertedWithCustomError(
+        vault,
+        "OwnableUnauthorizedAccount",
+      );
     });
 
     it("non-owner cannot pause", async () => {
-      await expect(vault.connect(alice).pause())
-        .to.be.revertedWithCustomError(vault, "OwnableUnauthorizedAccount");
+      await expect(vault.connect(alice).pause()).to.be.revertedWithCustomError(vault, "OwnableUnauthorizedAccount");
     });
 
     it("owner can pause and unpause", async () => {
@@ -367,15 +353,18 @@ describe("EvidenceVault", function () {
     it("non-owner cannot upgrade", async () => {
       const V2 = await ethers.getContractFactory("EvidenceVault");
       await expect(
-        upgrades.upgradeProxy(await vault.getAddress(), V2.connect(alice), { kind: "uups", unsafeAllow: ["constructor"] })
+        upgrades.upgradeProxy(await vault.getAddress(), V2.connect(alice), {
+          kind: "uups",
+          unsafeAllow: ["constructor"],
+        }),
       ).to.be.reverted;
     });
 
     it("owner can upgrade to new implementation", async () => {
-      const V2      = await ethers.getContractFactory("EvidenceVault");
+      const V2 = await ethers.getContractFactory("EvidenceVault");
       const proxyAddr = await vault.getAddress();
-      const upgraded  = await upgrades.upgradeProxy(proxyAddr, V2, { kind: "uups", unsafeAllow: ["constructor"] });
-      const newImpl   = await upgrades.erc1967.getImplementationAddress(proxyAddr);
+      const upgraded = await upgrades.upgradeProxy(proxyAddr, V2, { kind: "uups", unsafeAllow: ["constructor"] });
+      const newImpl = await upgrades.erc1967.getImplementationAddress(proxyAddr);
       expect(newImpl).to.be.properAddress;
       // State is preserved across upgrade
       await upgraded.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");

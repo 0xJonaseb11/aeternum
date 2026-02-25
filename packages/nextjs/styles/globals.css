@@ -108,12 +108,14 @@
 
 /* Subtle background pattern for depth (dark theme); use sparingly */
 .bg-pattern {
-  background-image: radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.03) 0%, transparent 50%),
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 20% 80%, rgba(233, 30, 99, 0.02) 0%, transparent 40%);
 }
 
 [data-theme="dark"] .bg-pattern {
-  background-image: radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.04) 0%, transparent 55%),
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.04) 0%, transparent 55%),
     radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 45%);
 }
 

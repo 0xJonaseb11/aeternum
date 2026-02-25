@@ -60,15 +60,11 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   // ── 3. EvidenceVault proxy (UUPS) ──────────────────────────────────────
   console.log("\n[3/4] Deploying EvidenceVault (UUPS proxy)...");
   const VaultFactory = await ethers.getContractFactory("EvidenceVault");
-  const vault = await upgrades.deployProxy(
-    VaultFactory,
-    [deployer],
-    {
-      initializer: "initialize",
-      kind: "uups",
-      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
-    }
-  );
+  const vault = await upgrades.deployProxy(VaultFactory, [deployer], {
+    initializer: "initialize",
+    kind: "uups",
+    unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
+  });
   await vault.waitForDeployment();
   const proxyAddr = await vault.getAddress();
   const implAddr = await upgrades.erc1967.getImplementationAddress(proxyAddr);
@@ -101,13 +97,19 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   console.log("\n═══════════════════════════════════════════════════");
   console.log("  Deployment Complete");
   console.log("═══════════════════════════════════════════════════");
-  console.log(JSON.stringify({
-    proxy: proxyAddr,
-    implementation: implAddr,
-    groth16Verifier: verifierAddr,
-    groth16VerifierWrapper: wrapperAddr,
-    multisig: multisig ?? "NOT_SET",
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        proxy: proxyAddr,
+        implementation: implAddr,
+        groth16Verifier: verifierAddr,
+        groth16VerifierWrapper: wrapperAddr,
+        multisig: multisig ?? "NOT_SET",
+      },
+      null,
+      2,
+    ),
+  );
 };
 
 export default deployEvidenceVaultFull;

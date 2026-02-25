@@ -9,12 +9,12 @@
  */
 
 import { ethers, upgrades } from "hardhat";
-import * as fs              from "fs";
-import * as path            from "path";
+import * as fs from "fs";
+import * as path from "path";
 
 async function main() {
   const [upgrader] = await ethers.getSigners();
-  const PROXY      = process.env.PROXY;
+  const PROXY = process.env.PROXY;
 
   if (!PROXY || !ethers.isAddress(PROXY)) {
     throw new Error("Set PROXY=0x... environment variable");
@@ -69,7 +69,7 @@ async function main() {
   console.log(`  npx hardhat verify --network ${network.name} ${newImpl}`);
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error(e);
   process.exit(1);
 });

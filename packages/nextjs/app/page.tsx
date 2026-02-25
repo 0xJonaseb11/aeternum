@@ -12,8 +12,8 @@ import {
   MagnifyingGlassIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress, isConnecting } = useAccount();
@@ -28,8 +28,8 @@ const Home: NextPage = () => {
             Private, permanent evidence vault
           </h1>
           <p className="mt-4 text-base text-base-content/80 sm:text-lg">
-            Store cryptographic proofs of your files on-chain. Encrypt locally, upload to Arweave, verify ownership
-            with zero-knowledge — without revealing secrets.
+            Store cryptographic proofs of your files on-chain. Encrypt locally, upload to Arweave, verify ownership with
+            zero-knowledge — without revealing secrets.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             {connectedAddress ? (
@@ -44,9 +44,7 @@ const Home: NextPage = () => {
                 />
               </div>
             ) : (
-              <p className="text-sm text-base-content/70">
-                Connect your wallet to create and view proofs.
-              </p>
+              <p className="text-sm text-base-content/70">Connect your wallet to create and view proofs.</p>
             )}
           </div>
         </div>

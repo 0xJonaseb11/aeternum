@@ -7,18 +7,12 @@ pragma solidity ^0.8.24;
  *          Implemented by EvidenceVault.sol.
  */
 interface IEvidenceVault {
-
     // ─────────────────────────────────────────────────────────────────────────
     //  Events
     // ─────────────────────────────────────────────────────────────────────────
 
     /// @notice Emitted when a new proof is registered.
-    event ProofCreated(
-        address indexed owner,
-        bytes32 indexed fileHash,
-        uint64  timestamp,
-        uint64  blockNumber
-    );
+    event ProofCreated(address indexed owner, bytes32 indexed fileHash, uint64 timestamp, uint64 blockNumber);
 
     /// @notice Emitted when the owner soft-revokes a proof.
     event ProofRevoked(address indexed owner, bytes32 indexed fileHash);
@@ -65,14 +59,14 @@ interface IEvidenceVault {
      *           slot 5: ipfsCid     (dynamic string — optional backup)
      */
     struct Proof {
-        address owner;          // 20 bytes ─┐
-        bool    revoked;        //  1 byte   ─┘ slot 0
-        uint64  timestamp;      //  8 bytes ─┐
-        uint64  blockNumber;    //  8 bytes ─┘ slot 1
-        bytes32 fileHash;       // 32 bytes    slot 2
-        bytes32 commitment;     // 32 bytes    slot 3  (Poseidon(fileHash,secret))
-        string  arweaveTxId;    // dynamic     slot 4  (primary storage)
-        string  ipfsCid;        // dynamic     slot 5  (optional backup)
+        address owner; // 20 bytes ─┐
+        bool revoked; //  1 byte   ─┘ slot 0
+        uint64 timestamp; //  8 bytes ─┐
+        uint64 blockNumber; //  8 bytes ─┘ slot 1
+        bytes32 fileHash; // 32 bytes    slot 2
+        bytes32 commitment; // 32 bytes    slot 3  (Poseidon(fileHash,secret))
+        string arweaveTxId; // dynamic     slot 4  (primary storage)
+        string ipfsCid; // dynamic     slot 5  (optional backup)
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -87,8 +81,8 @@ interface IEvidenceVault {
      * @param  ipfsCid      Optional IPFS CID backup (pass "" to omit).
      */
     function createProof(
-        bytes32        fileHash,
-        bytes32        commitment,
+        bytes32 fileHash,
+        bytes32 commitment,
         string calldata arweaveTxId,
         string calldata ipfsCid
     ) external;
@@ -143,7 +137,7 @@ interface IEvidenceVault {
      * @return               True if the proof is valid and matches stored commitment.
      */
     function verifyOwnership(
-        bytes32        fileHash,
+        bytes32 fileHash,
         bytes calldata zkProof,
         uint256[] calldata publicInputs
     ) external view returns (bool);
@@ -153,6 +147,6 @@ interface IEvidenceVault {
     // ─────────────────────────────────────────────────────────────────────────
 
     function setZKVerifier(address verifier) external;
-    function pause()   external;
+    function pause() external;
     function unpause() external;
 }

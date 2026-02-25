@@ -26,15 +26,11 @@ const deployEvidenceVaultProxy: DeployFunction = async function (hre: HardhatRun
   const wrapperAddress = wrapperDeployment.address;
 
   const EvidenceVaultFactory = await ethers.getContractFactory("EvidenceVault");
-  const vault = await upgrades.deployProxy(
-    EvidenceVaultFactory,
-    [deployer],
-    {
-      initializer: "initialize",
-      kind: "uups",
-      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
-    }
-  );
+  const vault = await upgrades.deployProxy(EvidenceVaultFactory, [deployer], {
+    initializer: "initialize",
+    kind: "uups",
+    unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
+  });
   await vault.waitForDeployment();
   const proxyAddress = await vault.getAddress();
   const implAddress = await upgrades.erc1967.getImplementationAddress(proxyAddress);
