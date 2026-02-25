@@ -7,8 +7,9 @@ pragma solidity ^0.8.24;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import { OwnableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+// OZ 5.5+: ReentrancyGuard is stateless; we init its storage slot in initialize() for the proxy
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Local
@@ -45,7 +46,7 @@ import { EvidenceVaultStorage } from "./EvidenceVaultStorage.sol";
  *          ─────────────
  *          • UUPS upgradeable (EIP-1822)
  *          • OwnableUpgradeable         → admin / upgrade authority
- *          • ReentrancyGuardUpgradeable → defence in depth
+ *          • ReentrancyGuard (OZ 5.5+)  → defence in depth (slot inited in initialize)
  *          • PausableUpgradeable        → emergency circuit-breaker
  *          • EvidenceVaultStorage       → isolated, append-only layout + __gap
  *          • Custom errors              → gas-efficient reverts
@@ -56,7 +57,7 @@ import { EvidenceVaultStorage } from "./EvidenceVaultStorage.sol";
 contract EvidenceVault is
     Initializable,
     OwnableUpgradeable,
-    ReentrancyGuardUpgradeable,
+    ReentrancyGuard,
     PausableUpgradeable,
     UUPSUpgradeable,
     EvidenceVaultStorage,
@@ -87,9 +88,12 @@ contract EvidenceVault is
         if (initialOwner == address(0)) revert InvalidInput();
 
         __Ownable_init(initialOwner);
-        __ReentrancyGuard_init();
+        // OZ 5.5+: ReentrancyGuard has no initializer; init proxy storage slot (NOT_ENTERED = 1)
+        assembly {
+            sstore(0x9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00, 1)
+        }
         __Pausable_init();
-        __UUPSUpgradeable_init();
+        // OZ 5.5+: UUPSUpgradeable is stateless, no initializer
     }
 
     // ─────────────────────────────────────────────────────────────────────────
