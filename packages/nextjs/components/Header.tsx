@@ -18,16 +18,6 @@ type HeaderMenuLink = {
 export const menuLinks: HeaderMenuLink[] = [
   { label: "Home", href: "/" },
   { label: "Vault", href: "/#vault" },
-  {
-    label: "Block Explorer",
-    href: "/blockexplorer",
-    icon: <MagnifyingGlassIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Debug",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -87,12 +77,16 @@ export const Header = () => {
             className="flex items-center gap-2 ml-0 mr-6 shrink-0 lg:ml-2"
             aria-label="Aeternum home"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <LockClosedIcon className="h-5 w-5" />
-            </span>
-            <div className="flex flex-col leading-tight">
-              <span className="font-semibold tracking-tight text-base-content">Aeternum</span>
-              <span className="text-xs text-base-content/70">Evidence vault</span>
+            <div className="flex items-center gap-2">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-content shadow-md">
+                <LockClosedIcon className="h-5 w-5" />
+              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-bold tracking-tight text-lg text-base-content">Aeternum</span>
+                <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-semibold">
+                  Evidence Vault
+                </span>
+              </div>
             </div>
           </Link>
           <ul className="hidden lg:flex menu menu-horizontal gap-1 px-1">
