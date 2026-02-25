@@ -90,8 +90,10 @@ async function setup() {
 
   // 6. Generate Solidity verifier
   console.log("\n[6/6] Generating Solidity verifier contract...");
-  const templates = { groth16: require("snarkjs/templates/verifier_groth16.sol") };
-  const solidityCode = await snarkjs.zKey.exportSolidityVerifier(ZKEY_FINAL, templates);
+  const templatePath = path.join(ROOT, "node_modules/snarkjs/templates/verifier_groth16.sol.ejs");
+  const template = fs.readFileSync(templatePath, "utf8");
+  const solidityCode = await (snarkjs.zKey as any).exportSolidityVerifier(ZKEY_FINAL, { groth16: template });
+
   // Rename the contract from Groth16Verifier → CommitmentVerifier
   const renamed = solidityCode.replace("contract Groth16Verifier", "contract CommitmentVerifier");
   fs.writeFileSync(VERIFIER_OUT, renamed);
