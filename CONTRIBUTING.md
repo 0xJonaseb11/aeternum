@@ -1,86 +1,64 @@
-# Welcome to Scaffold-ETH 2 Contributing Guide
+# Contributing to Aeternum
 
-Thank you for investing your time in contributing to Scaffold-ETH 2!
+Thanks for considering contributing to Aeternum — the permanent, private, verifiable evidence vault.
 
-This guide aims to provide an overview of the contribution workflow to help us make the contribution process effective for everyone involved.
+This guide outlines how to contribute effectively.
 
-## About the Project
+## About the project
 
-Scaffold-ETH 2 is a minimal and forkable repo providing builders with a starter kit to build decentralized applications on Ethereum.
+Aeternum is a zero-knowledge, blockchain-timestamped evidence vault: client-side encrypted storage (Arweave, optional IPFS) with Groth16 ZK proofs and immutable records on Base.
 
-Read the [README](README.md) to get an overview of the project.
+- Read the [README](README.md) for an overview and quick start.
+- Contracts and ZK: see `packages/hardhat/README.md`.
+- Frontend: see `packages/nextjs/`.
 
-### Vision
+## How to contribute
 
-The goal of Scaffold-ETH 2 is to provide the primary building blocks for a decentralized application.
+- Report bugs or suggest features (open an issue).
+- Fix open issues or improve docs.
+- Follow existing code style and the project’s commit conventions.
 
-The repo can be forked to include integrations and more features, but we want to keep the master branch simple and minimal.
+**Guidelines**
 
-### Project Status
+- Search existing issues and PRs before opening a new one.
+- One PR per concern (fix/add one thing, or style-only, not both).
+- When reporting bugs: describe what you did, what you expected, and how to reproduce.
+- Use the project’s Prettier/lint config; format before committing.
+- Update README or relevant docs if you change behavior or setup.
 
-The project is under active development.
+## Issues
 
-You can view the open Issues, follow the development process and contribute to the project.
+Use issues to report bugs, request features, or discuss changes before coding.
 
-## Getting started
+- **Picking up work:** Check open issues; comment if you’re working on one to avoid duplicate work.
+- **Opening an issue:** Include context, steps to reproduce (for bugs), or rationale (for features). Screenshots or logs help.
 
-You can contribute to this repo in many ways:
+## Pull requests
 
-- Solve open issues
-- Report bugs or feature requests
-- Improve the documentation
+We use a fork-and-pull workflow:
 
-Contributions are made via Issues and Pull Requests (PRs). A few general guidelines for contributions:
+1. Fork the repo and clone your fork.
+2. Create a branch from the default branch (e.g. `main` or `temp`) with a clear name.
+3. Make your changes, commit with a descriptive message.
+4. Push to your fork and open a PR against the upstream branch.
 
-- Search for existing Issues and PRs before creating your own.
-- Contributions should only fix/add the functionality in the issue OR address style issues, not both.
-- If you're running into an error, please give context. Explain what you're trying to do and how to reproduce the error.
-- Please use the same formatting in the code repository. You can configure your IDE to do it by using the prettier / linting config files included in each package.
-- If applicable, please edit the README.md file to reflect the changes.
+**Commit messages**
 
-### Issues
+Use a short prefix so history stays clear, for example:
 
-Issues should be used to report problems, request a new feature, or discuss potential changes before a PR is created.
+- `[fix]: ...` — bug fix  
+- `[feat]: ...` or `[update]: ...` — new or changed behavior  
+- `[docs]: ...` — documentation only  
+- `[chore]: ...` — tooling, config, or maintenance  
 
-#### Solve an issue
+**PR quality**
 
-Scan through our [existing issues](https://github.com/scaffold-eth/scaffold-eth-2/issues) to find one that interests you.
+- Title and description should clearly describe the change.
+- Link any related issue.
+- Keep the diff focused; avoid unrelated edits.
 
-If a contributor is working on the issue, they will be assigned to the individual. If you find an issue to work on, you are welcome to assign it to yourself and open a PR with a fix for it.
+Maintainers may request changes or ask questions. Once approved, your PR will be merged (merge strategy may vary; we prefer keeping history clear when possible).
 
-#### Create a new issue
+## Questions
 
-If a related issue doesn't exist, you can open a new issue.
-
-Some tips to follow when you are creating an issue:
-
-- Provide as much context as possible. Over-communicate to give the most details to the reader.
-- Include the steps to reproduce the issue or the reason for adding the feature.
-- Screenshots, videos etc., are highly appreciated.
-
-### Pull Requests
-
-#### Pull Request Process
-
-We follow the ["fork-and-pull" Git workflow](https://github.com/susam/gitpr)
-
-1. Fork the repo
-2. Clone the project
-3. Create a new branch with a descriptive name
-4. Commit your changes to the new branch
-5. Push changes to your fork
-6. Open a PR in our repository and tag one of the maintainers to review your PR
-
-Here are some tips for a high-quality pull request:
-
-- Create a title for the PR that accurately defines the work done.
-- Structure the description neatly to make it easy to consume by the readers. For example, you can include bullet points and screenshots instead of having one large paragraph.
-- Add the link to the issue if applicable.
-- Have a good commit message that summarises the work done.
-
-Once you submit your PR:
-
-- We may ask questions, request additional information or ask for changes to be made before a PR can be merged. Please note that these are to make the PR clear for everyone involved and aims to create a frictionless interaction process.
-- As you update your PR and apply changes, mark each conversation resolved.
-
-Once the PR is approved, we'll "squash-and-merge" to keep the git commit history clean.
+Open an issue with the “question” or “discussion” label, or reach out to the maintainers as indicated in the repo.
