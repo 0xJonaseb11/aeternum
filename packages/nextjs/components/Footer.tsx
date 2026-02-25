@@ -10,65 +10,78 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 export const Footer = () => {
   const { targetNetwork } = useTargetNetwork();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
-  const { price: nativeCurrencyPrice } = useFetchNativeCurrencyPrice();
 
   return (
-    <footer className="min-h-0 border-t border-base-300 bg-base-100/80 py-6 px-4 sm:px-6 lg:px-8 mb-11 lg:mb-0">
-      <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-between pointer-events-none p-4">
-        <div className="flex flex-col gap-2 pointer-events-auto md:flex-row">
-          {nativeCurrencyPrice > 0 && (
-            <div className="btn btn-primary btn-sm font-normal gap-1 cursor-default">
-              <CurrencyDollarIcon className="h-4 w-4" />
-              <span>{nativeCurrencyPrice.toFixed(2)}</span>
+    <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-content">
+                <LockClosedIcon className="h-4 w-4" />
+              </span>
+              <span className="font-bold text-xl tracking-tight text-base-content">Aeternum</span>
             </div>
-          )}
-          {isLocalNetwork && (
-            <>
-              <Faucet />
-              <Link href="/blockexplorer" passHref className="btn btn-primary btn-sm font-normal gap-1">
-                <MagnifyingGlassIcon className="h-4 w-4" />
-                <span>Block Explorer</span>
-              </Link>
-            </>
-          )}
-        </div>
-        <SwitchTheme className={`pointer-events-auto ${isLocalNetwork ? "self-end md:self-auto" : ""}`} />
-      </div>
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <div>
-            <p className="font-medium text-base-content">Aeternum</p>
-            <p className="text-sm text-base-content/70">Private, permanent evidence vault</p>
+            <p className="max-w-xs text-sm text-base-content/60 leading-relaxed">
+              Secure, permanent, and private evidence vault. Leveraging zero-knowledge proofs and decentralized storage
+              for ultimate data integrity.
+            </p>
           </div>
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm">
-            <a
-              href="https://github.com/scaffold-eth/se-2"
-              target="_blank"
-              rel="noreferrer"
-              className="link link-hover inline-flex items-center gap-1"
-            >
-              <span>GitHub</span>
-              <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://buidlguidl.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="link link-hover inline-flex items-center gap-1"
-            >
-              <span>BuidlGuidl</span>
-              <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA"
-              target="_blank"
-              rel="noreferrer"
-              className="link link-hover inline-flex items-center gap-1"
-            >
-              <span>Support</span>
-              <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
-            </a>
-          </nav>
+
+          <div>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Platform</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/" className="link link-hover text-base-content/70">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/#vault" className="link link-hover text-base-content/70">
+                  Vault
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Tools</h3>
+            <ul className="space-y-2 text-sm text-base-content/70">
+              {isLocalNetwork && (
+                <>
+                  <li>
+                    <Link href="/debug" className="link link-hover flex items-center gap-1">
+                      <span>Debug Contracts</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/blockexplorer" className="link link-hover flex items-center gap-1">
+                      <span>Block Explorer</span>
+                    </Link>
+                  </li>
+                </>
+              )}
+              <li>
+                <a
+                  href="https://github.com/0xJonaseb11/aeternum"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="link link-hover flex items-center gap-1"
+                >
+                  <span>Source Code</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-base-content/40">
+            © {new Date().getFullYear()} Aeternum. Built for the future of evidence.
+          </p>
+          <div className="flex items-center gap-4">
+            <SwitchTheme />
+          </div>
         </div>
       </div>
     </footer>
