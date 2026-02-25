@@ -1,0 +1,5 @@
+{
+  "buildCommand": "yarn next:build",
+  "installCommand": "yarn workspaces focus @se-2/nextjs",
+  "outputDirectory": "packages/nextjs/.next"
+}

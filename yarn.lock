@@ -3684,7 +3684,7 @@ __metadata:
   resolution: "@openzeppelin/contracts-upgradeable@npm:5.5.0"
   peerDependencies:
     "@openzeppelin/contracts": 5.0.2
-  checksum: 7d1dbd6bcb45fb6fccf2dc51253afd044b9f77b01d34e11f7cf4c3e17c860df31ddc2c831be7ac463e2955eaea9620cec1c38cdffed7fcf235eb1fdc7ceb3716
+  checksum: 04b1258d761be5be3493130adca7ec9324cf002add93cac0c53310f43afc35ffd485bf95acffabd93c49470e2b471e3fdc6996e9177818520f63b8138bded53b
   languageName: node
   linkType: hard
 
@@ -4282,6 +4282,7 @@ __metadata:
     "@typechain/ethers-v5": ~11.1.2
     "@typechain/ethers-v6": ~0.5.1
     "@typechain/hardhat": ~9.1.0
+    "@types/chai": ~4.3.19
     "@types/eslint": ~9.6.1
     "@types/mocha": ~10.0.10
     "@types/node": ^20.0.0
@@ -4329,6 +4330,7 @@ __metadata:
     "@trivago/prettier-plugin-sort-imports": ~4.3.0
     "@types/node": ~18.19.50
     "@types/react": ~19.0.7
+    "@vercel/analytics": ^1.6.1
     abitype: 1.0.6
     autoprefixer: ~10.4.20
     bgipfs: ~0.0.12
@@ -6254,6 +6256,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chai@npm:~4.3.19":
+  version: 4.3.20
+  resolution: "@types/chai@npm:4.3.20"
+  checksum: 7c5b0c9148f1a844a8d16cb1e16c64f2e7749cab2b8284155b9e494a6b34054846e22fb2b38df6b290f9bf57e6beebb2e121940c5896bc086ad7bab7ed429f06
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:^3.4.33":
   version: 3.4.38
   resolution: "@types/connect@npm:3.4.38"
@@ -6959,6 +6968,36 @@ __metadata:
   peerDependencies:
     "@vanilla-extract/css": ^1.0.0
   checksum: e4fea79a4f49c2b8095892f6d758958548ee8513c7ee27dd1f229c2639bd5271674d117facf79dbdb31d218a64d208e56489dc7a810c9ad30b7454b355298beb
+  languageName: node
+  linkType: hard
+
+"@vercel/analytics@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "@vercel/analytics@npm:1.6.1"
+  peerDependencies:
+    "@remix-run/react": ^2
+    "@sveltejs/kit": ^1 || ^2
+    next: ">= 13"
+    react: ^18 || ^19 || ^19.0.0-rc
+    svelte: ">= 4"
+    vue: ^3
+    vue-router: ^4
+  peerDependenciesMeta:
+    "@remix-run/react":
+      optional: true
+    "@sveltejs/kit":
+      optional: true
+    next:
+      optional: true
+    react:
+      optional: true
+    svelte:
+      optional: true
+    vue:
+      optional: true
+    vue-router:
+      optional: true
+  checksum: 07c91bb26b0328ba59790e1563b40548959289d1b447ac9512652766d39eab96fa618ddf9b51ef2683e10bf7c1485ae8abc4834b70757c78cbaff473a1f83203
   languageName: node
   linkType: hard
 
@@ -18204,6 +18243,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
+    "@types/chai": ~4.3.19
+    "@vercel/analytics": ^1.6.1
     husky: ~9.1.6
     lint-staged: ~13.2.2
   languageName: unknown
