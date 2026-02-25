@@ -11,8 +11,16 @@ import { DeployFunction } from "hardhat-deploy/types";
  */
 const deployEvidenceVaultProxy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
-  const { get, save } = hre.deployments;
-  const { ethers, upgrades } = hre;
+  const { get, getOrNull, save } = hre.deployments;
+  const { ethers } = hre;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const upgrades = (hre as any).upgrades;
+
+  const existing = await getOrNull("EvidenceVault");
+  if (existing) {
+    console.log("EvidenceVault already deployed at", existing.address);
+    return;
+  }
 
   const wrapperDeployment = await get("Groth16VerifierWrapper");
   const wrapperAddress = wrapperDeployment.address;

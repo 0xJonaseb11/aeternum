@@ -16,6 +16,7 @@ const deployCommitmentVerifier: DeployFunction = async function (hre: HardhatRun
     args: [],
     log: true,
     autoMine: true,
+    skipIfAlreadyDeployed: true,
   });
 };
 

@@ -19,6 +19,7 @@ const deployGroth16VerifierWrapper: DeployFunction = async function (hre: Hardha
     args: [verifierAddress],
     log: true,
     autoMine: true,
+    skipIfAlreadyDeployed: true,
   });
 };
 

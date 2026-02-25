@@ -1,44 +1,113 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { Contract } from "ethers";
 
 /**
- * Deploys a contract named "YourContract" using the deployer account and
- * constructor arguments set to the deployer address
+ * EvidenceVault — Full deployment (scaffold style).
  *
- * @param hre HardhatRuntimeEnvironment object.
+ * Deploys in order:
+ *   1. CommitmentVerifier (SnarkJS-generated Groth16 verifier)
+ *   2. Groth16VerifierWrapper (adapts to IZKVerifier)
+ *   3. EvidenceVault UUPS proxy + initialize
+ *   4. setZKVerifier(wrapper)
+ *   5. transferOwnership(MULTISIG) if MULTISIG env is set
+ *
+ * Usage:
+ *   Full deploy:  yarn deploy  (or yarn deploy --tags EvidenceVaultFull)
+ *   With multisig: MULTISIG=0x... yarn deploy
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  /*
-    On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
-
-    When deploying to live networks (e.g `yarn deploy --network sepolia`), the deployer account
-    should have sufficient balance to pay for the gas fees for contract creation.
-
-    You can generate a random account with `yarn generate` or `yarn account:import` to import your
-    existing PK which will fill DEPLOYER_PRIVATE_KEY_ENCRYPTED in the .env file (then used on hardhat.config.ts)
-    You can run the `yarn account` command to check your balance in every network.
-  */
+const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
-  const { deploy } = hre.deployments;
+  const { deploy, save } = hre.deployments;
+  const { ethers } = hre;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const upgrades = (hre as any).upgrades;
 
-  await deploy("YourContract", {
+  if (!deployer) {
+    throw new Error("Missing named account 'deployer'");
+  }
+
+  const network = await ethers.provider.getNetwork();
+  console.log("═══════════════════════════════════════════════════");
+  console.log("  EvidenceVault — Full Deployment");
+  console.log("═══════════════════════════════════════════════════");
+  console.log(`  Network  : ${network.name} (chainId ${network.chainId})`);
+  console.log(`  Deployer : ${deployer}`);
+  console.log(`  Balance  : ${ethers.formatEther(await ethers.provider.getBalance(deployer))} ETH`);
+  console.log("───────────────────────────────────────────────────");
+
+  // ── 1. CommitmentVerifier ────────────────────────────────────────────────
+  console.log("\n[1/4] Deploying CommitmentVerifier (Groth16)...");
+  const verifierResult = await deploy("CommitmentVerifier", {
     from: deployer,
-    // Contract constructor arguments
-    args: [deployer],
+    args: [],
     log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
+  const verifierAddr = verifierResult.address;
+  console.log(`      ✓ CommitmentVerifier: ${verifierAddr}`);
 
-  // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("YourContract", deployer);
-  console.log("👋 Initial greeting:", await yourContract.greeting());
+  // ── 2. Groth16VerifierWrapper ────────────────────────────────────────────
+  console.log("\n[2/4] Deploying Groth16VerifierWrapper...");
+  const wrapperResult = await deploy("Groth16VerifierWrapper", {
+    from: deployer,
+    args: [verifierAddr],
+    log: true,
+    autoMine: true,
+  });
+  const wrapperAddr = wrapperResult.address;
+  console.log(`      ✓ Groth16VerifierWrapper: ${wrapperAddr}`);
+
+  // ── 3. EvidenceVault proxy (UUPS) ──────────────────────────────────────
+  console.log("\n[3/4] Deploying EvidenceVault (UUPS proxy)...");
+  const VaultFactory = await ethers.getContractFactory("EvidenceVault");
+  const vault = await upgrades.deployProxy(
+    VaultFactory,
+    [deployer],
+    {
+      initializer: "initialize",
+      kind: "uups",
+    }
+  );
+  await vault.waitForDeployment();
+  const proxyAddr = await vault.getAddress();
+  const implAddr = await upgrades.erc1967.getImplementationAddress(proxyAddr);
+  const artifact = await hre.deployments.getArtifact("EvidenceVault");
+  await save("EvidenceVault", {
+    address: proxyAddr,
+    abi: artifact.abi,
+  });
+  console.log(`      ✓ Proxy (use this address): ${proxyAddr}`);
+  console.log(`      ✓ Implementation:           ${implAddr}`);
+
+  // ── 4. Wire ZK verifier ─────────────────────────────────────────────────
+  console.log("\n[4/4] Wiring ZK verifier into vault...");
+  const setTx = await vault.setZKVerifier(wrapperAddr);
+  await setTx.wait();
+  console.log(`      ✓ zkVerifier set to: ${wrapperAddr}`);
+
+  // ── 5. Transfer ownership to multisig ───────────────────────────────────
+  const multisig = process.env.MULTISIG;
+  if (multisig && ethers.isAddress(multisig)) {
+    console.log(`\n[5/5] Transferring ownership to multisig ${multisig}...`);
+    const transferTx = await vault.transferOwnership(multisig);
+    await transferTx.wait();
+    console.log(`      ✓ Ownership transferred`);
+  } else {
+    console.log("\n[5/5] ⚠️  MULTISIG env not set — ownership NOT transferred.");
+    console.log("         Set MULTISIG=0x... and run vault.transferOwnership(multisig)");
+  }
+
+  console.log("\n═══════════════════════════════════════════════════");
+  console.log("  Deployment Complete");
+  console.log("═══════════════════════════════════════════════════");
+  console.log(JSON.stringify({
+    proxy: proxyAddr,
+    implementation: implAddr,
+    groth16Verifier: verifierAddr,
+    groth16VerifierWrapper: wrapperAddr,
+    multisig: multisig ?? "NOT_SET",
+  }, null, 2));
 };
 
-export default deployYourContract;
-
-// Tags are useful if you have multiple deploy files and only want to run one of them.
-// e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["YourContract"];
+export default deployEvidenceVaultFull;
+deployEvidenceVaultFull.tags = ["EvidenceVaultFull"];
