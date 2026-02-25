@@ -14,6 +14,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { UploadEvidence } from "~~/components/vault/UploadEvidence";
+import { EvidenceList } from "~~/components/vault/EvidenceList";
 
 const Home: NextPage = () => {
   const { address: connectedAddress, isConnecting } = useAccount();
@@ -128,19 +130,17 @@ const Home: NextPage = () => {
           {isConnecting ? (
             <ProofListSkeleton count={3} />
           ) : connectedAddress ? (
-            <div className="rounded-2xl border border-base-300 bg-base-100 overflow-hidden shadow-sm">
-              <div className="p-12 text-center max-w-md mx-auto">
-                <div className="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CloudArrowUpIcon className="h-8 w-8 text-base-content/30" />
+            <div className="grid gap-12">
+              <UploadEvidence />
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-px grow bg-base-300"></div>
+                  <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-base-content/30 whitespace-nowrap">
+                    Recent Evidence Proofs
+                  </h3>
+                  <div className="h-px grow bg-base-300"></div>
                 </div>
-                <h3 className="text-xl font-bold mb-2">No proofs found</h3>
-                <p className="text-base-content/60 mb-8">
-                  You haven't uploaded any evidence yet. Start by creating your first permanent proof.
-                </p>
-                <Link href="/#vault" className="btn btn-primary btn-md px-8 gap-2">
-                  <CloudArrowUpIcon className="h-5 w-5" />
-                  <span>Upload first proof</span>
-                </Link>
+                <EvidenceList />
               </div>
             </div>
           ) : (
