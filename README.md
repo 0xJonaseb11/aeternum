@@ -347,6 +347,6 @@ This project is licensed under the **MIT License**.
 
 ## Contact
 
-- **Website:** [https://aeternum.app](https://aeternum.app)
+<!-- - **Website:** [https://aeternum.app](https://aeternum.app)
 - **GitHub:** [https://github.com/0xJonaseb11/aeternum](https://github.com/0xJonaseb11/aeternum)
-- **Twitter:** [@AeternumVault](https://twitter.com/AeternumVault)
+- **Twitter:** [@AeternumVault](https://twitter.com/AeternumVault) -->
