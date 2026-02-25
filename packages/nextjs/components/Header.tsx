@@ -58,9 +58,6 @@ export const HeaderMenuLinks = () => {
   );
 };
 
-/**
- * Site header — Aeternum branding, nav, theme toggle, wallet connect.
- */
 export const Header = () => {
   const { targetNetwork } = useTargetNetwork();
   const isLocalNetwork = targetNetwork.id === hardhat.id;
