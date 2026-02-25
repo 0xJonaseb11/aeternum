@@ -13,33 +13,33 @@
  *   npm install -D @types/node
  */
 
-import { ethers }       from "ethers";
-import * as snarkjs     from "snarkjs";
+import { ethers } from "ethers";
+import * as snarkjs from "snarkjs";
 import { buildPoseidon } from "circomlibjs";
-import * as fs          from "fs";
-import * as crypto      from "crypto";
+import * as fs from "fs";
+import * as crypto from "crypto";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Types
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface ProofInput {
-  fileHash:   string;   // bytes32 hex
-  secret:     string;   // bytes32 hex — KEEP PRIVATE
-  commitment: string;   // bytes32 hex — store on-chain
+  fileHash: string; // bytes32 hex
+  secret: string; // bytes32 hex — KEEP PRIVATE
+  commitment: string; // bytes32 hex — store on-chain
 }
 
 export interface ZKProofBundle {
-  zkProof:      string;       // ABI-encoded Groth16 proof (pA, pB, pC)
-  publicInputs: bigint[];     // [fileHash_felt, commitment_felt]
-  commitment:   string;       // bytes32 hex commitment
+  zkProof: string; // ABI-encoded Groth16 proof (pA, pB, pC)
+  publicInputs: bigint[]; // [fileHash_felt, commitment_felt]
+  commitment: string; // bytes32 hex commitment
 }
 
 export interface CreateProofTxArgs {
-  fileHash:    string;  // bytes32
-  commitment:  string;  // bytes32
-  arweaveTxId: string;  // 43-char Arweave TxID
-  ipfsCid:     string;  // IPFS CID or "" to omit
+  fileHash: string; // bytes32
+  commitment: string; // bytes32
+  arweaveTxId: string; // 43-char Arweave TxID
+  ipfsCid: string; // IPFS CID or "" to omit
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -47,9 +47,7 @@ export interface CreateProofTxArgs {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // BN254 (alt_bn128) scalar field size — same prime used inside Circom circuits
-const BN254_FIELD_SIZE = BigInt(
-  "21888242871839275222246405745257275088548364400416034343698204186575808495617"
-);
+const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  1. File Hashing
@@ -101,18 +99,15 @@ export function generateSecret(): string {
  *
  * Returns a bytes32 hex string matching what the circuit outputs as `commitment`.
  */
-export async function computeCommitment(
-  fileHash: string,
-  secret:   string
-): Promise<string> {
+export async function computeCommitment(fileHash: string, secret: string): Promise<string> {
   const poseidon = await buildPoseidon();
 
   // Reduce inputs to BN254 field elements
   const fileHash_felt = BigInt(fileHash) % BN254_FIELD_SIZE;
-  const secret_felt   = BigInt(secret)   % BN254_FIELD_SIZE;
+  const secret_felt = BigInt(secret) % BN254_FIELD_SIZE;
 
   if (fileHash_felt === 0n) throw new Error("fileHash_felt is zero after reduction");
-  if (secret_felt   === 0n) throw new Error("secret_felt is zero after reduction");
+  if (secret_felt === 0n) throw new Error("secret_felt is zero after reduction");
 
   // Poseidon returns a BigInt field element
   const hash = poseidon([fileHash_felt, secret_felt]);
@@ -126,12 +121,9 @@ export async function computeCommitment(
  * Build the full ProofInput object (fileHash + secret + commitment).
  * Call this BEFORE uploading to Arweave/IPFS — you need the commitment for createProof().
  */
-export async function buildProofInput(
-  fileBuffer: Buffer,
-  secret?: string
-): Promise<ProofInput> {
-  const fileHash  = hashFile(fileBuffer);
-  const _secret   = secret ?? generateSecret();
+export async function buildProofInput(fileBuffer: Buffer, secret?: string): Promise<ProofInput> {
+  const fileHash = hashFile(fileBuffer);
+  const _secret = secret ?? generateSecret();
   const commitment = await computeCommitment(fileHash, _secret);
 
   return { fileHash, secret: _secret, commitment };
@@ -152,16 +144,12 @@ export async function buildProofInput(
  * @param zkeyPath  Path to commitment_final.zkey (after trusted setup)
  * @param input     ProofInput from buildProofInput()
  */
-export async function generateZKProof(
-  wasmPath: string,
-  zkeyPath: string,
-  input:    ProofInput
-): Promise<ZKProofBundle> {
+export async function generateZKProof(wasmPath: string, zkeyPath: string, input: ProofInput): Promise<ZKProofBundle> {
   const poseidon = await buildPoseidon();
 
   // Reduce to field elements (must match circuit)
   const fileHash_felt = BigInt(input.fileHash) % BN254_FIELD_SIZE;
-  const secret_felt   = BigInt(input.secret)   % BN254_FIELD_SIZE;
+  const secret_felt = BigInt(input.secret) % BN254_FIELD_SIZE;
 
   // Recompute commitment for verification
   const hash = poseidon([fileHash_felt, secret_felt]);
@@ -169,18 +157,14 @@ export async function generateZKProof(
 
   // Circuit input — private witness included here, never goes on-chain
   const circuitInput = {
-    fileHash:   fileHash_felt.toString(),    // public
-    secret:     secret_felt.toString(),      // PRIVATE — stays in witness
-    commitment: commitment_felt.toString(),  // public
+    fileHash: fileHash_felt.toString(), // public
+    secret: secret_felt.toString(), // PRIVATE — stays in witness
+    commitment: commitment_felt.toString(), // public
   };
 
   console.log("⏳ Generating Groth16 proof (this takes ~2-10 seconds)...");
 
-  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-    circuitInput,
-    wasmPath,
-    zkeyPath
-  );
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(circuitInput, wasmPath, zkeyPath);
 
   // Encode proof for on-chain submission
   // SnarkJS Groth16 proof structure: { pi_a, pi_b, pi_c }
@@ -189,16 +173,13 @@ export async function generateZKProof(
   //   pi_c = [x, y]         (G1 point, 2 × uint256)
   const pA: [bigint, bigint] = [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])];
   const pB: [[bigint, bigint], [bigint, bigint]] = [
-    [BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0])],  // Note: SnarkJS uses reversed x-coords for G2
+    [BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0])], // Note: SnarkJS uses reversed x-coords for G2
     [BigInt(proof.pi_b[1][1]), BigInt(proof.pi_b[1][0])],
   ];
   const pC: [bigint, bigint] = [BigInt(proof.pi_c[0]), BigInt(proof.pi_c[1])];
 
   // ABI-encode as (uint256[2], uint256[2][2], uint256[2]) = 8 × uint256 = 256 bytes
-  const zkProof = ethers.AbiCoder.defaultAbiCoder().encode(
-    ["uint256[2]", "uint256[2][2]", "uint256[2]"],
-    [pA, pB, pC]
-  );
+  const zkProof = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[2]", "uint256[2][2]", "uint256[2]"], [pA, pB, pC]);
 
   // Public inputs for on-chain verification
   const publicInputs: bigint[] = publicSignals.map((s: string) => BigInt(s));
@@ -230,10 +211,7 @@ const EVIDENCE_VAULT_ABI = [
 export class EvidenceVaultClient {
   private contract: ethers.Contract;
 
-  constructor(
-    proxyAddress: string,
-    signerOrProvider: ethers.Signer | ethers.Provider
-  ) {
+  constructor(proxyAddress: string, signerOrProvider: ethers.Signer | ethers.Provider) {
     this.contract = new ethers.Contract(proxyAddress, EVIDENCE_VAULT_ABI, signerOrProvider);
   }
 
@@ -244,12 +222,7 @@ export class EvidenceVaultClient {
    * Call AFTER uploading the encrypted file to Arweave.
    */
   async createProof(args: CreateProofTxArgs): Promise<ethers.TransactionReceipt> {
-    const tx = await this.contract.createProof(
-      args.fileHash,
-      args.commitment,
-      args.arweaveTxId,
-      args.ipfsCid
-    );
+    const tx = await this.contract.createProof(args.fileHash, args.commitment, args.arweaveTxId, args.ipfsCid);
     return tx.wait();
   }
 
@@ -291,15 +264,8 @@ export class EvidenceVaultClient {
    * @param fileHash    bytes32 file hash
    * @param bundle      ZKProofBundle from generateZKProof()
    */
-  async verifyOwnership(
-    fileHash: string,
-    bundle:   ZKProofBundle
-  ): Promise<boolean> {
-    return this.contract.verifyOwnership(
-      fileHash,
-      bundle.zkProof,
-      bundle.publicInputs
-    );
+  async verifyOwnership(fileHash: string, bundle: ZKProofBundle): Promise<boolean> {
+    return this.contract.verifyOwnership(fileHash, bundle.zkProof, bundle.publicInputs);
   }
 }
 

@@ -19,7 +19,6 @@ pragma solidity ^0.8.24;
  *          client SDK and passes the encoded bytes here.
  */
 interface IZKVerifier {
-
     /**
      * @notice Verify a Groth16 zk-SNARK proof.
      *
@@ -37,8 +36,5 @@ interface IZKVerifier {
      *
      * @return valid         True if the proof is valid for the given public inputs.
      */
-    function verifyProof(
-        bytes     calldata proofData,
-        uint256[] calldata publicInputs
-    ) external view returns (bool valid);
+    function verifyProof(bytes calldata proofData, uint256[] calldata publicInputs) external view returns (bool valid);
 }

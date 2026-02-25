@@ -16,22 +16,22 @@
  *   npm install circomlibjs snarkjs ethers
  */
 
-import { execSync }       from "child_process";
-import * as fs            from "fs";
-import * as path          from "path";
-import * as snarkjs       from "snarkjs";
-import { buildPoseidon }  from "circomlibjs";
-import { ethers }         from "ethers";
+import { execSync } from "child_process";
+import * as fs from "fs";
+import * as path from "path";
+import * as snarkjs from "snarkjs";
+import { buildPoseidon } from "circomlibjs";
+import { ethers } from "ethers";
 
-const ROOT       = path.resolve(__dirname, "..");
-const CIRCUIT    = path.join(ROOT, "circuits/commitment.circom");
-const BUILD_DIR  = path.join(ROOT, "build/circuits");
-const PTAU_FILE  = path.join(BUILD_DIR, "pot15_final.ptau");  // Powers of Tau (2^15 constraints)
-const R1CS_FILE  = path.join(BUILD_DIR, "commitment.r1cs");
-const ZKEY_0     = path.join(BUILD_DIR, "commitment_0.zkey");
+const ROOT = path.resolve(__dirname, "..");
+const CIRCUIT = path.join(ROOT, "circuits/commitment.circom");
+const BUILD_DIR = path.join(ROOT, "build/circuits");
+const PTAU_FILE = path.join(BUILD_DIR, "pot15_final.ptau"); // Powers of Tau (2^15 constraints)
+const R1CS_FILE = path.join(BUILD_DIR, "commitment.r1cs");
+const ZKEY_0 = path.join(BUILD_DIR, "commitment_0.zkey");
 const ZKEY_FINAL = path.join(BUILD_DIR, "commitment_final.zkey");
-const WASM_FILE  = path.join(BUILD_DIR, "commitment_js/commitment.wasm");
-const VKEY_FILE  = path.join(BUILD_DIR, "verification_key.json");
+const WASM_FILE = path.join(BUILD_DIR, "commitment_js/commitment.wasm");
+const VKEY_FILE = path.join(BUILD_DIR, "verification_key.json");
 const VERIFIER_OUT = path.join(ROOT, "contracts/CommitmentVerifier.sol");
 
 const BN254_P = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
@@ -49,10 +49,9 @@ async function setup() {
 
   // 1. Compile the Circom circuit
   console.log("\n[1/6] Compiling commitment.circom...");
-  execSync(
-    `circom ${CIRCUIT} --r1cs --wasm --sym --c --output ${BUILD_DIR} -l ${ROOT}/node_modules`,
-    { stdio: "inherit" }
-  );
+  execSync(`circom ${CIRCUIT} --r1cs --wasm --sym --c --output ${BUILD_DIR} -l ${ROOT}/node_modules`, {
+    stdio: "inherit",
+  });
   console.log("      ✓ Circuit compiled");
 
   // 2. Download / use existing Powers of Tau
@@ -60,10 +59,9 @@ async function setup() {
   // https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau
   if (!fs.existsSync(PTAU_FILE)) {
     console.log("\n[2/6] Downloading Powers of Tau (pot15)...");
-    execSync(
-      `curl -o ${PTAU_FILE} https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau`,
-      { stdio: "inherit" }
-    );
+    execSync(`curl -o ${PTAU_FILE} https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau`, {
+      stdio: "inherit",
+    });
   } else {
     console.log("\n[2/6] Powers of Tau already present, skipping download.");
   }
@@ -80,7 +78,7 @@ async function setup() {
     ZKEY_FINAL,
     "EvidenceVault-Contributor-1",
     // Entropy: in production collect from multiple parties via a ceremony
-    ethers.hexlify(ethers.randomBytes(64))
+    ethers.hexlify(ethers.randomBytes(64)),
   );
   console.log("      ✓ Contribution complete → commitment_final.zkey");
 
@@ -95,10 +93,7 @@ async function setup() {
   const templates = { groth16: require("snarkjs/templates/verifier_groth16.sol") };
   const solidityCode = await snarkjs.zKey.exportSolidityVerifier(ZKEY_FINAL, templates);
   // Rename the contract from Groth16Verifier → CommitmentVerifier
-  const renamed = solidityCode.replace(
-    "contract Groth16Verifier",
-    "contract CommitmentVerifier"
-  );
+  const renamed = solidityCode.replace("contract Groth16Verifier", "contract CommitmentVerifier");
   fs.writeFileSync(VERIFIER_OUT, renamed);
   console.log(`      ✓ CommitmentVerifier.sol written to ${VERIFIER_OUT}`);
 
@@ -119,7 +114,7 @@ async function setup() {
 
 async function prove() {
   const filePath = process.env.FILE;
-  const secret   = process.env.SECRET;
+  const secret = process.env.SECRET;
 
   if (!filePath || !secret) {
     throw new Error("Set FILE=./path/to/file SECRET=0x... env vars");
@@ -131,51 +126,44 @@ async function prove() {
 
   // Hash the file
   const fileBuffer = fs.readFileSync(filePath);
-  const fileHash   = ethers.keccak256(fileBuffer);
+  const fileHash = ethers.keccak256(fileBuffer);
   console.log(`  fileHash : ${fileHash}`);
 
   // Build field elements
-  const poseidon       = await buildPoseidon();
-  const fileHash_felt  = BigInt(fileHash) % BN254_P;
-  const secret_felt    = BigInt(secret)   % BN254_P;
+  const poseidon = await buildPoseidon();
+  const fileHash_felt = BigInt(fileHash) % BN254_P;
+  const secret_felt = BigInt(secret) % BN254_P;
 
   if (fileHash_felt === 0n) throw new Error("fileHash reduces to zero mod BN254 — use a different file");
-  if (secret_felt   === 0n) throw new Error("secret reduces to zero mod BN254 — generate a new secret");
+  if (secret_felt === 0n) throw new Error("secret reduces to zero mod BN254 — generate a new secret");
 
   // Compute commitment
-  const hash           = poseidon([fileHash_felt, secret_felt]);
+  const hash = poseidon([fileHash_felt, secret_felt]);
   const commitment_felt: bigint = poseidon.F.toObject(hash);
-  const commitment     = "0x" + commitment_felt.toString(16).padStart(64, "0");
+  const commitment = "0x" + commitment_felt.toString(16).padStart(64, "0");
   console.log(`  commitment: ${commitment}`);
 
   // Circuit inputs
   const input = {
-    fileHash:   fileHash_felt.toString(),
-    secret:     secret_felt.toString(),    // private — stays in witness
+    fileHash: fileHash_felt.toString(),
+    secret: secret_felt.toString(), // private — stays in witness
     commitment: commitment_felt.toString(),
   };
 
   // Generate proof
   console.log("\n  Generating proof...");
-  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-    input,
-    WASM_FILE,
-    ZKEY_FINAL
-  );
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, WASM_FILE, ZKEY_FINAL);
   console.log("  ✓ Proof generated");
 
   // Encode for on-chain submission
   const pA: [bigint, bigint] = [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])];
-  const pB: [[bigint, bigint],[bigint,bigint]] = [
+  const pB: [[bigint, bigint], [bigint, bigint]] = [
     [BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0])],
     [BigInt(proof.pi_b[1][1]), BigInt(proof.pi_b[1][0])],
   ];
   const pC: [bigint, bigint] = [BigInt(proof.pi_c[0]), BigInt(proof.pi_c[1])];
 
-  const zkProof = ethers.AbiCoder.defaultAbiCoder().encode(
-    ["uint256[2]", "uint256[2][2]", "uint256[2]"],
-    [pA, pB, pC]
-  );
+  const zkProof = ethers.AbiCoder.defaultAbiCoder().encode(["uint256[2]", "uint256[2][2]", "uint256[2]"], [pA, pB, pC]);
 
   const bundle = {
     fileHash,
@@ -212,4 +200,7 @@ const cmd = process.argv[2];
     console.log("Usage: ts-node zkSetup.ts <setup|prove>");
     process.exit(1);
   }
-})().catch((e) => { console.error(e); process.exit(1); });
+})().catch(e => {
+  console.error(e);
+  process.exit(1);
+});

@@ -12,13 +12,7 @@ type SkeletonProps = HTMLAttributes<HTMLDivElement> & {
  * Reflects content structure; combine multiple for cards, lists, forms.
  */
 export function Skeleton({ className = "", ...props }: SkeletonProps) {
-  return (
-    <div
-      aria-hidden
-      className={`animate-pulse rounded-md bg-base-300 ${className}`}
-      {...props}
-    />
-  );
+  return <div aria-hidden className={`animate-pulse rounded-md bg-base-300 ${className}`} {...props} />;
 }
 
 /** Skeleton for a single-line text block */

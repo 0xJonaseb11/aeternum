@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IZKVerifier} from "./interface/IZKVerifier.sol";
+import { IZKVerifier } from "./interface/IZKVerifier.sol";
 
 /**
  * @title   Groth16VerifierWrapper
@@ -31,15 +31,14 @@ import {IZKVerifier} from "./interface/IZKVerifier.sol";
  */
 interface ISnarkJSVerifier {
     function verifyProof(
-        uint256[2]    calldata _pA,
+        uint256[2] calldata _pA,
         uint256[2][2] calldata _pB,
-        uint256[2]    calldata _pC,
-        uint256[2]    calldata _pubSignals
+        uint256[2] calldata _pC,
+        uint256[2] calldata _pubSignals
     ) external view returns (bool);
 }
 
 contract Groth16VerifierWrapper is IZKVerifier {
-
     // ── Errors ───────────────────────────────────────────────────────────────
 
     error InvalidProofEncoding();
@@ -64,15 +63,15 @@ contract Groth16VerifierWrapper is IZKVerifier {
      *      publicInputs must have exactly 2 elements: [fileHash_felt, commitment_felt]
      */
     function verifyProof(
-        bytes     calldata proofData,
+        bytes calldata proofData,
         uint256[] calldata publicInputs
     ) external view override returns (bool valid) {
         if (publicInputs.length != 2) revert WrongPublicInputCount();
 
         // Decode the proof components
-        uint256[2]    memory pA;
+        uint256[2] memory pA;
         uint256[2][2] memory pB;
-        uint256[2]    memory pC;
+        uint256[2] memory pC;
 
         /*
          * abi.decode requires memory, so we copy from calldata.
@@ -84,8 +83,8 @@ contract Groth16VerifierWrapper is IZKVerifier {
         (pA, pB, pC) = abi.decode(proofData, (uint256[2], uint256[2][2], uint256[2]));
 
         uint256[2] memory pubSignals;
-        pubSignals[0] = publicInputs[0];  // fileHash   as BN254 field element
-        pubSignals[1] = publicInputs[1];  // commitment as BN254 field element
+        pubSignals[0] = publicInputs[0]; // fileHash   as BN254 field element
+        pubSignals[1] = publicInputs[1]; // commitment as BN254 field element
 
         valid = snarkVerifier.verifyProof(pA, pB, pC, pubSignals);
     }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IEvidenceVault} from "./interface/IEvidenceVault.sol";
+import { IEvidenceVault } from "./interface/IEvidenceVault.sol";
 
 /**
  * @title   EvidenceVaultStorage
@@ -17,7 +17,6 @@ import {IEvidenceVault} from "./interface/IEvidenceVault.sol";
  *          Current gap: 48 slots reserved for future upgrades.
  */
 abstract contract EvidenceVaultStorage {
-
     // ── Core proof storage ────────────────────────────────────────────────────
 
     /// @dev fileHash → Proof
@@ -39,9 +38,9 @@ abstract contract EvidenceVaultStorage {
 
     // ── Constants (not stored in state, compiled in) ──────────────────────────
 
-    uint256 internal constant MAX_ARWEAVE_ID_LEN = 43;   // Arweave TxID is always 43 chars (Base64url)
-    uint256 internal constant MAX_IPFS_CID_LEN   = 128;  // CIDv0=46, CIDv1≤62, padded for safety
-    uint256 internal constant BN254_FIELD_SIZE    =
+    uint256 internal constant MAX_ARWEAVE_ID_LEN = 43; // Arweave TxID is always 43 chars (Base64url)
+    uint256 internal constant MAX_IPFS_CID_LEN = 128; // CIDv0=46, CIDv1≤62, padded for safety
+    uint256 internal constant BN254_FIELD_SIZE =
         21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
     // ── Upgrade gap ───────────────────────────────────────────────────────────
