@@ -7,7 +7,6 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon, LockClosedIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import { SwitchTheme } from "~~/components/SwitchTheme";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
