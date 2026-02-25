@@ -13,6 +13,8 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
+import { EvidenceList } from "~~/components/vault/EvidenceList";
+import { UploadEvidence } from "~~/components/vault/UploadEvidence";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
@@ -35,8 +37,8 @@ const Home: NextPage = () => {
               Security for your <span className="text-primary">Digital Truth</span>
             </h1>
             <p className="text-lg text-base-content/70 sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
-              Aeternum provides a permanent, private, and verifiable vault for your most critical files. Encrypt locally,
-              store forever on Arweave, and prove ownership without ever revealing the content.
+              Aeternum provides a permanent, private, and verifiable vault for your most critical files. Encrypt
+              locally, store forever on Arweave, and prove ownership without ever revealing the content.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/#vault" className="btn btn-primary btn-lg px-8 gap-2 group">
@@ -61,8 +63,8 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-xl font-bold text-base-content mb-3">Permanent Storage</h3>
               <p className="text-base-content/60 leading-relaxed mb-4">
-                Your evidence is stored on Arweave, a permanent decentralized web, ensuring it's available for decades,
-                not just years.
+                Your evidence is stored on Arweave, a permanent decentralized web, ensuring it&apos;s available for
+                decades, not just years.
               </p>
               <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                 <span>Learn more</span>
@@ -76,8 +78,8 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-xl font-bold text-base-content mb-3">Zero-Knowledge</h3>
               <p className="text-base-content/60 leading-relaxed mb-4">
-                Prove you own a file without sharing the file itself. We use advanced cryptography to create tamper-proof
-                proofs.
+                Prove you own a file without sharing the file itself. We use advanced cryptography to create
+                tamper-proof proofs.
               </p>
               <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-secondary-content opacity-0 group-hover:opacity-100 transition-opacity">
                 <span>Learn more</span>
