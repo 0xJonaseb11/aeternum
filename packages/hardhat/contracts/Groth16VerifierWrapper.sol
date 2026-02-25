@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IZKVerifier} from "./IZKVerifier.sol";
+import {IZKVerifier} from "./interface/IZKVerifier.sol";
 
 /**
  * @title   Groth16VerifierWrapper
