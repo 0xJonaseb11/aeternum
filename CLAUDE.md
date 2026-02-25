@@ -43,6 +43,33 @@ Treat this as a **production-grade full-stack Web3 project**. Every line of code
 - Modular React components + reusable hooks
 - Strict TypeScript typing
 - Tailwind CSS UI (modern, professional, intuitive)
+- **Follow the UI Reference & Frontend Design rules below (Section 2.1).**
+
+#### 2.1 UI Reference & Frontend Design
+
+**Visual reference (screenshots):**  
+The attached reference screenshots are from **vaultplatform.com** (“vault. a Diligent brand”). Use them **only as inspiration** for tone, structure, and component styling. Do not copy branding or layout literally.
+
+**Documented from the reference:**
+
+| Aspect | Description |
+|--------|-------------|
+| **Overall** | Corporate, clean, professional. Clear hierarchy, ample spacing, readable sans-serif typography. No playful or informal “vibecoding” visuals. |
+| **Dark theme** | Deep teal/green background (e.g. `#1A3A3D`–`#1c3c3a`). White/light text. Subtle abstract patterns (e.g. concentric circles) for depth only. |
+| **Light theme** | White or very light backgrounds; dark text. Header can stay light while main content uses theme (dark/light). |
+| **Accents** | Bright lime green (e.g. `#90EE02` / `#8af700`) for secondary actions and highlights. Pink/magenta (e.g. `#E91E63` / `#e6007e`) for primary CTAs. High contrast, no emojis. |
+| **Cards/forms** | White or theme-appropriate card backgrounds; rounded corners; clear separation between sections. |
+| **Buttons** | Primary: solid accent (e.g. pink/magenta), white text, optional right-arrow icon. Secondary: darker or outlined. Use **real icons** (e.g. arrow `→`, chevrons, close `×`), never emojis. |
+| **Form elements** | Inputs: rectangular fields, clear labels. Radio/check: selected state with checkmark or filled circle (e.g. green). Progress: step indicators (dots or steps) with one active. |
+| **Banners/alerts** | Distinct background (e.g. lime for cookie banner), dark text on light or vice versa. Clear actions: e.g. “Accept” / “Reject” or “Cookie settings” link. |
+
+**Mandatory frontend rules:**
+
+1. **Loading states:** Use **skeleton loading only**. No spinner-only or generic “Loading…” text without skeletons. Skeletons must reflect the structure of the content being loaded (cards, lists, form blocks).
+2. **Theming:** Support **dark** and **light** themes. Prefer **mirroring system theme** (e.g. `prefers-color-scheme`) with an optional manual override (toggle in UI).
+3. **Consistency:** Use a single design system: one palette per theme, consistent spacing, typography scale, and component patterns across the app.
+4. **Icons:** Use **real icons only** (e.g. Heroicons, Lucide, or similar). **No emojis anywhere** — not in UI copy, buttons, placeholders, or status labels.
+5. **Tone:** Professional and minimal. **No obvious “vibecoding” materials** — no whimsical illustrations, meme-style graphics, or overly decorative patterns. Abstract, subtle patterns are acceptable for background depth only.
 
 ---
 
@@ -100,7 +127,7 @@ Treat this as a **production-grade full-stack Web3 project**. Every line of code
 
 ## Deliverables
 1. Upgradeable smart contract with all required functionality  
-2. Scaffold-ETH-compatible frontend  
+2. Scaffold-ETH-compatible frontend **with Section 2.1 UI rules** (skeletons, dark/light/system theme, real icons, no emojis)  
 3. Wallet + smart contract integration  
 4. File upload + encryption + decentralized storage integration  
 5. Proof verification + certificate generation  
@@ -113,6 +140,6 @@ Treat this as a **production-grade full-stack Web3 project**. Every line of code
 **Extra Notes:**  
 - Assume production deployment is the target  
 - Prioritize security, privacy, and zero-knowledge compliance  
-- Make UI professional and intuitive  
+- Make UI professional and intuitive; **follow Section 2.1** (skeleton loading, dark/light/system theme, real icons, no emojis, no vibecoding)  
 - Provide hooks for future multi-chain or ZK proof extensions  
 - Explain design decisions in comments or README where appropriate  
