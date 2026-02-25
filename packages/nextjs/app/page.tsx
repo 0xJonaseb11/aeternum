@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 
 const Home: NextPage = () => {
   const { address: connectedAddress, isConnecting } = useAccount();
