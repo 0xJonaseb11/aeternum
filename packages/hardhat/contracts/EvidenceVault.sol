@@ -13,8 +13,8 @@ import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/P
 // ─────────────────────────────────────────────────────────────────────────────
 //  Local
 // ─────────────────────────────────────────────────────────────────────────────
-import { IEvidenceVault } from "../../interface/IEvidenceVault.sol";
-import { IZKVerifier } from "../interface/IZKVerifier.sol";
+import { IEvidenceVault } from "./interface/IEvidenceVault.sol";
+import { IZKVerifier } from "./interface/IZKVerifier.sol";
 import { EvidenceVaultStorage } from "./EvidenceVaultStorage.sol";
 
 /**
