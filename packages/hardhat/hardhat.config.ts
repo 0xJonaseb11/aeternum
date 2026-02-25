@@ -9,6 +9,7 @@ import "solidity-coverage";
 import "@nomicfoundation/hardhat-verify";
 import "hardhat-deploy";
 import "hardhat-deploy-ethers";
+import "@openzeppelin/hardhat-upgrades";
 import { task } from "hardhat/config";
 import generateTsAbis from "./scripts/generateTsAbis";
 
