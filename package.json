@@ -7,6 +7,10 @@
       "packages/*"
     ]
   },
+  "resolutions": {
+    "react": "~19.2.3",
+    "react-dom": "~19.2.3"
+  },
   "scripts": {
     "account": "yarn hardhat:account",
     "account:generate": "yarn workspace @se-2/hardhat account:generate",
@@ -50,11 +54,15 @@
     "verify": "yarn hardhat:verify"
   },
   "devDependencies": {
+    "@types/chai": "~4.3.19",
     "husky": "~9.1.6",
     "lint-staged": "~13.2.2"
   },
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=20.18.3"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
   }
 }
