@@ -1,13 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import { hardhat } from "viem/chains";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 export const Footer = () => {
-  const { targetNetwork } = useTargetNetwork();
-  const isLocalNetwork = targetNetwork.id === hardhat.id;
 
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-12 px-4 sm:px-6 lg:px-8">
@@ -45,20 +41,6 @@ export const Footer = () => {
           <div>
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Tools</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
-              {isLocalNetwork && (
-                <>
-                  <li>
-                    <Link href="/debug" className="link link-hover flex items-center gap-1">
-                      <span>Debug Contracts</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/blockexplorer" className="link link-hover flex items-center gap-1">
-                      <span>Block Explorer</span>
-                    </Link>
-                  </li>
-                </>
-              )}
               <li>
                 <a
                   href="https://github.com/0xJonaseb11/aeternum"
