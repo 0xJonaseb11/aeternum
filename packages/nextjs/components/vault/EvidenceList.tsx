@@ -11,13 +11,15 @@ import {
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useRecover } from "~~/hooks/vault/useRecover";
+import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface EvidenceItem {
-  id: string; // blockNumber + index or fileHash
+  id: string;
   fileHash: string;
   timestamp: number;
   storageId: string;
+  ipfsCid?: string;
 }
 
 export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
@@ -30,29 +32,30 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
       notification.error("Please enter your secret key");
       return;
     }
-    await recoverFile(proof.storageId, secret, `aeternum_${proof.fileHash.slice(2, 10)}.enc`);
+    await recoverFile(proof.storageId, secret, `aeternum_${proof.fileHash.slice(2, 10)}.enc`, proof.ipfsCid);
     setShowRecover(false);
     setSecret("");
   };
 
   const handleDetails = () => {
-    notification.info("Generating Evidence Certificate...");
-    // Mock certificate generation (in production use jspdf)
-    const certificateInfo = `
-      AETERNUM EVIDENCE CERTIFICATE
-      ----------------------------
-      File Hash: ${proof.fileHash}
-      Timestamp: ${new Date(proof.timestamp * 1000).toUTCString()}
-      Storage ID: ${proof.storageId}
-      Status: Verified On-chain
-    `;
-    const blob = new Blob([certificateInfo], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `certificate_${proof.fileHash.slice(2, 10)}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+      const blob = createCertificatePdf({
+        fileHash: proof.fileHash,
+        timestamp: proof.timestamp,
+        storageId: proof.storageId,
+        ipfsCid: proof.ipfsCid,
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `aeternum_certificate_${proof.fileHash.slice(2, 10)}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      notification.success("Certificate downloaded.");
+    } catch (e) {
+      console.error("Certificate Error:", e);
+      notification.error("Failed to generate certificate.");
+    }
   };
 
   return (
@@ -195,6 +198,7 @@ const EvidenceListItem = ({ fileHash, timestamp }: { fileHash: string; timestamp
         fileHash,
         timestamp,
         storageId: proof.arweaveTxId,
+        ipfsCid: proof.ipfsCid && proof.ipfsCid.length > 0 ? proof.ipfsCid : undefined,
       }}
     />
   );

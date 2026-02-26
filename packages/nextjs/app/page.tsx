@@ -18,8 +18,9 @@ import { UploadEvidence } from "~~/components/vault/UploadEvidence";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress, isConnecting } = useAccount();
+  const { address: connectedAddress, isConnecting, chain } = useAccount();
   const { targetNetwork } = useTargetNetwork();
+  const isWrongNetwork = chain && chain.id !== targetNetwork.id;
 
   return (
     <div className="flex flex-col grow">
@@ -127,7 +128,14 @@ const Home: NextPage = () => {
             )}
           </div>
 
-          {isConnecting ? (
+          {connectedAddress && isWrongNetwork ? (
+            <div className="rounded-2xl border border-warning/50 bg-warning/10 p-8 text-center">
+              <p className="font-bold text-warning mb-1">Wrong network</p>
+              <p className="text-base-content/70 text-sm">
+                Switch to {targetNetwork.name} to use the Evidence Vault.
+              </p>
+            </div>
+          ) : isConnecting ? (
             <ProofListSkeleton count={3} />
           ) : connectedAddress ? (
             <div className="grid gap-12">
