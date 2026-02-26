@@ -111,7 +111,7 @@ export const UploadEvidence = () => {
 
             <div className="mt-8 pt-6 border-t border-base-300">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-success uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
                   <ShieldCheckIcon className="h-4 w-4" />
                   <span>AES-256-GCM Encryption Ready</span>
                 </div>
