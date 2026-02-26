@@ -12,6 +12,7 @@ import {
   ShieldCheckIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";
@@ -21,6 +22,9 @@ const Home: NextPage = () => {
   const { address: connectedAddress, isConnecting, chain } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const isWrongNetwork = chain && chain.id !== targetNetwork.id;
+  const hasVaultContract = Boolean(
+    deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault,
+  );
 
   return (
     <div className="flex flex-col grow">
@@ -131,9 +135,12 @@ const Home: NextPage = () => {
           {connectedAddress && isWrongNetwork ? (
             <div className="rounded-2xl border border-warning/50 bg-warning/10 p-8 text-center">
               <p className="font-bold text-warning mb-1">Wrong network</p>
-              <p className="text-base-content/70 text-sm">
-                Switch to {targetNetwork.name} to use the Evidence Vault.
-              </p>
+              <p className="text-base-content/70 text-sm">Switch to {targetNetwork.name} to use the Evidence Vault.</p>
+            </div>
+          ) : connectedAddress && !hasVaultContract ? (
+            <div className="rounded-2xl border border-base-300 bg-base-100 p-8 text-center">
+              <p className="font-bold text-base-content mb-1">Vault not available</p>
+              <p className="text-base-content/60 text-sm">Evidence Vault is not deployed on this network.</p>
             </div>
           ) : isConnecting ? (
             <ProofListSkeleton count={3} />

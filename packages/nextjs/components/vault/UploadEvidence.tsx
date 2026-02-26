@@ -117,7 +117,7 @@ export const UploadEvidence = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 bg-base-200 rounded-xl border border-base-300">
                 <span className="text-[10px] uppercase font-bold text-base-content/40 mb-1 block">File Hash</span>
                 <div className="flex items-center justify-between gap-2">
@@ -136,6 +136,18 @@ export const UploadEvidence = () => {
                   <code className="text-[10px] font-mono truncate text-base-content/70">{result.arweaveTxId}</code>
                   <button
                     onClick={() => copyToClipboard(result.arweaveTxId)}
+                    className="btn btn-ghost btn-xs btn-circle text-base-content/30"
+                  >
+                    <ClipboardIcon className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+              <div className="p-4 bg-base-200 rounded-xl border border-base-300">
+                <span className="text-[10px] uppercase font-bold text-base-content/40 mb-1 block">IPFS CID</span>
+                <div className="flex items-center justify-between gap-2">
+                  <code className="text-[10px] font-mono truncate text-base-content/70">{result.ipfsCid}</code>
+                  <button
+                    onClick={() => copyToClipboard(result.ipfsCid)}
                     className="btn btn-ghost btn-xs btn-circle text-base-content/30"
                   >
                     <ClipboardIcon className="h-3 w-3" />
