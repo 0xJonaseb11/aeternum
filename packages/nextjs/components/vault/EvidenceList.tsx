@@ -140,7 +140,6 @@ export const EvidenceList = () => {
   const { data: events, isLoading: eventsLoading } = useScaffoldEventHistory({
     contractName: "EvidenceVault",
     eventName: "ProofCreated",
-    fromBlock: 0n,
     filters: { owner: connectedAddress },
   });
 
