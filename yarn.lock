@@ -4331,6 +4331,7 @@ __metadata:
     "@trivago/prettier-plugin-sort-imports": ~4.3.0
     "@types/node": ~18.19.50
     "@types/react": ~19.0.7
+    "@types/react-dom": ~19.0.3
     "@vercel/analytics": ^1.6.1
     abitype: 1.0.6
     autoprefixer: ~10.4.20
@@ -6462,6 +6463,24 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 7a10d298a9987dc4f0cdfdc5171dabafaf0945cc97e5daa6b609e726a57aa4a48ae0e966c68379ef390d61d3cd6621b9b04214bb16b42f5486a46349e1db254d
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:^19.2.3":
+  version: 19.2.3
+  resolution: "@types/react-dom@npm:19.2.3"
+  peerDependencies:
+    "@types/react": ^19.2.0
+  checksum: b9c548f7378979cd8384444ae6c96f7a933b98e341c271c33e74231f27bf3082f04ad7c2927f1b1e6d8af35ccf83e549fce4978ebe0a02ded5a8803aa5f80e06
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:~19.0.3":
+  version: 19.0.6
+  resolution: "@types/react-dom@npm:19.0.6"
+  peerDependencies:
+    "@types/react": ^19.0.0
+  checksum: cf6232700909f0ae31ed9c4cd93c25ce0ef726ba3a19745e99141b0daf3a88b2561972b0923aa1c8f2a494aa504939c26887861f9462b3ff6ea8cab627103a9c
   languageName: node
   linkType: hard
 
@@ -18267,6 +18286,7 @@ __metadata:
   dependencies:
     "@types/chai": ~4.3.19
     "@types/circomlibjs": ^0
+    "@types/react-dom": ^19.2.3
     "@types/snarkjs": ^0
     "@vercel/analytics": ^1.6.1
     circomlibjs: ^0.1.7
