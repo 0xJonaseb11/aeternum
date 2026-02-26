@@ -21,7 +21,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
     <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden">
       <div className="card-body p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-bold uppercase tracking-wider border border-success/20">
+          <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
             <ShieldCheckIcon className="h-3 w-3" />
             <span>Verified On-chain</span>
           </div>
