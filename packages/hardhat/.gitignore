@@ -28,3 +28,9 @@ cache-zk
 
 # other
 temp
+
+# env files
+.env
+
+# docs
+docs/
