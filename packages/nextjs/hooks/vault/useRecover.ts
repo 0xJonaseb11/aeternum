@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { decryptFile } from "~~/utils/vault/crypto";
+import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 import { notification } from "~~/utils/scaffold-eth";
 
-const IPFS_GATEWAY = "https://ipfs.io/ipfs/";
+const IPFS_IO_FALLBACK = "https://ipfs.io/ipfs/";
 
 function isLikelyIpfsCid(id: string): boolean {
     if (!id || id.length < 20) return false;
@@ -13,6 +14,14 @@ async function fetchFromStorage(url: string): Promise<ArrayBuffer> {
     const response = await fetch(url);
     if (!response.ok) throw new Error("Failed to fetch from storage");
     return response.arrayBuffer();
+}
+
+async function fetchFromIpfs(cid: string): Promise<ArrayBuffer> {
+    try {
+        return await fetchFromStorage(getIpfsUrl(cid));
+    } catch {
+        return await fetchFromStorage(`${IPFS_IO_FALLBACK}${cid}`);
+    }
 }
 
 export const useRecover = () => {
@@ -28,14 +37,14 @@ export const useRecover = () => {
         try {
             let combined: ArrayBuffer;
             if (isLikelyIpfsCid(storageId)) {
-                combined = await fetchFromStorage(`${IPFS_GATEWAY}${storageId}`);
+                combined = await fetchFromIpfs(storageId);
             } else {
                 const arweaveUrl = `https://arweave.net/${storageId}`;
                 try {
                     combined = await fetchFromStorage(arweaveUrl);
                 } catch {
                     if (ipfsCid && isLikelyIpfsCid(ipfsCid)) {
-                        combined = await fetchFromStorage(`${IPFS_GATEWAY}${ipfsCid}`);
+                        combined = await fetchFromIpfs(ipfsCid);
                     } else {
                         throw new Error("Failed to fetch from storage");
                     }
