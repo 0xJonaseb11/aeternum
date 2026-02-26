@@ -1,28 +1,50 @@
 import { create } from "kubo-rpc-client";
+import { getIpfsUrl, PINATA_JWT } from "~~/utils/vault/ipfsConfig";
 
 /**
  * Service for decentralized storage uploads.
- * Supports IPFS via Kubo and has placeholders for Arweave.
+ * IPFS: Pinata gateway for backup; uploads go to Pinata (if JWT set) or Infura.
  */
 
-const IPFS_GATEWAY = "https://ipfs.io/ipfs/";
+const PINATA_PIN_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+
+async function uploadToPinata(data: ArrayBuffer): Promise<string> {
+    if (!PINATA_JWT) throw new Error("Pinata JWT not configured");
+    const blob = new Blob([data]);
+    const form = new FormData();
+    form.append("file", blob, "evidence.enc");
+    const res = await fetch(PINATA_PIN_URL, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${PINATA_JWT}` },
+        body: form,
+    });
+    if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Pinata upload failed: ${res.status} ${err}`);
+    }
+    const json = (await res.json()) as { IpfsHash?: string };
+    if (!json.IpfsHash) throw new Error("Pinata did not return IpfsHash");
+    return json.IpfsHash;
+}
 
 /**
- * Uploads a buffer to IPFS using the Kubo RPC client.
- * Note: Requires an IPFS node or service to be accessible.
+ * Uploads a buffer to IPFS. Uses Pinata when NEXT_PUBLIC_PINATA_JWT is set (recommended for backup); otherwise Infura.
  */
 export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
+    if (PINATA_JWT) {
+        try {
+            return await uploadToPinata(data);
+        } catch (error) {
+            console.error("Pinata upload failed, falling back to Infura:", error);
+        }
+    }
     try {
-        // Defaulting to a common local/service port for demo; 
-        // in production, this should be configurable.
         const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
         const { cid } = await client.add(new Uint8Array(data));
         return cid.toString();
     } catch (error) {
         console.error("IPFS Upload Error:", error);
-        // Return a mock CID for demonstration if upload fails, 
-        // to allow the flow to continue for testing.
-        return "QmMockCID" + Math.random().toString(36).substring(7);
+        throw new Error("IPFS upload failed. Add NEXT_PUBLIC_PINATA_JWT for Pinata backup.");
     }
 };
 
@@ -39,11 +61,9 @@ export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
 };
 
 /**
- * Helper to get the public URL for a storage ID.
+ * Helper to get the public URL for a storage ID (uses Pinata gateway for IPFS).
  */
 export const getStorageUrl = (id: string, type: "ipfs" | "arweave"): string => {
-    if (type === "ipfs") {
-        return `${IPFS_GATEWAY}${id}`;
-    }
+    if (type === "ipfs") return getIpfsUrl(id);
     return `https://arweave.net/${id}`;
 };
