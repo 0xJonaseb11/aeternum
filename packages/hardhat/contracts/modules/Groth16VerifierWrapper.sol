@@ -31,7 +31,7 @@ contract Groth16VerifierWrapper is IZKVerifier {
 
     /**
      * @inheritdoc IZKVerifier
-    */
+     */
     function verifyProof(
         bytes calldata proofData,
         uint256[] calldata publicInputs

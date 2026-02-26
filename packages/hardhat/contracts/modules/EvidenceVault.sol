@@ -33,8 +33,8 @@ contract EvidenceVault is
     }
 
     /**
-    * @notice One-time proxy init. Use a multisig for initialOwner in production.
-    */ 
+     * @notice One-time proxy init. Use a multisig for initialOwner in production.
+     */
     function initialize(address initialOwner) external initializer {
         if (initialOwner == address(0)) revert InvalidInput();
 
@@ -46,9 +46,9 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    * @dev Arweave TxID must be 43 chars; commitment < BN254_FIELD_SIZE; calldata strings; single SLOAD via storage ptr.
-    */  
+     * @inheritdoc IEvidenceVault
+     * @dev Arweave TxID must be 43 chars; commitment < BN254_FIELD_SIZE; calldata strings; single SLOAD via storage ptr.
+     */
     function createProof(
         bytes32 fileHash,
         bytes32 commitment,
@@ -88,8 +88,8 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function addBackup(bytes32 fileHash, string calldata ipfsCid) external override nonReentrant whenNotPaused {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -104,10 +104,10 @@ contract EvidenceVault is
         emit BackupAdded(fileHash, ipfsCid);
     }
 
-    /** 
-    * @inheritdoc IEvidenceVault
-    * @dev Soft revocation: data retained for audit; flag permanent.
-    */ 
+    /**
+     * @inheritdoc IEvidenceVault
+     * @dev Soft revocation: data retained for audit; flag permanent.
+     */
     function revokeProof(bytes32 fileHash) external override nonReentrant whenNotPaused {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -119,8 +119,8 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function grantAccess(bytes32 fileHash, address grantee) external override nonReentrant {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -132,8 +132,8 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function revokeAccess(bytes32 fileHash, address grantee) external override nonReentrant {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -145,17 +145,17 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */ 
+     * @inheritdoc IEvidenceVault
+     */
     function proofExists(bytes32 fileHash) external view override returns (bool) {
         Proof storage p = _proofs[fileHash];
         return p.owner != address(0) && !p.revoked;
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    * @dev Caller must be owner or grantee; returns memory copy (no reentrancy).
-    */ 
+     * @inheritdoc IEvidenceVault
+     * @dev Caller must be owner or grantee; returns memory copy (no reentrancy).
+     */
     function getProof(bytes32 fileHash) external view override returns (Proof memory) {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -168,8 +168,8 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function hasAccess(bytes32 fileHash, address grantee) external view override returns (bool) {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
@@ -177,9 +177,9 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    * @dev Secret is private witness in zkProof. Public inputs: [fileHash_felt, commitment_felt]; publicInputs[1] must match stored commitment.
-    */
+     * @inheritdoc IEvidenceVault
+     * @dev Secret is private witness in zkProof. Public inputs: [fileHash_felt, commitment_felt]; publicInputs[1] must match stored commitment.
+     */
     function verifyOwnership(
         bytes32 fileHash,
         bytes calldata zkProof,
@@ -201,43 +201,43 @@ contract EvidenceVault is
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function setZKVerifier(address verifier) external override onlyOwner {
         _zkVerifier = verifier;
         emit ZKVerifierUpdated(verifier);
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */ 
+     * @inheritdoc IEvidenceVault
+     */
     function pause() external override onlyOwner {
         _pause();
     }
 
     /**
-    * @inheritdoc IEvidenceVault
-    */
+     * @inheritdoc IEvidenceVault
+     */
     function unpause() external override onlyOwner {
         _unpause();
     }
 
     /**
-    * @notice Total proofs created by owner (includes revoked).
-    */
+     * @notice Total proofs created by owner (includes revoked).
+     */
     function ownerProofCount(address owner) external view returns (uint256) {
         return _ownerProofCount[owner];
     }
 
-    /** 
-    * @notice Current ZK verifier; zero means disabled.
-    */
+    /**
+     * @notice Current ZK verifier; zero means disabled.
+     */
     function zkVerifier() external view returns (address) {
         return _zkVerifier;
     }
 
-    /** 
-    * @dev Upgrade authorised only by owner (use multisig + timelock in production).
-    */
+    /**
+     * @dev Upgrade authorised only by owner (use multisig + timelock in production).
+     */
     function _authorizeUpgrade(address /*newImplementation*/) internal override onlyOwner {}
 }
