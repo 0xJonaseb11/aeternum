@@ -2,6 +2,7 @@ import { Address } from "@scaffold-ui/components";
 import { QRCodeSVG } from "qrcode.react";
 import { Address as AddressType } from "viem";
 import { hardhat } from "viem/chains";
+import { Portal } from "~~/components/Portal";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 type AddressQRCodeModalProps = {
@@ -12,7 +13,7 @@ type AddressQRCodeModalProps = {
 export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps) => {
   const { targetNetwork } = useTargetNetwork();
   return (
-    <>
+    <Portal>
       <div>
         <input type="checkbox" id={`${modalId}`} className="modal-toggle" />
         <label htmlFor={`${modalId}`} className="modal cursor-pointer">
@@ -39,6 +40,6 @@ export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps
           </label>
         </label>
       </div>
-    </>
+    </Portal>
   );
 };
