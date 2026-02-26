@@ -12,6 +12,7 @@ import {
   ShieldCheckIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";

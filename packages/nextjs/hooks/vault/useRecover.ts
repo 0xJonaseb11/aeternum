@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { decryptFile } from "~~/utils/vault/crypto";
+import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 import { notification } from "~~/utils/scaffold-eth";
 import { decryptFile } from "~~/utils/vault/crypto";
 import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
@@ -22,6 +24,14 @@ async function fetchFromIpfs(cid: string): Promise<ArrayBuffer> {
   } catch {
     return await fetchFromStorage(`${IPFS_IO_FALLBACK}${cid}`);
   }
+}
+
+async function fetchFromIpfs(cid: string): Promise<ArrayBuffer> {
+    try {
+        return await fetchFromStorage(getIpfsUrl(cid));
+    } catch {
+        return await fetchFromStorage(`${IPFS_IO_FALLBACK}${cid}`);
+    }
 }
 
 export const useRecover = () => {
