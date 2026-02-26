@@ -1,22 +1,60 @@
-"use client";
-
 import { useState } from "react";
+import { useAccount } from "wagmi";
 import {
   ArrowDownTrayIcon,
   CalendarIcon,
   DocumentMagnifyingGlassIcon,
   KeyIcon,
   ShieldCheckIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { ProofListSkeleton } from "~~/components/ui/Skeleton";
+import { notification } from "~~/utils/scaffold-eth";
+import { useRecover } from "~~/hooks/vault/useRecover";
 
 interface EvidenceItem {
-  id: string;
+  id: string; // blockNumber + index or fileHash
   fileHash: string;
   timestamp: number;
   storageId: string;
 }
 
 export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
+  const [showRecover, setShowRecover] = useState(false);
+  const [secret, setSecret] = useState("");
+  const { recoverFile, isRecovering } = useRecover();
+
+  const handleRecover = async () => {
+    if (!secret) {
+      notification.error("Please enter your secret key");
+      return;
+    }
+    await recoverFile(proof.storageId, secret, `aeternum_${proof.fileHash.slice(2, 10)}.enc`);
+    setShowRecover(false);
+    setSecret("");
+  };
+
+  const handleDetails = () => {
+    notification.info("Generating Evidence Certificate...");
+    // Mock certificate generation (in production use jspdf)
+    const certificateInfo = `
+      AETERNUM EVIDENCE CERTIFICATE
+      ----------------------------
+      File Hash: ${proof.fileHash}
+      Timestamp: ${new Date(proof.timestamp * 1000).toUTCString()}
+      Storage ID: ${proof.storageId}
+      Status: Verified On-chain
+    `;
+    const blob = new Blob([certificateInfo], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `certificate_${proof.fileHash.slice(2, 10)}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden">
       <div className="card-body p-6">
@@ -25,7 +63,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
             <ShieldCheckIcon className="h-3 w-3" />
             <span>Verified On-chain</span>
           </div>
-          <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.id.slice(0, 8)}</p>
+          <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
         </div>
 
         <h4 className="font-bold text-base-content truncate mb-1" title={proof.fileHash}>
@@ -35,7 +73,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
         <div className="flex items-center gap-4 text-xs text-base-content/50 mt-4">
           <div className="flex items-center gap-1">
             <CalendarIcon className="h-3.5 w-3.5" />
-            <span>{new Date(proof.timestamp).toLocaleDateString()}</span>
+            <span>{new Date(proof.timestamp * 1000).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center gap-1">
             <KeyIcon className="h-3.5 w-3.5" />
@@ -43,50 +81,121 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-base-300 flex items-center justify-between gap-2">
-          <button className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors">
-            <ArrowDownTrayIcon className="h-3.5 w-3.5" />
-            <span>Recover</span>
-          </button>
-          <div className="w-px h-4 bg-base-300"></div>
-          <button className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors">
-            <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5" />
-            <span>Details</span>
-          </button>
-        </div>
+        {showRecover ? (
+          <div className="mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold uppercase text-base-content/40">Enter Secret Key</span>
+              <button onClick={() => setShowRecover(false)} className="btn btn-ghost btn-xs btn-circle">
+                <XMarkIcon className="h-3 w-3" />
+              </button>
+            </div>
+            <div className="join w-full">
+              <input
+                type="password"
+                placeholder="0x..."
+                className="input input-bordered input-sm join-item flex-1 text-xs font-mono"
+                value={secret}
+                onChange={e => setSecret(e.target.value)}
+              />
+              <button
+                onClick={handleRecover}
+                disabled={isRecovering}
+                className={`btn btn-primary btn-sm join-item px-4 ${isRecovering ? "loading" : ""}`}
+              >
+                {isRecovering ? "" : "Go"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-6 pt-4 border-t border-base-300 flex items-center justify-between gap-2">
+            <button
+              onClick={() => setShowRecover(true)}
+              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors"
+            >
+              <ArrowDownTrayIcon className="h-3.5 w-3.5" />
+              <span>Recover</span>
+            </button>
+            <div className="w-px h-4 bg-base-300"></div>
+            <button
+              onClick={handleDetails}
+              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors"
+            >
+              <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5" />
+              <span>Certificate</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export const EvidenceList = () => {
-  // Mock data for UI demonstration
-  const [proofs] = useState<EvidenceItem[]>([
-    {
-      id: "1",
-      fileHash: "0x7f83b123456789abcdef0123456789abcdef0123456789abcdef0123456789abc",
-      timestamp: Date.now() - 86400000,
-      storageId: "ar-123",
-    },
-    {
-      id: "2",
-      fileHash: "0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-      timestamp: Date.now() - 86400000 * 3,
-      storageId: "ar-456",
-    },
-    {
-      id: "3",
-      fileHash: "0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
-      timestamp: Date.now() - 86400000 * 7,
-      storageId: "ar-789",
-    },
-  ]);
+  const { address: connectedAddress } = useAccount();
+
+  // 1. Fetch event history for ProofCreated to get the hashes
+  const { data: events, isLoading: eventsLoading } = useScaffoldEventHistory({
+    contractName: "EvidenceVault",
+    eventName: "ProofCreated",
+    fromBlock: 0n,
+    filters: { owner: connectedAddress },
+  });
+
+  if (eventsLoading) {
+    return <ProofListSkeleton count={3} />;
+  }
+
+  if (!events || events.length === 0) {
+    return (
+      <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
+        <p className="text-base-content/40 font-medium">No archive evidence found for this wallet.</p>
+      </div>
+    );
+  }
+
+  // We sort by timestamp descending
+  const sortedEvents = [...events].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {proofs.map(proof => (
-        <EvidenceCard key={proof.id} proof={proof} />
-      ))}
+      {sortedEvents.map(event => {
+        const fileHash = event.args.fileHash as string;
+        // In a more complex app, we'd fetch the full proof object using useScaffoldReadContract
+        // but for the list, we can show what's in the event.
+        // We might need another hook to fetch the ArweaveTxId if not in event.
+        // The event has: owner, fileHash, timestamp, blockNumber.
+        // Wait, the event ProofCreated DOES NOT have arweaveTxId.
+        // So we need to call getProof(fileHash) for each.
+        return <EvidenceListItem fileHash={fileHash} key={fileHash} timestamp={Number(event.args.timestamp)} />;
+      })}
     </div>
+  );
+};
+
+const EvidenceListItem = ({ fileHash, timestamp }: { fileHash: string; timestamp: number }) => {
+  const { data: proof, isLoading } = useScaffoldReadContract({
+    contractName: "EvidenceVault",
+    functionName: "getProof",
+    args: [fileHash as `0x${string}`],
+  });
+
+  if (isLoading || !proof) {
+    return (
+      <div className="card bg-base-100 border border-base-300 shadow-sm p-6 flex flex-col gap-4 animate-pulse">
+        <div className="h-4 bg-base-300 rounded w-3/4"></div>
+        <div className="h-4 bg-base-300 rounded w-1/2"></div>
+      </div>
+    );
+  }
+
+  return (
+    <EvidenceCard
+      proof={{
+        id: fileHash,
+        fileHash,
+        timestamp,
+        storageId: proof.arweaveTxId,
+      }}
+    />
   );
 };
