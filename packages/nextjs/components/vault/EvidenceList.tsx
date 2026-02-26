@@ -8,10 +8,10 @@ import {
   ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
-import { notification } from "~~/utils/scaffold-eth";
+import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useRecover } from "~~/hooks/vault/useRecover";
+import { notification } from "~~/utils/scaffold-eth";
 
 interface EvidenceItem {
   id: string; // blockNumber + index or fileHash
