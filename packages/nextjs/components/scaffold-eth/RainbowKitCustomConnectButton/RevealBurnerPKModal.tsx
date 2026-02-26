@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { rainbowkitBurnerWallet } from "burner-connector";
 import { ShieldExclamationIcon } from "@heroicons/react/24/outline";
+import { Portal } from "~~/components/Portal";
 import { useCopyToClipboard } from "~~/hooks/scaffold-eth";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
@@ -25,7 +26,7 @@ export const RevealBurnerPKModal = () => {
   };
 
   return (
-    <>
+    <Portal>
       <div>
         <input type="checkbox" id="reveal-burner-pk-modal" className="modal-toggle" ref={modalCheckboxRef} />
         <label htmlFor="reveal-burner-pk-modal" className="modal cursor-pointer">
@@ -54,6 +55,6 @@ export const RevealBurnerPKModal = () => {
           </label>
         </label>
       </div>
-    </>
+    </Portal>
   );
 };
