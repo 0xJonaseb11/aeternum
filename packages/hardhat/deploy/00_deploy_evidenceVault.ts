@@ -60,11 +60,16 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   // ── 3. EvidenceVault proxy (UUPS) ──────────────────────────────────────
   console.log("\n[3/4] Deploying EvidenceVault (UUPS proxy)...");
   const VaultFactory = await ethers.getContractFactory("EvidenceVault");
-  const vault = await upgrades.deployProxy(VaultFactory, [deployer], {
-    initializer: "initialize",
-    kind: "uups",
-    unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
-  }, { gasLimit: 5000000 });
+  const vault = await upgrades.deployProxy(
+    VaultFactory,
+    [deployer],
+    {
+      initializer: "initialize",
+      kind: "uups",
+      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
+    },
+    { gasLimit: 5000000 },
+  );
   await vault.waitForDeployment();
   const proxyAddr = await vault.getAddress();
   const implAddr = await upgrades.erc1967.getImplementationAddress(proxyAddr);

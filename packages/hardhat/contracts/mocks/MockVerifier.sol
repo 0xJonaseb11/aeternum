@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 /**
-* @notice Mock ZK verifier for tests; returns a fixed boolean set at deploy.
-*/
+ * @notice Mock ZK verifier for tests; returns a fixed boolean set at deploy.
+ */
 contract MockVerifier {
     bool private immutable _pass;
 

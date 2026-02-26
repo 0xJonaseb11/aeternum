@@ -54,8 +54,8 @@ interface IEvidenceVault {
     function hasAccess(bytes32 fileHash, address grantee) external view returns (bool);
 
     /**
-    * @param publicInputs [fileHash as BN254 field, commitment as BN254 field].
-    */ 
+     * @param publicInputs [fileHash as BN254 field, commitment as BN254 field].
+     */
     function verifyOwnership(
         bytes32 fileHash,
         bytes calldata zkProof,

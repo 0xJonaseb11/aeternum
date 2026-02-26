@@ -8,7 +8,7 @@ pragma solidity ^0.8.24;
  */
 interface IZKVerifier {
     /**
-    * @param publicInputs For CommitmentProof: [0] fileHash (BN254), [1] commitment (BN254).
-    */ 
-   function verifyProof(bytes calldata proofData, uint256[] calldata publicInputs) external view returns (bool valid);
+     * @param publicInputs For CommitmentProof: [0] fileHash (BN254), [1] commitment (BN254).
+     */
+    function verifyProof(bytes calldata proofData, uint256[] calldata publicInputs) external view returns (bool valid);
 }
