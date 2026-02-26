@@ -11,8 +11,8 @@ import {
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useRecover } from "~~/hooks/vault/useRecover";
-import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { notification } from "~~/utils/scaffold-eth";
+import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 
 interface EvidenceItem {
   id: string;

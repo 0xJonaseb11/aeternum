@@ -4,7 +4,6 @@ import { LockClosedIcon } from "@heroicons/react/24/outline";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 
 export const Footer = () => {
-
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
