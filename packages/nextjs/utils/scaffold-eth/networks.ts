@@ -44,51 +44,49 @@ export const getAlchemyHttpUrl = (chainId: number) => {
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.hardhat.id]: {
-    color: "#b8af0c",
+    color: "#e91e63",
   },
   [chains.mainnet.id]: {
-    color: "#ff8b9e",
+    color: "#e91e63",
   },
   [chains.sepolia.id]: {
-    color: ["#5f4bb6", "#87ff65"],
+    color: ["#c2185b", "#e91e63"],
   },
   [chains.gnosis.id]: {
-    color: "#48a9a6",
+    color: "#1a3a3d",
   },
   [chains.polygon.id]: {
-    color: "#2bbdf7",
-    nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+    color: "#e91e63",
   },
   [chains.polygonMumbai.id]: {
-    color: "#92D9FA",
-    nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+    color: "#e91e63",
   },
   [chains.optimismSepolia.id]: {
-    color: "#f01a37",
+    color: "#e91e63",
   },
   [chains.optimism.id]: {
-    color: "#f01a37",
+    color: "#e91e63",
   },
   [chains.arbitrumSepolia.id]: {
-    color: "#28a0f0",
+    color: "#1a3a3d",
   },
   [chains.arbitrum.id]: {
-    color: "#28a0f0",
+    color: "#1a3a3d",
   },
   [chains.fantom.id]: {
-    color: "#1969ff",
+    color: "#c2185b",
   },
   [chains.fantomTestnet.id]: {
-    color: "#1969ff",
+    color: "#c2185b",
   },
   [chains.scrollSepolia.id]: {
-    color: "#fbebd4",
+    color: "#e91e63",
   },
   [chains.celo.id]: {
-    color: "#FCFF52",
+    color: "#e91e63",
   },
   [chains.celoSepolia.id]: {
-    color: "#476520",
+    color: "#1a3a3d",
   },
 };
 

@@ -20,8 +20,8 @@
 
   --color-primary: #c2185b;
   --color-primary-content: #ffffff;
-  --color-secondary: #8bc34a;
-  --color-secondary-content: #1a2e1a;
+  --color-secondary: #1a3a3d;
+  --color-secondary-content: #ffffff;
   --color-accent: #1a3a3d;
   --color-accent-content: #ffffff;
   --color-neutral: #1a3a3d;
@@ -30,9 +30,9 @@
   --color-base-200: #f0f4f3;
   --color-base-300: #e0eae8;
   --color-base-content: #1a3a3d;
-  --color-info: #1a3a3d;
-  --color-success: #2e7d32;
-  --color-warning: #ed6c02;
+  --color-info: #c2185b;
+  --color-success: #1a3a3d;
+  --color-warning: #c2185b;
   --color-error: #c62828;
 
   --radius-field: 0.5rem;
@@ -46,8 +46,8 @@
 
   --color-primary: #e91e63;
   --color-primary-content: #ffffff;
-  --color-secondary: #90ee02;
-  --color-secondary-content: #1a2e0a;
+  --color-secondary: #2a5a5d;
+  --color-secondary-content: #f0f4f3;
   --color-accent: #1a3a3d;
   --color-accent-content: #e0eae8;
   --color-neutral: #e0eae8;
@@ -56,9 +56,9 @@
   --color-base-200: #1a3a3d;
   --color-base-300: #152d2b;
   --color-base-content: #f0f4f3;
-  --color-info: #90ee02;
-  --color-success: #2e7d32;
-  --color-warning: #ed6c02;
+  --color-info: #e91e63;
+  --color-success: #e91e63;
+  --color-warning: #e91e63;
   --color-error: #ef5350;
 
   --radius-field: 0.5rem;
@@ -109,13 +109,13 @@
 /* Subtle background pattern for depth (dark theme); use sparingly */
 .bg-pattern {
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(233, 30, 99, 0.03) 0%, transparent 50%),
     radial-gradient(circle at 20% 80%, rgba(233, 30, 99, 0.02) 0%, transparent 40%);
 }
 
 [data-theme="dark"] .bg-pattern {
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(144, 238, 2, 0.04) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(233, 30, 99, 0.04) 0%, transparent 55%),
     radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 45%);
 }
 
