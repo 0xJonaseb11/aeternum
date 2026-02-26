@@ -20,8 +20,8 @@
 
   --color-primary: #c2185b;
   --color-primary-content: #ffffff;
-  --color-secondary: #1a3a3d;
-  --color-secondary-content: #ffffff;
+  --color-secondary: #e0f2f1;
+  --color-secondary-content: #1a3a3d;
   --color-accent: #1a3a3d;
   --color-accent-content: #ffffff;
   --color-neutral: #1a3a3d;
@@ -76,6 +76,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
   *,
   ::after,
   ::before,
