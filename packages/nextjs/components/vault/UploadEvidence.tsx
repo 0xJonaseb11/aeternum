@@ -58,7 +58,7 @@ export const UploadEvidence = () => {
     try {
       const uploadResult = await uploadEvidence(file);
       setResult(uploadResult);
-    } catch (e) {
+    } catch {
       // Error handled in hook
     }
   };
