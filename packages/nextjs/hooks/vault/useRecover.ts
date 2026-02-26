@@ -2,18 +2,45 @@ import { useState } from "react";
 import { decryptFile } from "~~/utils/vault/crypto";
 import { notification } from "~~/utils/scaffold-eth";
 
+const IPFS_GATEWAY = "https://ipfs.io/ipfs/";
+
+function isLikelyIpfsCid(id: string): boolean {
+    if (!id || id.length < 20) return false;
+    return id.startsWith("Qm") || id.startsWith("ba") || id.startsWith("k51") || /^[Qmb][a-zA-Z0-9]{40,}$/.test(id);
+}
+
+async function fetchFromStorage(url: string): Promise<ArrayBuffer> {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Failed to fetch from storage");
+    return response.arrayBuffer();
+}
+
 export const useRecover = () => {
     const [isRecovering, setIsRecovering] = useState(false);
 
-    const recoverFile = async (storageId: string, secret: string, fileName: string = "recovered_evidence") => {
+    const recoverFile = async (
+        storageId: string,
+        secret: string,
+        fileName: string = "recovered_evidence",
+        ipfsCid?: string,
+    ) => {
         setIsRecovering(true);
         try {
-            // 1. Fetch from Arweave (proxy through gateway)
-            const url = `https://arweave.net/${storageId}`;
-            const response = await fetch(url);
-            if (!response.ok) throw new Error("Failed to fetch from storage");
-
-            const combined = await response.arrayBuffer();
+            let combined: ArrayBuffer;
+            if (isLikelyIpfsCid(storageId)) {
+                combined = await fetchFromStorage(`${IPFS_GATEWAY}${storageId}`);
+            } else {
+                const arweaveUrl = `https://arweave.net/${storageId}`;
+                try {
+                    combined = await fetchFromStorage(arweaveUrl);
+                } catch {
+                    if (ipfsCid && isLikelyIpfsCid(ipfsCid)) {
+                        combined = await fetchFromStorage(`${IPFS_GATEWAY}${ipfsCid}`);
+                    } else {
+                        throw new Error("Failed to fetch from storage");
+                    }
+                }
+            }
 
             // 2. Decrypt locally
             const decrypted = await decryptFile(combined, secret);

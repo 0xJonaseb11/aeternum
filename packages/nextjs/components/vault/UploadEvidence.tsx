@@ -14,6 +14,7 @@ interface UploadResult {
   fileHash: string;
   secret: string;
   arweaveTxId: string;
+  ipfsCid: string;
 }
 
 export const UploadEvidence = () => {
@@ -57,7 +58,7 @@ export const UploadEvidence = () => {
     if (!file) return;
     try {
       const uploadResult = await uploadEvidence(file);
-      setResult(uploadResult);
+      if (uploadResult) setResult(uploadResult);
     } catch {
       // Error handled in hook
     }

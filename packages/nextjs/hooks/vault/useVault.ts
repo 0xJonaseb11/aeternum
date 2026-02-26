@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { getParsedError } from "~~/utils/scaffold-eth";
 import { computeCommitment, computeHash, encryptFile, generateSecret } from "~~/utils/vault/crypto";
 import { uploadToArweave, uploadToIPFS } from "~~/utils/vault/storage";
 import { notification } from "~~/utils/scaffold-eth";
+
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
 
 export const useVault = () => {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -13,6 +16,10 @@ export const useVault = () => {
     });
 
     const uploadEvidence = async (file: File) => {
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+            notification.error(`File too large. Maximum size is 50 MB.`);
+            return;
+        }
         setIsProcessing(true);
         setStep("encrypting");
 
@@ -56,7 +63,8 @@ export const useVault = () => {
             };
         } catch (e) {
             console.error("Vault Error:", e);
-            notification.error("Failed to secure evidence.");
+            const message = getParsedError(e);
+            notification.error(message && message.length < 120 ? message : "Failed to secure evidence.");
             throw e;
         } finally {
             setIsProcessing(false);
