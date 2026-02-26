@@ -1,5 +1,18 @@
 # Aeternum
 
+<div align="center">
+  <br/>
+  <img src="https://img.shields.io/github/stars/0xJonaseb11/aeternum?style=flat-square&logo=github&color=e91e63" alt="Stars" />
+  <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Solidity-363636?style=flat-square&logo=solidity&logoColor=white" />
+  <img src="https://img.shields.io/badge/Arweave-000000?style=flat-square&logo=arweave&logoColor=white" />
+  <img src="https://img.shields.io/badge/Base-0052FF?style=flat-square&logo=base&logoColor=white" />
+  <img src="https://img.shields.io/badge/ZK-6C5CE7?style=flat-square&logo=simple-analytics&logoColor=white" />
+</div>
+
+<br/>
+
 **Permanent. Private. Verifiable.**
 
 A zero-knowledge, blockchain-timestamped evidence vault. Store and prove ownership of files: client-side encrypted, permanently on Arweave (optional IPFS), with Groth16 ZK proofs and immutable records on Base.
@@ -34,29 +47,18 @@ yarn dev
 
 ```bash
 npm run zk:setup    # one-time: circuit + Groth16 setup
-npm run compile
-npm test
+yarn compile
+yarn test
 ```
 
 See `packages/hardhat/README.md` for deployment and `packages/nextjs/` for app config.
 
 ---
 
-## Stack
-
-| Layer      | Tech |
-|-----------|------|
-| Frontend  | Next.js, TypeScript, Tailwind, wagmi/viem |
-| Chain     | Solidity, Base (EVM), UUPS |
-| Storage   | Arweave, optional IPFS |
-| ZK        | Circom, Groth16, Poseidon (BN254) |
-
----
-
 ## License
+[MIT LICENSE](./LICENCE)
 
-MIT
+--------------------
 
---------
+(c) 2026 Jonas Sebera
 
-@0xJonaseb11
