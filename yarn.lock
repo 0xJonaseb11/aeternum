@@ -4522,6 +4522,7 @@ __metadata:
     "@types/react": ~19.0.7
     "@types/react-dom": ~19.0.3
     "@vercel/analytics": ^1.6.1
+    "@vercel/speed-insights": ^1.3.1
     abitype: 1.0.6
     autoprefixer: ~10.4.20
     bgipfs: ~0.0.12
