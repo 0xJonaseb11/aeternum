@@ -59,13 +59,29 @@ export const decryptFile = async (combined: ArrayBuffer, secret: string): Promis
 };
 
 /**
- * Computes a "commitment" for ZK proofs: hash(fileHash + secret).
- * In a real ZK system, this would use Poseidon/Pedersen on a specific field.
- * For this implementation, we use SHA-256 as a secure commitment.
+ * BN254 field size used on-chain (EvidenceVaultStorage.BN254_FIELD_SIZE).
+ * We reduce the commitment into this field so `uint256(commitment) < BN254_FIELD_SIZE` always holds.
+ */
+const BN254_FIELD_SIZE =
+  21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+
+/**
+ * Computes a field-safe commitment for ZK proofs:
+ *   h = SHA-256(fileHash || secret)
+ *   commitment = h mod BN254_FIELD_SIZE (as bytes32)
  */
 export const computeCommitment = async (fileHash: string, secret: string): Promise<string> => {
   // Ensure fileHash is stripped of 0x if present
   const cleanHash = fileHash.startsWith("0x") ? fileHash.slice(2) : fileHash;
   const data = cleanHash + secret;
-  return await computeHash(data);
+  const hashHex = await computeHash(data); // 0x-prefixed 32-byte hex
+
+  let value = BigInt(hashHex) % BN254_FIELD_SIZE;
+  if (value === 0n) {
+    // Avoid zero, which the contract rejects as InvalidInput()
+    value = 1n;
+  }
+
+  const hex = value.toString(16).padStart(64, "0");
+  return `0x${hex}`;
 };
