@@ -14,10 +14,7 @@ async function main() {
   try {
     const rpcUrl = process.env.IRYS_RPC_URL ?? "https://sepolia.base.org";
 
-    const uploader = await Uploader(BaseEth)
-      .withWallet(PRIVATE_KEY)
-      .withRpc(rpcUrl)
-      .devnet();
+    const uploader = await Uploader(BaseEth).withWallet(PRIVATE_KEY).withRpc(rpcUrl).devnet();
 
     const atomicAmount = uploader.utils.toAtomic(amountEth);
 
@@ -34,4 +31,3 @@ async function main() {
 }
 
 main();
-

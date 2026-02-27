@@ -1,0 +1,10 @@
+➜  nextjs git:(temp) ✗ `yarn irys:fund 0.002`                                                                   
+Funding Irys devnet with 0.002 Base Sepolia ETH (2000000000000000 atomic units)...
+Fund tx result: {
+  reward: '126000000000',
+  target: '0x853758425e953739F5438fd6fd0Efe04A477b039',
+  quantity: '2000000000000000',
+  id: '0xd6fafec2147ead7e9c66b23b8febe95ccb5491194f623f07953ee971b6be04e8'
+}
+New Irys balance: 0.002
+➜  nextjs git:(temp) ✗ 
