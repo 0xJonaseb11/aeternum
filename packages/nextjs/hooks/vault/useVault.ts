@@ -38,7 +38,13 @@ export const useVault = () => {
 
       // 3. Upload to Decentralized Storage
       const arweaveTxId = await uploadToArweave(encryptedData);
+      if (!arweaveTxId || arweaveTxId.length !== 43) {
+        throw new Error("Arweave returned an invalid transaction id.");
+      }
       const ipfsCid = await uploadToIPFS(encryptedData);
+      if (!ipfsCid || ipfsCid.length === 0 || ipfsCid.length > 128) {
+        throw new Error("IPFS returned an invalid CID.");
+      }
 
       setStep("confirming");
 
