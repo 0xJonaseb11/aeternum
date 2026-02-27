@@ -36,16 +36,21 @@ export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
   return uploadToPinata(data);
 };
 
-/**
- * Uploads data to Arweave.
- * Primary recommendation is to use Irys (Bundlr) for Web3 apps.
- * This is a placeholder for the integration.
- */
 export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
-  console.log("Arweave upload initiated (Placeholder)");
-  // Simulation of Arweave TxID (43 characters)
-  const mockTxId = "MOCK_ARWEAVE_TXID_" + Math.random().toString(36).substring(2, 28);
-  return mockTxId.padEnd(43, "X");
+  const res = await fetch("/api/arweave-upload", {
+    method: "POST",
+    body: data,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => undefined);
+    console.error("Arweave upload failed:", error ?? res.statusText);
+    throw new Error("Arweave upload failed.");
+  }
+  const json = (await res.json()) as { txId?: string };
+  if (!json.txId) {
+    throw new Error("Arweave upload failed: missing txId.");
+  }
+  return json.txId;
 };
 
 /**

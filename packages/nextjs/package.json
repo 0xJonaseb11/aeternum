@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@heroicons/react": "~2.1.5",
+    "@irys/upload": "^0.0.15",
+    "@irys/upload-ethereum": "^0.0.16",
     "@rainbow-me/rainbowkit": "2.2.9",
     "@react-native-async-storage/async-storage": "~2.2.0",
     "@scaffold-ui/components": "^0.1.8",
