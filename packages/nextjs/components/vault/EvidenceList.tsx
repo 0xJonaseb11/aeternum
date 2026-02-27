@@ -141,6 +141,7 @@ export const EvidenceList = () => {
     contractName: "EvidenceVault",
     eventName: "ProofCreated",
     filters: { owner: connectedAddress },
+    blocksBatchSize: 2000,
   });
 
   if (eventsLoading) {

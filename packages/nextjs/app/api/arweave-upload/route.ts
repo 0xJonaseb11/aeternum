@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
     if (!privateKey) {
       console.error("IRYS_PRIVATE_KEY is not set");
-      return NextResponse.json({ error: "Arweave upload misconfigured" }, { status: 500 });
+      return NextResponse.json({ error: "Arweave upload misconfigured: IRYS_PRIVATE_KEY is not set" }, { status: 500 });
     }
 
     const body = await req.arrayBuffer();
@@ -29,6 +29,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ txId: result.id });
   } catch (error) {
     console.error("Arweave upload error:", error);
-    return NextResponse.json({ error: "Arweave upload failed" }, { status: 500 });
+    return NextResponse.json({ error: `Arweave upload failed: ${String(error)}` }, { status: 500 });
   }
 }

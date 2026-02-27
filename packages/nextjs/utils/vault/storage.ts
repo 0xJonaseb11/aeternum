@@ -42,9 +42,10 @@ export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
     body: data,
   });
   if (!res.ok) {
-    const error = await res.json().catch(() => undefined);
-    console.error("Arweave upload failed:", error ?? res.statusText);
-    throw new Error("Arweave upload failed.");
+    const errorJson = await res.json().catch(() => undefined);
+    const message = (errorJson && (errorJson.error as string)) || `Arweave upload failed with status ${res.status}`;
+    console.error("Arweave upload failed:", errorJson ?? res.statusText);
+    throw new Error(message);
   }
   const json = (await res.json()) as { txId?: string };
   if (!json.txId) {
