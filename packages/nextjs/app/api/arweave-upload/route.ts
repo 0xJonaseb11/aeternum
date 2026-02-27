@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Empty body" }, { status: 400 });
     }
 
-    const uploader = await Uploader(BaseEth).withPrivateKey(privateKey);
+    const uploader = await Uploader(BaseEth).withWallet(privateKey);
 
     const result = await uploader.upload(Buffer.from(body), {
       tags: [{ name: "Content-Type", value: "application/octet-stream" }],
@@ -32,4 +32,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Arweave upload failed" }, { status: 500 });
   }
 }
-

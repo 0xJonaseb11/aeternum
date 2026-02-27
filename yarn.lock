@@ -4522,6 +4522,7 @@ __metadata:
     "@types/react": ~19.0.7
     "@types/react-dom": ~19.0.3
     "@vercel/analytics": ^1.6.1
+    "@vercel/speed-insights": ^1.3.1
     abitype: 1.0.6
     autoprefixer: ~10.4.20
     bgipfs: ~0.0.12
@@ -7436,6 +7437,33 @@ __metadata:
   version: 2.1.0
   resolution: "@vercel/ruby@npm:2.1.0"
   checksum: 059d142ca2c43578ae36e3b9c5ecd92511ea9b5127beb583e94b60bc34d17f44269c8b42c7e98992e29ab27c4c9108a28119605cdb73c586dc3cc0b17a99789c
+  languageName: node
+  linkType: hard
+
+"@vercel/speed-insights@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "@vercel/speed-insights@npm:1.3.1"
+  peerDependencies:
+    "@sveltejs/kit": ^1 || ^2
+    next: ">= 13"
+    react: ^18 || ^19 || ^19.0.0-rc
+    svelte: ">= 4"
+    vue: ^3
+    vue-router: ^4
+  peerDependenciesMeta:
+    "@sveltejs/kit":
+      optional: true
+    next:
+      optional: true
+    react:
+      optional: true
+    svelte:
+      optional: true
+    vue:
+      optional: true
+    vue-router:
+      optional: true
+  checksum: b46a7b53c94a057ec358e5fed95855c7e45ecb0b870fe72f422d89065838ef0acf71cab1bfec16155c37da2f6fabf05538011fd58baba5061bc646ec1d9a7917
   languageName: node
   linkType: hard
 
@@ -18971,6 +18999,7 @@ __metadata:
     "@types/react-dom": ^19.2.3
     "@types/snarkjs": ^0
     "@vercel/analytics": ^1.6.1
+    "@vercel/speed-insights": ^1.3.1
     circomlibjs: ^0.1.7
     husky: ~9.1.6
     lint-staged: ~13.2.2
