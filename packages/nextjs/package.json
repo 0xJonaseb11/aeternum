@@ -13,7 +13,8 @@
     "start": "next dev",
     "vercel": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env VERCEL_TELEMETRY_DISABLED=1",
     "vercel:login": "vercel login",
-    "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true --build-env VERCEL_TELEMETRY_DISABLED=1"
+    "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true --build-env VERCEL_TELEMETRY_DISABLED=1",
+    "irys:fund": "node scripts/fundIrys.mjs"
   },
   "dependencies": {
     "@heroicons/react": "~2.1.5",
@@ -30,6 +31,7 @@
     "blo": "~1.2.0",
     "burner-connector": "0.0.20",
     "daisyui": "5.0.9",
+    "dotenv": "^17.3.1",
     "jspdf": "^4.2.0",
     "kubo-rpc-client": "~5.0.2",
     "next": "~15.2.8",
