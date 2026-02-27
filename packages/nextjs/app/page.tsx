@@ -16,7 +16,6 @@ import deployedContracts from "~~/contracts/deployedContracts";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";
-import deployedContracts from "~~/contracts/deployedContracts";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
