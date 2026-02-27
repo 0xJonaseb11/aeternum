@@ -15,7 +15,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Empty body" }, { status: 400 });
     }
 
-    const uploader = await Uploader(BaseEth).withWallet(privateKey);
+    const rpcUrl = process.env.IRYS_RPC_URL ?? "https://sepolia.base.org";
+
+    const uploader = await Uploader(BaseEth).withWallet(privateKey).withRpc(rpcUrl).devnet();
 
     const result = await uploader.upload(Buffer.from(body), {
       tags: [{ name: "Content-Type", value: "application/octet-stream" }],
