@@ -1,9 +1,8 @@
-import { create } from "kubo-rpc-client";
 import { PINATA_JWT, getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 
 /**
  * Service for decentralized storage uploads.
- * IPFS: Pinata gateway for backup; uploads go to Pinata (if JWT set) or Infura.
+ * IPFS: Pinata gateway for backup; uploads go only to Pinata (requires NEXT_PUBLIC_PINATA_JWT).
  */
 
 const PINATA_PIN_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
@@ -28,24 +27,13 @@ async function uploadToPinata(data: ArrayBuffer): Promise<string> {
 }
 
 /**
- * Uploads a buffer to IPFS. Uses Pinata when NEXT_PUBLIC_PINATA_JWT is set (recommended for backup); otherwise Infura.
+ * Uploads a buffer to IPFS using Pinata. Requires NEXT_PUBLIC_PINATA_JWT and never falls back to Infura.
  */
 export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
-  if (PINATA_JWT) {
-    try {
-      return await uploadToPinata(data);
-    } catch (error) {
-      console.error("Pinata upload failed, falling back to Infura:", error);
-    }
+  if (!PINATA_JWT) {
+    throw new Error("IPFS upload failed: NEXT_PUBLIC_PINATA_JWT is not configured.");
   }
-  try {
-    const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
-    const { cid } = await client.add(new Uint8Array(data));
-    return cid.toString();
-  } catch (error) {
-    console.error("IPFS Upload Error:", error);
-    throw new Error("IPFS upload failed. Add NEXT_PUBLIC_PINATA_JWT for Pinata backup.");
-  }
+  return uploadToPinata(data);
 };
 
 /**

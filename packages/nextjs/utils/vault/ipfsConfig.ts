@@ -6,14 +6,9 @@
 
 const PINATA_GATEWAY = "https://green-high-bat-939.mypinata.cloud/ipfs/";
 
-function getEnv(name: string): string | undefined {
-  if (typeof process === "undefined") return undefined;
-  return (process as NodeJS.Process & { env?: Record<string, string> }).env?.[name];
-}
+export const IPFS_GATEWAY = process.env.NEXT_PUBLIC_IPFS_GATEWAY ?? "https://green-high-bat-939.mypinata.cloud/ipfs/";
 
-export const IPFS_GATEWAY = getEnv("NEXT_PUBLIC_IPFS_GATEWAY") || PINATA_GATEWAY;
-
-export const PINATA_JWT = getEnv("NEXT_PUBLIC_PINATA_JWT");
+export const PINATA_JWT = process.env.NEXT_PUBLIC_PINATA_JWT;
 
 export function getIpfsUrl(cid: string): string {
   const base = IPFS_GATEWAY.endsWith("/") ? IPFS_GATEWAY : `${IPFS_GATEWAY}/`;
