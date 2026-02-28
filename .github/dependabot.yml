@@ -1,0 +1,106 @@
+# Dependabot configuration file
+# See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # NPM dependencies for the monorepo root
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "npm"
+    groups:
+      # Group production dependencies together
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group development dependencies together
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group major updates separately for careful review
+      major-updates:
+        update-types:
+          - "major"
+
+  # NPM dependencies for nextjs package
+  - package-ecosystem: "npm"
+    directory: "/packages/nextjs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-nextjs)"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "nextjs"
+    groups:
+      nextjs-production:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      nextjs-development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # NPM dependencies for hardhat package
+  - package-ecosystem: "npm"
+    directory: "/packages/hardhat"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-hardhat)"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "hardhat"
+    groups:
+      hardhat-production:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      hardhat-development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps-actions)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      
