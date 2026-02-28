@@ -71,11 +71,13 @@ export const UploadEvidence = () => {
   const getStepText = () => {
     switch (step) {
       case "encrypting":
-        return "Encrypting Locally...";
-      case "uploading":
-        return "Storing Decentralized...";
+        return "Encrypting locally...";
+      case "uploading_arweave":
+        return "Uploading to Arweave...";
+      case "uploading_ipfs":
+        return "Uploading to IPFS...";
       case "confirming":
-        return "Confirming On-chain...";
+        return "Executing transaction...";
       default:
         return "Encrypt & Proof Evidence";
     }
@@ -235,6 +237,39 @@ export const UploadEvidence = () => {
                   <span>AES-256-GCM Encryption Ready</span>
                 </div>
               </div>
+
+              {isProcessing && (
+                <div className="mb-4 p-4 bg-base-200/80 rounded-xl border border-base-300 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-3">Current step</p>
+                  {[
+                    { key: "encrypting", label: "Encrypting locally" },
+                    { key: "uploading_arweave", label: "Uploading to Arweave" },
+                    { key: "uploading_ipfs", label: "Uploading to IPFS" },
+                    { key: "confirming", label: "Executing transaction" },
+                  ].map(({ key, label }, i) => {
+                    const isCurrent = step === key;
+                    const isPast =
+                      (key === "encrypting" && ["uploading_arweave", "uploading_ipfs", "confirming"].includes(step)) ||
+                      (key === "uploading_arweave" && ["uploading_ipfs", "confirming"].includes(step)) ||
+                      (key === "uploading_ipfs" && step === "confirming");
+                    return (
+                      <div key={key} className="flex items-center gap-2 text-sm">
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                            isPast ? "bg-success/20 text-success" : isCurrent ? "bg-primary text-primary-content animate-pulse" : "bg-base-300 text-base-content/40"
+                          }`}
+                        >
+                          {isPast ? "✓" : i + 1}
+                        </span>
+                        <span className={isCurrent ? "font-bold text-primary" : isPast ? "text-base-content/60" : "text-base-content/40"}>
+                          {label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               <button
                 onClick={handleUpload}
                 disabled={isProcessing}

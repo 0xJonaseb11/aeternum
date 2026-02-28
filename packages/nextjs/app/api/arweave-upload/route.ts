@@ -28,7 +28,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Arweave upload failed" }, { status: 500 });
     }
 
-    return NextResponse.json({ txId: result.id });
+    const rawId = String(result.id);
+    const ARWEAVE_TX_LEN = 43;
+    if (rawId.length < ARWEAVE_TX_LEN) {
+      console.error("Irys returned short id", { length: rawId.length, id: rawId });
+      return NextResponse.json(
+        { error: `Arweave returned invalid transaction id (length ${rawId.length}, expected ${ARWEAVE_TX_LEN})` },
+        { status: 500 },
+      );
+    }
+    const txId = rawId.length > ARWEAVE_TX_LEN ? rawId.slice(0, ARWEAVE_TX_LEN) : rawId;
+
+    return NextResponse.json({ txId });
   } catch (error) {
     console.error("Arweave upload error:", error);
     return NextResponse.json({ error: `Arweave upload failed: ${String(error)}` }, { status: 500 });
