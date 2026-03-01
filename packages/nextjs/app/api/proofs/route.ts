@@ -12,9 +12,13 @@ export async function GET(req: NextRequest) {
   if (!owner || !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
     return NextResponse.json({ error: "Missing or invalid owner" }, { status: 400 });
   }
-  const chainId = chainIdParam != null ? parseInt(chainIdParam, 10) : undefined;
-  if (chainIdParam != null && (Number.isNaN(chainId) || chainId < 0)) {
-    return NextResponse.json({ error: "Invalid chainId" }, { status: 400 });
+  let chainId: number | undefined;
+  if (chainIdParam != null) {
+    const parsed = parseInt(chainIdParam, 10);
+    if (Number.isNaN(parsed) || parsed < 0) {
+      return NextResponse.json({ error: "Invalid chainId" }, { status: 400 });
+    }
+    chainId = parsed;
   }
 
   let query = supabase
