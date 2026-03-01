@@ -19,7 +19,6 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, save } = hre.deployments;
   const { ethers } = hre;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const upgrades = (hre as any).upgrades;
 
   if (!deployer) {

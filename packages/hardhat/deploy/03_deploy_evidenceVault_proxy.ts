@@ -13,7 +13,6 @@ const deployEvidenceVaultProxy: DeployFunction = async function (hre: HardhatRun
   const { deployer } = await hre.getNamedAccounts();
   const { get, getOrNull, save } = hre.deployments;
   const { ethers } = hre;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const upgrades = (hre as any).upgrades;
 
   const existing = await getOrNull("EvidenceVault");
@@ -34,6 +33,7 @@ const deployEvidenceVaultProxy: DeployFunction = async function (hre: HardhatRun
   await vault.waitForDeployment();
   const proxyAddress = await vault.getAddress();
   const implAddress = await upgrades.erc1967.getImplementationAddress(proxyAddress);
+  console.log("EvidenceVault proxy:", proxyAddress, "implementation:", implAddress);
 
   const artifact = await hre.deployments.getArtifact("EvidenceVault");
   await save("EvidenceVault", {
