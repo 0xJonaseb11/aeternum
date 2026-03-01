@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useBlockNumber } from "wagmi";
 import {
   ArrowDownTrayIcon,
   CalendarIcon,
@@ -11,7 +11,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
-import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldEventHistory, useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
@@ -213,21 +213,31 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
   );
 };
 
+const RECENT_BLOCKS = 10_000; // ~2 days on Base Sepolia; keeps RPC requests bounded
+
 export const EvidenceList = () => {
   const { address: connectedAddress } = useAccount();
+  const selectedNetwork = useSelectedNetwork();
+  const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
+  const fromBlock =
+    blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
 
   const {
     data: events,
     isLoading: eventsLoading,
+    isFetchingNextPage,
     error: eventsError,
     refetch: refetchEvents,
   } = useScaffoldEventHistory({
     contractName: "EvidenceVault",
     eventName: "ProofCreated",
     filters: { owner: connectedAddress },
-    blocksBatchSize: 500,
-    enabled: !!connectedAddress,
+    fromBlock,
+    blocksBatchSize: 200,
+    enabled: !!connectedAddress && blockNumber != null,
   });
+
+  const stillLoading = eventsLoading || isFetchingNextPage;
 
   if (!connectedAddress) {
     return (
@@ -237,7 +247,7 @@ export const EvidenceList = () => {
     );
   }
 
-  if (eventsLoading) {
+  if (stillLoading && (!events || events.length === 0)) {
     return <ProofListSkeleton count={3} />;
   }
 
@@ -257,6 +267,10 @@ export const EvidenceList = () => {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/40 font-medium">No archive evidence found for this wallet.</p>
+        <p className="text-xs text-base-content/40 mt-2">Showing last ~2 days on Base Sepolia.</p>
+        <button onClick={() => refetchEvents()} className="btn btn-ghost btn-sm mt-4">
+          Refresh
+        </button>
       </div>
     );
   }
