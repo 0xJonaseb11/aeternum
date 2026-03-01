@@ -43,7 +43,7 @@
     "react": "~19.2.3",
     "react-dom": "~19.2.3",
     "react-hot-toast": "~2.4.0",
-    "snarkjs": "^0.7.0",
+    "snarkjs": "^0.7.6",
     "usehooks-ts": "~3.1.0",
     "viem": "2.39.0",
     "wagmi": "2.19.5",
@@ -52,6 +52,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "4.0.15",
     "@trivago/prettier-plugin-sort-imports": "~4.3.0",
+    "@types/circomlibjs": "^0.1.6",
     "@types/node": "~18.19.50",
     "@types/react": "~19.0.7",
     "@types/react-dom": "~19.0.3",
