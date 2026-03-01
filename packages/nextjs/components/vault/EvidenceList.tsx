@@ -232,7 +232,7 @@ export const EvidenceList = () => {
     isLoading: indexedLoading,
     isError: indexedError,
     refetch: refetchIndexed,
-  } = useIndexedProofs(connectedAddress, selectedNetwork.id, INDEXER_URL);
+  } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
   const supabaseEnabled = !INDEXER_URL;
   const {
@@ -240,7 +240,7 @@ export const EvidenceList = () => {
     isLoading: supabaseLoading,
     isError: supabaseError,
     refetch: refetchSupabase,
-  } = useSupabaseProofs(connectedAddress, selectedNetwork.id, supabaseEnabled);
+  } = useSupabaseProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, supabaseEnabled);
 
   const useEventHistory = !INDEXER_URL ? supabaseError : indexedError;
   const {
