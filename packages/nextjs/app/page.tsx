@@ -44,12 +44,17 @@ const Home: NextPage = () => {
               locally, store forever on Arweave, and prove ownership without ever revealing the content.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <Link href="/#vault" className="btn btn-primary btn-sm sm:btn-md md:btn-lg px-6 sm:px-8 gap-2 group w-full sm:w-auto max-w-xs sm:max-w-none">
+              <Link
+                href="/#vault"
+                className="btn btn-primary btn-sm sm:btn-md md:btn-lg px-6 sm:px-8 gap-2 group w-full sm:w-auto max-w-xs sm:max-w-none"
+              >
                 <span>Access your Vault</span>
                 <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1 shrink-0" />
               </Link>
               {!connectedAddress && (
-                <p className="text-xs sm:text-sm text-base-content/50 font-medium text-center">Connect your wallet to get started</p>
+                <p className="text-xs sm:text-sm text-base-content/50 font-medium text-center">
+                  Connect your wallet to get started
+                </p>
               )}
             </div>
           </div>
@@ -114,7 +119,9 @@ const Home: NextPage = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
             <div className="min-w-0">
               <h2 className="text-2xl sm:text-3xl font-bold text-base-content mb-1 sm:mb-2">Evidence Vault</h2>
-              <p className="text-sm sm:text-base text-base-content/60">Manage and verify your recorded evidence proofs.</p>
+              <p className="text-sm sm:text-base text-base-content/60">
+                Manage and verify your recorded evidence proofs.
+              </p>
             </div>
             {connectedAddress && (
               <div className="flex items-center gap-3 sm:gap-4 bg-base-100 px-3 sm:px-4 py-2 rounded-xl border border-base-300 shadow-sm w-full md:w-auto min-w-0 overflow-hidden">
@@ -135,7 +142,9 @@ const Home: NextPage = () => {
           {connectedAddress && isWrongNetwork ? (
             <div className="rounded-2xl border border-warning/50 bg-warning/10 p-6 sm:p-8 text-center min-w-0">
               <p className="font-bold text-warning mb-1 text-sm sm:text-base">Wrong network</p>
-              <p className="text-base-content/70 text-xs sm:text-sm">Switch to {targetNetwork.name} to use the Evidence Vault.</p>
+              <p className="text-base-content/70 text-xs sm:text-sm">
+                Switch to {targetNetwork.name} to use the Evidence Vault.
+              </p>
             </div>
           ) : connectedAddress && !hasVaultContract ? (
             <div className="rounded-2xl border border-base-300 bg-base-100 p-6 sm:p-8 text-center min-w-0">
@@ -161,7 +170,9 @@ const Home: NextPage = () => {
           ) : (
             <div className="rounded-2xl border border-2 border-dashed border-base-300 bg-base-100 p-8 sm:p-12 md:p-20 text-center min-w-0">
               <h3 className="text-lg sm:text-xl font-bold mb-2">Vault locked</h3>
-              <p className="text-sm sm:text-base text-base-content/60 mb-0">Connect your wallet to access your private evidence proofs.</p>
+              <p className="text-sm sm:text-base text-base-content/60 mb-0">
+                Connect your wallet to access your private evidence proofs.
+              </p>
             </div>
           )}
         </div>
