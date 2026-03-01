@@ -14,7 +14,8 @@
     "vercel": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env VERCEL_TELEMETRY_DISABLED=1",
     "vercel:login": "vercel login",
     "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true --build-env VERCEL_TELEMETRY_DISABLED=1",
-    "irys:fund": "node scripts/fundIrys.mjs"
+    "irys:fund": "node scripts/fundIrys.mjs",
+    "zk:copy": "node scripts/copyZkArtifacts.mjs"
   },
   "dependencies": {
     "@heroicons/react": "~2.1.5",
@@ -30,6 +31,7 @@
     "@vercel/speed-insights": "^1.3.1",
     "blo": "~1.2.0",
     "burner-connector": "0.0.20",
+    "circomlibjs": "^0.1.7",
     "daisyui": "5.0.9",
     "dotenv": "^17.3.1",
     "jspdf": "^4.2.0",
@@ -41,6 +43,7 @@
     "react": "~19.2.3",
     "react-dom": "~19.2.3",
     "react-hot-toast": "~2.4.0",
+    "snarkjs": "^0.7.6",
     "usehooks-ts": "~3.1.0",
     "viem": "2.39.0",
     "wagmi": "2.19.5",
@@ -49,6 +52,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "4.0.15",
     "@trivago/prettier-plugin-sort-imports": "~4.3.0",
+    "@types/circomlibjs": "^0.1.6",
     "@types/node": "~18.19.50",
     "@types/react": "~19.0.7",
     "@types/react-dom": "~19.0.3",

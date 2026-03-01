@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   ArrowDownTrayIcon,
   CalendarIcon,
+  CheckCircleIcon,
   DocumentMagnifyingGlassIcon,
+  FingerPrintIcon,
   KeyIcon,
   ShieldCheckIcon,
   XMarkIcon,
@@ -11,8 +13,10 @@ import {
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useRecover } from "~~/hooks/vault/useRecover";
+import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
+import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
 
 interface EvidenceItem {
   id: string;
@@ -24,8 +28,17 @@ interface EvidenceItem {
 
 export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
   const [showRecover, setShowRecover] = useState(false);
+  const [showVerify, setShowVerify] = useState(false);
   const [secret, setSecret] = useState("");
+  const [verifySecret, setVerifySecret] = useState("");
+  const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
+  const [zkAvailable, setZkAvailable] = useState(false);
   const { recoverFile, isRecovering } = useRecover();
+  const { verify, isVerifying } = useVerifyOwnership();
+
+  useEffect(() => {
+    isZKArtifactsAvailable().then(setZkAvailable);
+  }, []);
 
   const handleRecover = async () => {
     if (!secret) {
@@ -35,6 +48,22 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
     await recoverFile(proof.storageId, secret, `aeternum_${proof.fileHash.slice(2, 10)}.enc`, proof.ipfsCid);
     setShowRecover(false);
     setSecret("");
+  };
+
+  const handleVerifyOwnership = async () => {
+    if (!verifySecret.trim()) {
+      notification.error("Enter your secret key to generate the ZK proof.");
+      return;
+    }
+    setVerifyResult(null);
+    const secretHex = verifySecret.trim().startsWith("0x") ? verifySecret.trim() : `0x${verifySecret.trim()}`;
+    const result = await verify(proof.fileHash, secretHex);
+    setVerifyResult(result.verified);
+    if (result.verified) {
+      notification.success("Ownership verified! Your ZK proof is valid.");
+    } else {
+      notification.error(result.error ?? "Verification failed.");
+    }
   };
 
   const handleDetails = () => {
@@ -109,21 +138,72 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
               </button>
             </div>
           </div>
+        ) : showVerify ? (
+          <div className="mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold uppercase text-base-content/40">Verify ownership (ZK)</span>
+              <button onClick={() => setShowVerify(false)} className="btn btn-ghost btn-xs btn-circle">
+                <XMarkIcon className="h-3 w-3" />
+              </button>
+            </div>
+            <p className="text-[10px] text-base-content/50 mb-2">
+              Enter your secret to generate a zero-knowledge proof. Your secret never leaves this device.
+            </p>
+            <div className="join w-full mb-2">
+              <input
+                type="password"
+                placeholder="0x... or hex secret"
+                className="input input-bordered input-sm join-item flex-1 text-xs font-mono"
+                value={verifySecret}
+                onChange={e => {
+                  setVerifySecret(e.target.value);
+                  setVerifyResult(null);
+                }}
+              />
+              <button
+                onClick={handleVerifyOwnership}
+                disabled={isVerifying}
+                className={`btn btn-primary btn-sm join-item px-4 ${isVerifying ? "loading" : ""}`}
+              >
+                {isVerifying ? "Proving…" : "Verify"}
+              </button>
+            </div>
+            {verifyResult === true && (
+              <div className="flex items-center gap-2 text-success text-xs font-medium">
+                <CheckCircleIcon className="h-4 w-4 shrink-0" />
+                <span>Ownership verified on-chain</span>
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="mt-6 pt-4 border-t border-base-300 flex items-center justify-between gap-2">
+          <div className="mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-between gap-2">
             <button
               onClick={() => setShowRecover(true)}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors"
+              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0"
             >
-              <ArrowDownTrayIcon className="h-3.5 w-3.5" />
+              <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Recover</span>
             </button>
-            <div className="w-px h-4 bg-base-300"></div>
+            <div className="w-px h-4 bg-base-300 shrink-0" />
+            <button
+              onClick={() => zkAvailable && setShowVerify(true)}
+              disabled={!zkAvailable}
+              title={
+                zkAvailable
+                  ? "Prove ownership with zero-knowledge (no secret on-chain)"
+                  : "ZK artifacts not loaded. Run zk:setup in hardhat and copy to public/zk/"
+              }
+              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0 disabled:opacity-50"
+            >
+              <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
+              <span>Verify</span>
+            </button>
+            <div className="w-px h-4 bg-base-300 shrink-0" />
             <button
               onClick={handleDetails}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors"
+              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors min-w-0"
             >
-              <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5" />
+              <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Certificate</span>
             </button>
           </div>
