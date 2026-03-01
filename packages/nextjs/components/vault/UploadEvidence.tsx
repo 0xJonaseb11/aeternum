@@ -104,7 +104,9 @@ export const UploadEvidence = () => {
                   <KeyIcon className="h-3.5 w-3.5" />
                   <span>Private Secret Key</span>
                 </div>
-                <span className="badge badge-error badge-xs p-2 text-[8px] font-bold shrink-0">CRITICAL: SAVE OFFLINE</span>
+                <span className="badge badge-error badge-xs p-2 text-[8px] font-bold shrink-0">
+                  CRITICAL: SAVE OFFLINE
+                </span>
               </div>
               <div className="flex items-center justify-between gap-2 min-w-0">
                 <code className="text-xs sm:text-sm font-mono text-primary break-all bg-base-100 px-2 py-1 rounded min-w-0 overflow-hidden">
@@ -217,7 +219,9 @@ export const UploadEvidence = () => {
                   <DocumentIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-base-content truncate max-w-[140px] sm:max-w-[200px]">{file.name}</span>
+                  <span className="font-bold text-base-content truncate max-w-[140px] sm:max-w-[200px]">
+                    {file.name}
+                  </span>
                   <span className="text-xs text-base-content/40">{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
                 </div>
               </div>
