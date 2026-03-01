@@ -53,7 +53,10 @@ export const RainbowKitCustomConnectButton = () => {
                         fontSize: "0.75rem",
                       }}
                     />
-                    <span className="text-[10px] md:text-xs truncate max-w-[100px] md:max-w-none" style={{ color: networkColor }}>
+                    <span
+                      className="text-[10px] md:text-xs truncate max-w-[100px] md:max-w-none"
+                      style={{ color: networkColor }}
+                    >
                       {chain.name}
                     </span>
                   </div>
