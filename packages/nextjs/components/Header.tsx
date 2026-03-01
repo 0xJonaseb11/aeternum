@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
@@ -22,17 +22,25 @@ export const menuLinks: HeaderMenuLink[] = [
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    setHash(typeof window !== "undefined" ? (window.location.hash || "").replace(/^#/, "") : "");
+    const onHashChange = () => setHash((window.location.hash || "").replace(/^#/, ""));
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   return (
     <>
       {menuLinks.map(({ label, href, icon }) => {
         const path = href.replace(/#.*/, "");
-        const isActive = pathname === path || (path === "/" && pathname === "/");
+        const fragment = (href.match(/#(.+)/) || [])[1] || "";
+        const isActive = pathname === path && (fragment === "" ? hash !== "vault" : hash === fragment);
         return (
           <li key={href}>
             <Link
               href={href}
-              passHref
               className={`${
                 isActive ? "text-primary bg-primary/10 shadow-inner" : "text-base-content/70"
               } hover:bg-primary/5 hover:text-primary active:scale-95 transition-all duration-200 py-2 px-4 text-sm font-bold uppercase tracking-widest rounded-lg flex items-center gap-2`}
