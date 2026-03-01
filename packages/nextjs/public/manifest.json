@@ -1,5 +1,6 @@
 {
-  "name": "Scaffold-ETH 2 DApp",
-  "description": "A DApp built with Scaffold-ETH",
-  "iconPath": "logo.svg"
+  "name": "Aeternum",
+  "short_name": "Aeternum",
+  "description": "Private, permanent, zero-knowledge verifiable evidence vault on-chain.",
+  "icons": [{ "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }
