@@ -34,6 +34,16 @@ export const Footer = () => {
                   Vault
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy-policy" className="link link-hover text-base-content/70">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/tos" className="link link-hover text-base-content/70">
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -55,8 +65,17 @@ export const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-base-content/40">
-            © {new Date().getFullYear()} Aeternum. Built for the future of evidence.
+          <p className="text-xs text-base-content/40 text-center md:text-left">
+            © {new Date().getFullYear()} Aeternum. Built for the future of evidence. Built by{" "}
+            <a
+              href="https://github.com/0xJonaseb11"
+              target="_blank"
+              rel="noreferrer"
+              className="link link-hover text-primary font-medium"
+            >
+              Jonas Sebera
+            </a>
+            .
           </p>
           <div className="flex items-center gap-4">
             <SwitchTheme />

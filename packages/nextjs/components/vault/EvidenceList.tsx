@@ -136,16 +136,41 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
 export const EvidenceList = () => {
   const { address: connectedAddress } = useAccount();
 
-  // 1. Fetch event history for ProofCreated to get the hashes
-  const { data: events, isLoading: eventsLoading } = useScaffoldEventHistory({
+  const {
+    data: events,
+    isLoading: eventsLoading,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useScaffoldEventHistory({
     contractName: "EvidenceVault",
     eventName: "ProofCreated",
     filters: { owner: connectedAddress },
-    blocksBatchSize: 2000,
+    blocksBatchSize: 500,
+    enabled: !!connectedAddress,
   });
+
+  if (!connectedAddress) {
+    return (
+      <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
+        <p className="text-base-content/40 font-medium">Connect your wallet to view archive evidence.</p>
+      </div>
+    );
+  }
 
   if (eventsLoading) {
     return <ProofListSkeleton count={3} />;
+  }
+
+  if (eventsError != null) {
+    return (
+      <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
+        <p className="text-base-content/60 font-medium mb-2">Could not load evidence proofs.</p>
+        <p className="text-sm text-base-content/40 mb-4">The chain may be busy. You can try again.</p>
+        <button onClick={() => refetchEvents()} className="btn btn-primary btn-sm">
+          Retry
+        </button>
+      </div>
+    );
   }
 
   if (!events || events.length === 0) {
