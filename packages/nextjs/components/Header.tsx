@@ -120,14 +120,16 @@ export const Header = () => {
           <Link
             href="/"
             passHref
-            className="flex items-center gap-1.5 sm:gap-2 ml-0 mr-2 sm:mr-6 shrink-0 md:ml-2 min-w-0"
+            className="flex items-center gap-2 sm:gap-2.5 ml-0 mr-2 sm:mr-6 shrink-0 md:ml-2 min-w-0"
             aria-label="Aeternum home"
           >
-            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-base-200 shadow-md shrink-0 overflow-hidden">
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg bg-base-200 shadow-md overflow-hidden">
               <AppLogo className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
             </span>
-            <div className="flex flex-col leading-tight min-w-0 hidden sm:block">
-              <span className="font-bold tracking-tight text-base sm:text-lg text-base-content truncate">Aeternum</span>
+            <div className="flex flex-col justify-center leading-tight min-w-0">
+              <span className="font-bold tracking-tight text-sm sm:text-base md:text-lg text-base-content truncate">
+                Aeternum
+              </span>
               <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-base-content/50 font-semibold truncate">
                 Evidence Vault
               </span>
