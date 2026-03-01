@@ -11,10 +11,7 @@ export interface SupabaseProofItem {
   revoked: boolean;
 }
 
-async function fetchProofsFromSupabase(
-  owner: `0x${string}`,
-  chainId: number,
-): Promise<SupabaseProofItem[]> {
+async function fetchProofsFromSupabase(owner: `0x${string}`, chainId: number): Promise<SupabaseProofItem[]> {
   const params = new URLSearchParams({ owner: owner.toLowerCase(), chainId: String(chainId) });
   const res = await fetch(`/api/proofs?${params}`);
   if (res.status === 503) {
