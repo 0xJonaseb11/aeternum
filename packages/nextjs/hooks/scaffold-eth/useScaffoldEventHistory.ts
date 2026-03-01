@@ -96,11 +96,11 @@ export const useScaffoldEventHistory = <
 }: UseScaffoldEventHistoryConfig<TContractName, TEventName, TBlockData, TTransactionData, TReceiptData>) => {
   const selectedNetwork = useSelectedNetwork(chainId);
 
-  // Runtime warning for non-local chains
+  // Runtime warning for non-local chains (dev only to avoid console noise)
   useEffect(() => {
-    if (selectedNetwork.id !== hardhat.id) {
-      console.log(
-        "⚠️ useScaffoldEventHistory is not optimized for production use. It can overload RPC endpoints (especially on L2s)",
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && selectedNetwork.id !== hardhat.id) {
+      console.warn(
+        "useScaffoldEventHistory: not optimized for production; can overload RPC on L2s. Prefer an indexer for production.",
       );
     }
   }, [selectedNetwork.id]);
@@ -286,6 +286,7 @@ export const useScaffoldEventHistory = <
     status: query.status,
     error: query.error,
     isLoading: query.isLoading,
+    isFetchingNextPage: query.isFetchingNextPage,
     isFetchingNewEvent: query.isFetchingNextPage,
     refetch: query.refetch,
   };
