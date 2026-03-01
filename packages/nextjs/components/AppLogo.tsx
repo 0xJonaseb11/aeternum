@@ -1,5 +1,5 @@
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
 
 type AppLogoProps = {
   className?: string;
@@ -7,12 +7,5 @@ type AppLogoProps = {
 };
 
 export const AppLogo = ({ className = "h-8 w-8", ariaHidden = true }: AppLogoProps) => (
-  <Image
-    src="/logo.svg"
-    alt="Aeternum"
-    className={className}
-    aria-hidden={ariaHidden}
-    width={32}
-    height={32}
-  />
+  <Image src="/logo.svg" alt="Aeternum" className={className} aria-hidden={ariaHidden} width={48} height={48} />
 );

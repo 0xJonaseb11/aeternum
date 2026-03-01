@@ -10,9 +10,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-4">
           <div className="md:col-span-2 min-w-0">
             <div className="flex items-center gap-2 mb-4">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-base-200 shrink-0 overflow-hidden">
-                <AppLogo className="h-4 w-4" />
-              </span>
+              <AppLogo className="h-10 w-10 sm:h-12 sm:w-12 shrink-0" />
               <span className="font-bold text-lg sm:text-xl tracking-tight text-base-content">Aeternum</span>
             </div>
             <p className="max-w-xs text-xs sm:text-sm text-base-content/60 leading-relaxed">
