@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS proofs (
 CREATE INDEX IF NOT EXISTS idx_proofs_owner_chain ON proofs(owner_address, chain_id);
 
 -- Optional RLS: enable if you use anon key and auth.
--- ALTER TABLE proofs ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "Users can read own proofs" ON proofs FOR SELECT USING (owner_address = current_setting('request.jwt.claim.wallet', true));
--- CREATE POLICY "Users can insert own proofs" ON proofs FOR INSERT WITH CHECK (owner_address = current_setting('request.jwt.claim.wallet', true));
+ALTER TABLE proofs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can read own proofs" ON proofs FOR SELECT USING (owner_address = current_setting('request.jwt.claim.wallet', true));
+CREATE POLICY "Users can insert own proofs" ON proofs FOR INSERT WITH CHECK (owner_address = current_setting('request.jwt.claim.wallet', true));
