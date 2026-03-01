@@ -1,0 +1,3 @@
+# ZK circuit artifacts (commitment.wasm, commitment_final.zkey) go here.
+# Run from repo root: cd packages/hardhat && npx ts-node scripts/zkSetup.ts setup
+# Then: yarn workspace @se-2/nextjs zk:copy

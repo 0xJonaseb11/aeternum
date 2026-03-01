@@ -1,10 +1,18 @@
 /**
  * Utility functions for client-side encryption, decryption and hashing.
- * Uses Web Crypto API for high performance and security.
+ * Uses Web Crypto API and Poseidon (circomlibjs) for ZK-compatible commitments.
  */
+
+import { buildPoseidon } from "circomlibjs";
+
+/** BN254 scalar field size — matches Circom circuit and on-chain verifier. */
+const BN254_FIELD_SIZE = BigInt(
+  "21888242871839275222246405745257275088548364400416034343698204186575808495617",
+);
 
 /**
  * Generates a random 32-byte secret key for AES-256-GCM.
+ * Returns 64-char hex (optionally use with 0x prefix for commitment/Poseidon).
  */
 export const generateSecret = (): string => {
   const array = new Uint8Array(32);
@@ -59,28 +67,24 @@ export const decryptFile = async (combined: ArrayBuffer, secret: string): Promis
 };
 
 /**
- * BN254 field size used on-chain (EvidenceVaultStorage.BN254_FIELD_SIZE).
- * We reduce the commitment into this field so `uint256(commitment) < BN254_FIELD_SIZE` always holds.
- */
-const BN254_FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
-
-/**
- * Computes a field-safe commitment for ZK proofs:
- *   h = SHA-256(fileHash || secret)
- *   commitment = h mod BN254_FIELD_SIZE (as bytes32)
+ * Computes the ZK-compatible commitment: Poseidon(fileHash, secret).
+ * Matches the Circom circuit so verifyOwnership() can be used with a Groth16 proof.
+ * Returns bytes32 (0x-prefixed hex). Both inputs are reduced mod BN254 field.
  */
 export const computeCommitment = async (fileHash: string, secret: string): Promise<string> => {
-  // Ensure fileHash is stripped of 0x if present
-  const cleanHash = fileHash.startsWith("0x") ? fileHash.slice(2) : fileHash;
-  const data = cleanHash + secret;
-  const hashHex = await computeHash(data); // 0x-prefixed 32-byte hex
+  const poseidon = await buildPoseidon();
 
-  let value = BigInt(hashHex) % BN254_FIELD_SIZE;
-  if (value === 0n) {
-    // Avoid zero, which the contract rejects as InvalidInput()
-    value = 1n;
-  }
+  const fileHashClean = fileHash.startsWith("0x") ? fileHash.slice(2) : fileHash;
+  const secretClean = secret.startsWith("0x") ? secret.slice(2) : secret;
 
-  const hex = value.toString(16).padStart(64, "0");
-  return `0x${hex}`;
+  let fileHashFelt = BigInt("0x" + fileHashClean) % BN254_FIELD_SIZE;
+  let secretFelt = BigInt("0x" + secretClean) % BN254_FIELD_SIZE;
+
+  if (fileHashFelt === 0n) fileHashFelt = 1n;
+  if (secretFelt === 0n) secretFelt = 1n;
+
+  const hash = poseidon([fileHashFelt, secretFelt]);
+  const commitmentFelt = poseidon.F.toObject(hash) as bigint;
+
+  return "0x" + commitmentFelt.toString(16).padStart(64, "0");
 };
