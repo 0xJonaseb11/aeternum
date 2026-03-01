@@ -176,15 +176,15 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
             )}
           </div>
         ) : (
-          <div className="mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-2">
             <button
               onClick={() => setShowRecover(true)}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors"
             >
               <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Recover</span>
             </button>
-            <div className="w-px h-4 bg-base-300 shrink-0" />
+            <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
               onClick={() => zkAvailable && setShowVerify(true)}
               disabled={!zkAvailable}
@@ -193,15 +193,15 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
                   ? "Prove ownership with zero-knowledge (no secret on-chain)"
                   : "ZK artifacts not loaded. Run zk:setup in hardhat and copy to public/zk/"
               }
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0 disabled:opacity-50"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors disabled:opacity-50"
             >
               <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Verify</span>
             </button>
-            <div className="w-px h-4 bg-base-300 shrink-0" />
+            <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
               onClick={handleDetails}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors min-w-0"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors"
             >
               <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Certificate</span>
@@ -278,7 +278,7 @@ export const EvidenceList = () => {
   const sortedEvents = [...events].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
       {sortedEvents.map(event => {
         const fileHash = event.args.fileHash as string;
         // In a more complex app, we'd fetch the full proof object using useScaffoldReadContract
