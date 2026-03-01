@@ -11,18 +11,15 @@ const ARWEAVE_TX_ID_LEN = 43;
 
 function normalizeToArweaveTxId(id: string): string {
   if (!id || id.length < ARWEAVE_TX_ID_LEN) {
-    throw new Error(`Arweave returned an invalid transaction id (length ${id?.length ?? 0}, expected ${ARWEAVE_TX_ID_LEN}).`);
+    throw new Error(
+      `Arweave returned an invalid transaction id (length ${id?.length ?? 0}, expected ${ARWEAVE_TX_ID_LEN}).`,
+    );
   }
   if (id.length === ARWEAVE_TX_ID_LEN) return id;
   return id.slice(0, ARWEAVE_TX_ID_LEN);
 }
 
-export type VaultStep =
-  | "idle"
-  | "encrypting"
-  | "uploading_arweave"
-  | "uploading_ipfs"
-  | "confirming";
+export type VaultStep = "idle" | "encrypting" | "uploading_arweave" | "uploading_ipfs" | "confirming";
 
 export const useVault = () => {
   const [isProcessing, setIsProcessing] = useState(false);
