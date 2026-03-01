@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 type AppLogoProps = {
@@ -6,7 +7,7 @@ type AppLogoProps = {
 };
 
 export const AppLogo = ({ className = "h-8 w-8", ariaHidden = true }: AppLogoProps) => (
-  <img
+  <Image
     src="/logo.svg"
     alt="Aeternum"
     className={className}
