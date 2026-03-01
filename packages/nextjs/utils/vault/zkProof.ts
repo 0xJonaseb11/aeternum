@@ -4,7 +4,6 @@
  * without revealing the secret. Requires ZK artifacts in /zk/ (see README).
  */
 import { buildPoseidon } from "circomlibjs";
-import * as snarkjs from "snarkjs";
 
 const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
@@ -64,6 +63,7 @@ export async function generateZKProofBundle(fileHash: string, secret: string): P
   const wasmPath = typeof window !== "undefined" ? `${window.location.origin}${WASM_URL}` : WASM_URL;
   const zkeyPath = typeof window !== "undefined" ? `${window.location.origin}${ZKEY_URL}` : ZKEY_URL;
 
+  const snarkjs = await import("snarkjs");
   const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasmPath, zkeyPath);
 
   const pA: [bigint, bigint] = [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])];
