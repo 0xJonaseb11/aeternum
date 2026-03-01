@@ -68,15 +68,51 @@ export const Header = () => {
     <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm w-full">
       <div className="navbar min-h-0 justify-between gap-2 px-3 sm:px-6 lg:px-8 max-w-[100vw]">
         <div className="navbar-start w-auto lg:w-1/2 min-w-0">
-          <details className="dropdown" ref={burgerMenuRef}>
+          <details className="dropdown dropdown-end" ref={burgerMenuRef}>
             <summary className="btn btn-ghost btn-sm lg:hidden p-2" aria-label="Open menu">
               <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
             </summary>
             <ul
-              className="menu dropdown-content menu-compact mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg z-30"
-              onClick={() => burgerMenuRef?.current?.removeAttribute("open")}
+              className="menu dropdown-content menu-compact mt-3 w-72 min-w-[280px] rounded-box border border-base-300 bg-base-100 p-2 shadow-lg z-30"
+              onClick={e => {
+                const target = e.target as HTMLElement;
+                if (target.closest("a[href]")) burgerMenuRef?.current?.removeAttribute("open");
+              }}
             >
               <HeaderMenuLinks />
+              <li className="menu-title mt-2 pt-2 border-t border-base-300">
+                <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold">App</span>
+              </li>
+              <li onClick={e => e.stopPropagation()} className="rounded-lg">
+                <div className="flex flex-col gap-1.5 py-1">
+                  <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold px-4">
+                    Theme
+                  </span>
+                  <SwitchTheme className="px-2" />
+                </div>
+              </li>
+              {isLocalNetwork && (
+                <li onClick={e => e.stopPropagation()} className="rounded-lg">
+                  <div className="flex flex-col gap-1.5 py-1">
+                    <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold px-4">
+                      Faucet
+                    </span>
+                    <div className="px-2">
+                      <FaucetButton />
+                    </div>
+                  </div>
+                </li>
+              )}
+              <li onClick={e => e.stopPropagation()} className="rounded-lg">
+                <div className="flex flex-col gap-1.5 py-1">
+                  <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold px-4">
+                    Wallet
+                  </span>
+                  <div className="px-2 w-full min-w-0">
+                    <RainbowKitCustomConnectButton />
+                  </div>
+                </div>
+              </li>
             </ul>
           </details>
           <Link
@@ -99,7 +135,7 @@ export const Header = () => {
             <HeaderMenuLinks />
           </ul>
         </div>
-        <div className="navbar-end flex grow items-center justify-end gap-1.5 sm:gap-3 min-w-0 flex-shrink-0">
+        <div className="navbar-end hidden lg:flex grow items-center justify-end gap-1.5 sm:gap-3 min-w-0 flex-shrink-0">
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
