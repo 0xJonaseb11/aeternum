@@ -88,9 +88,9 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
   };
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden">
-      <div className="card-body p-6">
-        <div className="flex items-center justify-between mb-4">
+    <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden min-w-0">
+      <div className="card-body p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
           <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
             <ShieldCheckIcon className="h-3 w-3" />
             <span>Verified On-chain</span>
@@ -98,11 +98,11 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
           <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
         </div>
 
-        <h4 className="font-bold text-base-content truncate mb-1" title={proof.fileHash}>
-          {proof.fileHash.slice(0, 24)}...
+        <h4 className="font-bold text-base-content truncate mb-1 text-sm sm:text-base min-w-0" title={proof.fileHash}>
+          {proof.fileHash.slice(0, 20)}...
         </h4>
 
-        <div className="flex items-center gap-4 text-xs text-base-content/50 mt-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-base-content/50 mt-3 sm:mt-4">
           <div className="flex items-center gap-1">
             <CalendarIcon className="h-3.5 w-3.5" />
             <span>{new Date(proof.timestamp * 1000).toLocaleDateString()}</span>
@@ -114,46 +114,46 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
         </div>
 
         {showRecover ? (
-          <div className="mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200">
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200 min-w-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold uppercase text-base-content/40">Enter Secret Key</span>
-              <button onClick={() => setShowRecover(false)} className="btn btn-ghost btn-xs btn-circle">
+              <button onClick={() => setShowRecover(false)} className="btn btn-ghost btn-xs btn-circle shrink-0">
                 <XMarkIcon className="h-3 w-3" />
               </button>
             </div>
-            <div className="join w-full">
+            <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0">
               <input
                 type="password"
                 placeholder="0x..."
-                className="input input-bordered input-sm join-item flex-1 text-xs font-mono"
+                className="input input-bordered input-sm join-item flex-1 min-w-0 text-xs font-mono w-full sm:w-auto"
                 value={secret}
                 onChange={e => setSecret(e.target.value)}
               />
               <button
                 onClick={handleRecover}
                 disabled={isRecovering}
-                className={`btn btn-primary btn-sm join-item px-4 ${isRecovering ? "loading" : ""}`}
+                className={`btn btn-primary btn-sm join-item px-4 w-full sm:w-auto ${isRecovering ? "loading" : ""}`}
               >
                 {isRecovering ? "" : "Go"}
               </button>
             </div>
           </div>
         ) : showVerify ? (
-          <div className="mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200">
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200 min-w-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-bold uppercase text-base-content/40">Verify ownership (ZK)</span>
-              <button onClick={() => setShowVerify(false)} className="btn btn-ghost btn-xs btn-circle">
+              <button onClick={() => setShowVerify(false)} className="btn btn-ghost btn-xs btn-circle shrink-0">
                 <XMarkIcon className="h-3 w-3" />
               </button>
             </div>
             <p className="text-[10px] text-base-content/50 mb-2">
               Enter your secret to generate a zero-knowledge proof. Your secret never leaves this device.
             </p>
-            <div className="join w-full mb-2">
+            <div className="join w-full mb-2 flex flex-col sm:flex-row gap-2 sm:gap-0">
               <input
                 type="password"
                 placeholder="0x... or hex secret"
-                className="input input-bordered input-sm join-item flex-1 text-xs font-mono"
+                className="input input-bordered input-sm join-item flex-1 min-w-0 text-xs font-mono w-full sm:w-auto"
                 value={verifySecret}
                 onChange={e => {
                   setVerifySecret(e.target.value);
@@ -163,7 +163,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
               <button
                 onClick={handleVerifyOwnership}
                 disabled={isVerifying}
-                className={`btn btn-primary btn-sm join-item px-4 ${isVerifying ? "loading" : ""}`}
+                className={`btn btn-primary btn-sm join-item px-4 w-full sm:w-auto ${isVerifying ? "loading" : ""}`}
               >
                 {isVerifying ? "Proving…" : "Verify"}
               </button>
@@ -176,15 +176,15 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
             )}
           </div>
         ) : (
-          <div className="mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-between gap-2">
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-2">
             <button
               onClick={() => setShowRecover(true)}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors"
             >
               <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Recover</span>
             </button>
-            <div className="w-px h-4 bg-base-300 shrink-0" />
+            <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
               onClick={() => zkAvailable && setShowVerify(true)}
               disabled={!zkAvailable}
@@ -193,15 +193,15 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
                   ? "Prove ownership with zero-knowledge (no secret on-chain)"
                   : "ZK artifacts not loaded. Run zk:setup in hardhat and copy to public/zk/"
               }
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors min-w-0 disabled:opacity-50"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors disabled:opacity-50"
             >
               <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Verify</span>
             </button>
-            <div className="w-px h-4 bg-base-300 shrink-0" />
+            <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
               onClick={handleDetails}
-              className="btn btn-ghost btn-sm flex-1 gap-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors min-w-0"
+              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors"
             >
               <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
               <span>Certificate</span>
@@ -278,7 +278,7 @@ export const EvidenceList = () => {
   const sortedEvents = [...events].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
       {sortedEvents.map(event => {
         const fileHash = event.args.fileHash as string;
         // In a more complex app, we'd fetch the full proof object using useScaffoldReadContract
