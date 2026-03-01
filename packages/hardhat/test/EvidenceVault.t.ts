@@ -14,27 +14,6 @@ function mockCommitment(fileHash: string, secret: string): string {
 
 const ARWEAVE_TX_ID = "a".repeat(43); // valid 43-char Arweave TxID
 const IPFS_CID = "QmTestCIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const BN254_P = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Mock ZK Verifier (always returns true / false based on constructor arg)
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function deployMockVerifier(shouldPass: boolean) {
-  const src = `
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.24;
-    contract MockVerifier {
-        bool private _pass;
-        constructor(bool pass_) { _pass = pass_; }
-        function verifyProof(bytes calldata, uint256[] calldata) external view returns (bool) {
-            return _pass;
-        }
-    }`;
-  // We use an inline fixture approach — in real tests use a fixture file
-  const factory = await ethers.getContractFactory("MockVerifier");
-  return factory.deploy(shouldPass);
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Test Suite
