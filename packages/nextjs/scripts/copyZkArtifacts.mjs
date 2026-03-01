@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * Copy ZK circuit artifacts from hardhat build to nextjs public/zk
  * so the app can load commitment.wasm and commitment_final.zkey in the browser.
@@ -6,7 +7,7 @@
  * Run from repo root after: cd packages/hardhat && npx ts-node scripts/zkSetup.ts setup
  * Or: yarn zk:copy (from repo root or packages/nextjs)
  */
-import { copyFileSync, mkdirSync, existsSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 

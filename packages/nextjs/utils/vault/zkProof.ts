@@ -3,13 +3,10 @@
  * Proves knowledge of secret such that commitment = Poseidon(fileHash, secret)
  * without revealing the secret. Requires ZK artifacts in /zk/ (see README).
  */
-
-import * as snarkjs from "snarkjs";
 import { buildPoseidon } from "circomlibjs";
+import * as snarkjs from "snarkjs";
 
-const BN254_FIELD_SIZE = BigInt(
-  "21888242871839275222246405745257275088548364400416034343698204186575808495617",
-);
+const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 const WASM_URL = "/zk/commitment.wasm";
 const ZKEY_URL = "/zk/commitment_final.zkey";
@@ -32,7 +29,10 @@ function toFieldHex(hex: string): string {
 /**
  * Compute Poseidon(fileHash, secret) and return as bytes32 hex and as field string.
  */
-async function getCommitmentFelt(fileHash: string, secret: string): Promise<{ commitmentHex: string; commitmentFelt: string }> {
+async function getCommitmentFelt(
+  fileHash: string,
+  secret: string,
+): Promise<{ commitmentHex: string; commitmentFelt: string }> {
   const poseidon = await buildPoseidon();
   const fileHashFelt = toFieldHex(fileHash);
   const secretFelt = toFieldHex(secret);
@@ -74,10 +74,11 @@ export async function generateZKProofBundle(fileHash: string, secret: string): P
   const pC: [bigint, bigint] = [BigInt(proof.pi_c[0]), BigInt(proof.pi_c[1])];
 
   const { encodeAbiParameters, parseAbiParameters } = await import("viem");
-  const zkProof = encodeAbiParameters(
-    parseAbiParameters("uint256[2], uint256[2][2], uint256[2]"),
-    [pA, pB, pC],
-  ) as `0x${string}`;
+  const zkProof = encodeAbiParameters(parseAbiParameters("uint256[2], uint256[2][2], uint256[2]"), [
+    pA,
+    pB,
+    pC,
+  ]) as `0x${string}`;
 
   const publicInputs: [bigint, bigint] = [BigInt(publicSignals[0]), BigInt(publicSignals[1])];
 

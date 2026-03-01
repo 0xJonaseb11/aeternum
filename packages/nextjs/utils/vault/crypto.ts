@@ -2,13 +2,10 @@
  * Utility functions for client-side encryption, decryption and hashing.
  * Uses Web Crypto API and Poseidon (circomlibjs) for ZK-compatible commitments.
  */
-
 import { buildPoseidon } from "circomlibjs";
 
 /** BN254 scalar field size — matches Circom circuit and on-chain verifier. */
-const BN254_FIELD_SIZE = BigInt(
-  "21888242871839275222246405745257275088548364400416034343698204186575808495617",
-);
+const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 /**
  * Generates a random 32-byte secret key for AES-256-GCM.
