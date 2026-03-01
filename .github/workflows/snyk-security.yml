@@ -1,0 +1,65 @@
+# Snyk Security: Code (SAST), Open Source (SCA), optional IaC and Container.
+# Requires SNYK_TOKEN in repository secrets: https://github.com/snyk/actions#getting-your-snyk-token
+
+name: Snyk Security
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  snyk:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    runs-on: ubuntu-latest
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+
+      # Snyk Code: produce SARIF for GitHub Code Scanning; do not fail the job on findings
+      - name: Snyk Code test
+        run: snyk code test --sarif > snyk-code.sarif || true
+
+      - name: Upload Snyk Code to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-code.sarif
+        continue-on-error: true
+
+      - name: Snyk Open Source monitor
+        run: snyk monitor --all-projects
+        continue-on-error: true
+
+      - name: Snyk IaC test and report
+        run: snyk iac test --report || true
+
+      # Only run Docker/Container steps if a Dockerfile exists
+      - name: Build Docker image
+        if: hashFiles('Dockerfile') != ''
+        run: docker build -t aeternum-app:${{ github.sha }} .
+
+      - name: Snyk Container monitor
+        if: hashFiles('Dockerfile') != ''
+        run: snyk container monitor aeternum-app:${{ github.sha }} --file=Dockerfile
+        continue-on-error: true
