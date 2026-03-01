@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
@@ -214,13 +215,25 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
 };
 
 const RECENT_BLOCKS = 10_000; // ~2 days on Base Sepolia; keeps RPC requests bounded
+const LOAD_TIMEOUT_MS = 18_000; // Stop showing skeleton after 18s; show error + Retry
+
+const INDEXER_URL = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_INDEXER_URL : undefined;
 
 export const EvidenceList = () => {
   const { address: connectedAddress } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
   const fromBlock = blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
+  const [loadTimedOut, setLoadTimedOut] = useState(false);
 
+  const {
+    data: indexedProofs,
+    isLoading: indexedLoading,
+    isError: indexedError,
+    refetch: refetchIndexed,
+  } = useIndexedProofs(connectedAddress, selectedNetwork.id, INDEXER_URL);
+
+  const useEventHistory = !INDEXER_URL || indexedError;
   const {
     data: events,
     isLoading: eventsLoading,
@@ -233,10 +246,28 @@ export const EvidenceList = () => {
     filters: { owner: connectedAddress },
     fromBlock,
     blocksBatchSize: 200,
-    enabled: !!connectedAddress && blockNumber != null,
+    enabled: !!connectedAddress && blockNumber != null && useEventHistory,
   });
 
-  const stillLoading = eventsLoading || isFetchingNextPage;
+  const useIndexerData = INDEXER_URL && !indexedError && indexedProofs != null;
+  const stillLoading =
+    useIndexerData
+      ? false
+      : useEventHistory
+        ? eventsLoading || isFetchingNextPage
+        : indexedLoading;
+
+  const hasData = useIndexerData ? indexedProofs.length > 0 : (events != null && events.length > 0);
+
+  // After timeout, stop showing skeleton and show error + Retry so UI never sticks
+  useEffect(() => {
+    if (!connectedAddress || !stillLoading || hasData) {
+      setLoadTimedOut(false);
+      return;
+    }
+    const t = setTimeout(() => setLoadTimedOut(true), LOAD_TIMEOUT_MS);
+    return () => clearTimeout(t);
+  }, [connectedAddress, stillLoading, hasData]);
 
   if (!connectedAddress) {
     return (
@@ -246,16 +277,24 @@ export const EvidenceList = () => {
     );
   }
 
-  if (stillLoading && (!events || events.length === 0)) {
+  if (stillLoading && (!events || events.length === 0) && !loadTimedOut) {
     return <ProofListSkeleton count={3} />;
   }
 
-  if (eventsError != null) {
+  if (eventsError != null || loadTimedOut) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/60 font-medium mb-2">Could not load evidence proofs.</p>
-        <p className="text-sm text-base-content/40 mb-4">The chain may be busy. You can try again.</p>
-        <button onClick={() => refetchEvents()} className="btn btn-primary btn-sm">
+        <p className="text-sm text-base-content/40 mb-4">
+          {loadTimedOut ? "The request took too long. You can try again." : "The chain may be busy. You can try again."}
+        </p>
+        <button
+          onClick={() => {
+            setLoadTimedOut(false);
+            refetchEvents();
+          }}
+          className="btn btn-primary btn-sm"
+        >
           Retry
         </button>
       </div>
