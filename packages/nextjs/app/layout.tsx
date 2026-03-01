@@ -12,10 +12,16 @@ export const metadata = getMetadata({
   description: "Private, permanent, zero-knowledge verifiable evidence vault on-chain.",
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning className={``}>
-      <body>
+    <html suppressHydrationWarning lang="en" className="w-full">
+      <body className="min-h-screen w-full overflow-x-hidden antialiased">
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
         </ThemeProvider>

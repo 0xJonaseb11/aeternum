@@ -65,15 +65,15 @@ export const Header = () => {
   });
 
   return (
-    <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm">
-      <div className="navbar min-h-0 justify-between px-4 sm:px-6 lg:px-8">
-        <div className="navbar-start w-auto lg:w-1/2">
+    <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm w-full">
+      <div className="navbar min-h-0 justify-between gap-2 px-3 sm:px-6 lg:px-8 max-w-[100vw]">
+        <div className="navbar-start w-auto lg:w-1/2 min-w-0">
           <details className="dropdown" ref={burgerMenuRef}>
-            <summary className="btn btn-ghost lg:hidden" aria-label="Open menu">
-              <Bars3Icon className="h-6 w-6" />
+            <summary className="btn btn-ghost btn-sm lg:hidden p-2" aria-label="Open menu">
+              <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
             </summary>
             <ul
-              className="menu dropdown-content menu-compact mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+              className="menu dropdown-content menu-compact mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg z-30"
               onClick={() => burgerMenuRef?.current?.removeAttribute("open")}
             >
               <HeaderMenuLinks />
@@ -82,29 +82,29 @@ export const Header = () => {
           <Link
             href="/"
             passHref
-            className="flex items-center gap-2 ml-0 mr-6 shrink-0 lg:ml-2"
+            className="flex items-center gap-1.5 sm:gap-2 ml-0 mr-2 sm:mr-6 shrink-0 lg:ml-2 min-w-0"
             aria-label="Aeternum home"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-content shadow-md">
-                <LockClosedIcon className="h-5 w-5" />
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-primary text-primary-content shadow-md shrink-0">
+              <LockClosedIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            </span>
+            <div className="flex flex-col leading-tight min-w-0 hidden sm:block">
+              <span className="font-bold tracking-tight text-base sm:text-lg text-base-content truncate">Aeternum</span>
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-widest text-base-content/50 font-semibold truncate">
+                Evidence Vault
               </span>
-              <div className="flex flex-col leading-tight">
-                <span className="font-bold tracking-tight text-lg text-base-content">Aeternum</span>
-                <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-semibold">
-                  Evidence Vault
-                </span>
-              </div>
             </div>
           </Link>
           <ul className="hidden lg:flex menu menu-horizontal gap-1 px-1">
             <HeaderMenuLinks />
           </ul>
         </div>
-        <div className="navbar-end flex grow items-center gap-2 sm:gap-3">
-          <SwitchTheme className="shrink-0" />
+        <div className="navbar-end flex grow items-center justify-end gap-1.5 sm:gap-3 min-w-0 flex-shrink-0">
+          <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
-          <RainbowKitCustomConnectButton />
+          <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+            <RainbowKitCustomConnectButton />
+          </div>
         </div>
       </div>
     </header>
