@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
@@ -122,8 +123,8 @@ export const Header = () => {
             className="flex items-center gap-1.5 sm:gap-2 ml-0 mr-2 sm:mr-6 shrink-0 md:ml-2 min-w-0"
             aria-label="Aeternum home"
           >
-            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-primary text-primary-content shadow-md shrink-0">
-              <LockClosedIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-base-200 shadow-md shrink-0 overflow-hidden">
+              <AppLogo className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
             </span>
             <div className="flex flex-col leading-tight min-w-0 hidden sm:block">
               <span className="font-bold tracking-tight text-base sm:text-lg text-base-content truncate">Aeternum</span>

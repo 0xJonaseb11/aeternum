@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { LockClosedIcon } from "@heroicons/react/24/outline";
+import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 
 export const Footer = () => {
@@ -10,8 +10,8 @@ export const Footer = () => {
         <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-4">
           <div className="md:col-span-2 min-w-0">
             <div className="flex items-center gap-2 mb-4">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-content shrink-0">
-                <LockClosedIcon className="h-4 w-4" />
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-base-200 shrink-0 overflow-hidden">
+                <AppLogo className="h-4 w-4" />
               </span>
               <span className="font-bold text-lg sm:text-xl tracking-tight text-base-content">Aeternum</span>
             </div>

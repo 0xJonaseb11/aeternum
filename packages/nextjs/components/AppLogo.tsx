@@ -1,0 +1,17 @@
+import React from "react";
+
+type AppLogoProps = {
+  className?: string;
+  ariaHidden?: boolean;
+};
+
+export const AppLogo = ({ className = "h-8 w-8", ariaHidden = true }: AppLogoProps) => (
+  <img
+    src="/logo.svg"
+    alt="Aeternum"
+    className={className}
+    aria-hidden={ariaHidden}
+    width={32}
+    height={32}
+  />
+);

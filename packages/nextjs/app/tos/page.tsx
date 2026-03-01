@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowLeftIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { AppLogo } from "~~/components/AppLogo";
 
 export const metadata: Metadata = {
   title: "Terms of Service | Aeternum",
@@ -20,8 +21,8 @@ export default function TermsOfServicePage() {
         </Link>
 
         <div className="flex items-center gap-3 mb-10">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-content">
-            <LockClosedIcon className="h-5 w-5" />
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-base-200 overflow-hidden">
+            <AppLogo className="h-5 w-5" />
           </span>
           <div>
             <h1 className="text-2xl font-bold text-base-content">Terms of Service</h1>
