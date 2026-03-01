@@ -277,55 +277,70 @@ export const EvidenceList = () => {
     );
   }
 
-  if (stillLoading && (!events || events.length === 0) && !loadTimedOut) {
+  if (stillLoading && !hasData && !loadTimedOut) {
     return <ProofListSkeleton count={3} />;
   }
 
-  if (eventsError != null || loadTimedOut) {
+  const refetch = () => {
+    setLoadTimedOut(false);
+    if (useIndexerData) refetchIndexed();
+    else refetchEvents();
+  };
+
+  if ((useEventHistory && eventsError != null) || loadTimedOut) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/60 font-medium mb-2">Could not load evidence proofs.</p>
         <p className="text-sm text-base-content/40 mb-4">
           {loadTimedOut ? "The request took too long. You can try again." : "The chain may be busy. You can try again."}
         </p>
-        <button
-          onClick={() => {
-            setLoadTimedOut(false);
-            refetchEvents();
-          }}
-          className="btn btn-primary btn-sm"
-        >
+        <button onClick={refetch} className="btn btn-primary btn-sm">
           Retry
         </button>
       </div>
     );
   }
 
-  if (!events || events.length === 0) {
+  if (!hasData) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/40 font-medium">No archive evidence found for this wallet.</p>
-        <p className="text-xs text-base-content/40 mt-2">Showing last ~2 days on Base Sepolia.</p>
-        <button onClick={() => refetchEvents()} className="btn btn-ghost btn-sm mt-4">
+        <p className="text-xs text-base-content/40 mt-2">
+          {useIndexerData ? "Indexed proofs for this chain." : "Showing last ~2 days on Base Sepolia."}
+        </p>
+        <button onClick={refetch} className="btn btn-ghost btn-sm mt-4">
           Refresh
         </button>
       </div>
     );
   }
 
-  // We sort by timestamp descending
-  const sortedEvents = [...events].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
+  if (useIndexerData && indexedProofs) {
+    const activeProofs = indexedProofs.filter(p => !p.revoked);
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+        {activeProofs.map(p => (
+          <EvidenceCard
+            key={p.id}
+            proof={{
+              id: p.fileHash,
+              fileHash: p.fileHash,
+              timestamp: p.timestamp,
+              storageId: p.arweaveTxId,
+              ipfsCid: p.ipfsCid ?? undefined,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const sortedEvents = [...(events ?? [])].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
       {sortedEvents.map(event => {
         const fileHash = event.args.fileHash as string;
-        // In a more complex app, we'd fetch the full proof object using useScaffoldReadContract
-        // but for the list, we can show what's in the event.
-        // We might need another hook to fetch the ArweaveTxId if not in event.
-        // The event has: owner, fileHash, timestamp, blockNumber.
-        // Wait, the event ProofCreated DOES NOT have arweaveTxId.
-        // So we need to call getProof(fileHash) for each.
         return <EvidenceListItem fileHash={fileHash} key={fileHash} timestamp={Number(event.args.timestamp)} />;
       })}
     </div>

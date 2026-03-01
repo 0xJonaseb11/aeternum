@@ -64,6 +64,7 @@ export const useVault = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["eventHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["indexedProofs"] });
 
       notification.success("Evidence secured successfully!");
 
