@@ -240,7 +240,9 @@ export const UploadEvidence = () => {
 
               {isProcessing && (
                 <div className="mb-4 p-4 bg-base-200/80 rounded-xl border border-base-300 space-y-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-3">Current step</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-3">
+                    Current step
+                  </p>
                   {[
                     { key: "encrypting", label: "Encrypting locally" },
                     { key: "uploading_arweave", label: "Uploading to Arweave" },
@@ -256,12 +258,24 @@ export const UploadEvidence = () => {
                       <div key={key} className="flex items-center gap-2 text-sm">
                         <span
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                            isPast ? "bg-success/20 text-success" : isCurrent ? "bg-primary text-primary-content animate-pulse" : "bg-base-300 text-base-content/40"
+                            isPast
+                              ? "bg-success/20 text-success"
+                              : isCurrent
+                                ? "bg-primary text-primary-content animate-pulse"
+                                : "bg-base-300 text-base-content/40"
                           }`}
                         >
                           {isPast ? "✓" : i + 1}
                         </span>
-                        <span className={isCurrent ? "font-bold text-primary" : isPast ? "text-base-content/60" : "text-base-content/40"}>
+                        <span
+                          className={
+                            isCurrent
+                              ? "font-bold text-primary"
+                              : isPast
+                                ? "text-base-content/60"
+                                : "text-base-content/40"
+                          }
+                        >
                           {label}
                         </span>
                       </div>
