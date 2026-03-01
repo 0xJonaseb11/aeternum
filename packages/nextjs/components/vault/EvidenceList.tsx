@@ -265,13 +265,15 @@ export const EvidenceList = () => {
       ? false
       : INDEXER_URL
         ? indexedLoading
-        : supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage)) || (!supabaseError && !supabaseProofs && (eventsLoading || isFetchingNextPage));
+        : supabaseLoading ||
+          (supabaseError && (eventsLoading || isFetchingNextPage)) ||
+          (!supabaseError && !supabaseProofs && (eventsLoading || isFetchingNextPage));
 
   const hasData = useIndexerData
     ? indexedProofs.length > 0
     : useSupabaseData
       ? supabaseProofs.length > 0
-      : (events != null && events.length > 0);
+      : events != null && events.length > 0;
 
   // After timeout, stop showing skeleton and show error + Retry so UI never sticks
   useEffect(() => {
