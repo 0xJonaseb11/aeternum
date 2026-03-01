@@ -12,7 +12,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
+import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
@@ -214,13 +216,33 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
 };
 
 const RECENT_BLOCKS = 10_000; // ~2 days on Base Sepolia; keeps RPC requests bounded
+const LOAD_TIMEOUT_MS = 18_000; // Stop showing skeleton after 18s; show error + Retry
+
+const INDEXER_URL = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_INDEXER_URL : undefined;
 
 export const EvidenceList = () => {
   const { address: connectedAddress } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
   const fromBlock = blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
+  const [loadTimedOut, setLoadTimedOut] = useState(false);
 
+  const {
+    data: indexedProofs,
+    isLoading: indexedLoading,
+    isError: indexedError,
+    refetch: refetchIndexed,
+  } = useIndexedProofs(connectedAddress, selectedNetwork.id, INDEXER_URL);
+
+  const supabaseEnabled = !INDEXER_URL;
+  const {
+    data: supabaseProofs,
+    isLoading: supabaseLoading,
+    isError: supabaseError,
+    refetch: refetchSupabase,
+  } = useSupabaseProofs(connectedAddress, selectedNetwork.id, supabaseEnabled);
+
+  const useEventHistory = !INDEXER_URL ? supabaseError : indexedError;
   const {
     data: events,
     isLoading: eventsLoading,
@@ -233,10 +255,33 @@ export const EvidenceList = () => {
     filters: { owner: connectedAddress },
     fromBlock,
     blocksBatchSize: 200,
-    enabled: !!connectedAddress && blockNumber != null,
+    enabled: !!connectedAddress && blockNumber != null && (useEventHistory || supabaseEnabled),
   });
 
-  const stillLoading = eventsLoading || isFetchingNextPage;
+  const useIndexerData = INDEXER_URL && !indexedError && indexedProofs != null;
+  const useSupabaseData = supabaseEnabled && !supabaseError && supabaseProofs != null;
+  const stillLoading =
+    useIndexerData || useSupabaseData
+      ? false
+      : INDEXER_URL
+        ? indexedLoading
+        : supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage)) || (!supabaseError && !supabaseProofs && (eventsLoading || isFetchingNextPage));
+
+  const hasData = useIndexerData
+    ? indexedProofs.length > 0
+    : useSupabaseData
+      ? supabaseProofs.length > 0
+      : (events != null && events.length > 0);
+
+  // After timeout, stop showing skeleton and show error + Retry so UI never sticks
+  useEffect(() => {
+    if (!connectedAddress || !stillLoading || hasData) {
+      setLoadTimedOut(false);
+      return;
+    }
+    const t = setTimeout(() => setLoadTimedOut(true), LOAD_TIMEOUT_MS);
+    return () => clearTimeout(t);
+  }, [connectedAddress, stillLoading, hasData]);
 
   if (!connectedAddress) {
     return (
@@ -246,47 +291,90 @@ export const EvidenceList = () => {
     );
   }
 
-  if (stillLoading && (!events || events.length === 0)) {
+  if (stillLoading && !hasData && !loadTimedOut) {
     return <ProofListSkeleton count={3} />;
   }
 
-  if (eventsError != null) {
+  const refetch = () => {
+    setLoadTimedOut(false);
+    if (INDEXER_URL && !indexedError) refetchIndexed();
+    else if (supabaseEnabled && !supabaseError) refetchSupabase();
+    else refetchEvents();
+  };
+
+  if ((useEventHistory && eventsError != null) || loadTimedOut) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/60 font-medium mb-2">Could not load evidence proofs.</p>
-        <p className="text-sm text-base-content/40 mb-4">The chain may be busy. You can try again.</p>
-        <button onClick={() => refetchEvents()} className="btn btn-primary btn-sm">
+        <p className="text-sm text-base-content/40 mb-4">
+          {loadTimedOut ? "The request took too long. You can try again." : "The chain may be busy. You can try again."}
+        </p>
+        <button onClick={refetch} className="btn btn-primary btn-sm">
           Retry
         </button>
       </div>
     );
   }
 
-  if (!events || events.length === 0) {
+  if (!hasData) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/40 font-medium">No archive evidence found for this wallet.</p>
-        <p className="text-xs text-base-content/40 mt-2">Showing last ~2 days on Base Sepolia.</p>
-        <button onClick={() => refetchEvents()} className="btn btn-ghost btn-sm mt-4">
+        <p className="text-xs text-base-content/40 mt-2">
+          {useIndexerData ? "Indexed proofs for this chain." : "Showing last ~2 days on Base Sepolia."}
+        </p>
+        <button onClick={refetch} className="btn btn-ghost btn-sm mt-4">
           Refresh
         </button>
       </div>
     );
   }
 
-  // We sort by timestamp descending
-  const sortedEvents = [...events].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
+  if (useIndexerData && indexedProofs) {
+    const activeProofs = indexedProofs.filter(p => !p.revoked);
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+        {activeProofs.map(p => (
+          <EvidenceCard
+            key={p.id}
+            proof={{
+              id: p.fileHash,
+              fileHash: p.fileHash,
+              timestamp: p.timestamp,
+              storageId: p.arweaveTxId,
+              ipfsCid: p.ipfsCid ?? undefined,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (useSupabaseData && supabaseProofs) {
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+        {supabaseProofs.map(p => (
+          <EvidenceCard
+            key={p.id}
+            proof={{
+              id: p.fileHash,
+              fileHash: p.fileHash,
+              timestamp: p.timestamp,
+              storageId: p.arweaveTxId,
+              ipfsCid: p.ipfsCid ?? undefined,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const sortedEvents = [...(events ?? [])].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
 
   return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
       {sortedEvents.map(event => {
         const fileHash = event.args.fileHash as string;
-        // In a more complex app, we'd fetch the full proof object using useScaffoldReadContract
-        // but for the list, we can show what's in the event.
-        // We might need another hook to fetch the ArweaveTxId if not in event.
-        // The event has: owner, fileHash, timestamp, blockNumber.
-        // Wait, the event ProofCreated DOES NOT have arweaveTxId.
-        // So we need to call getProof(fileHash) for each.
         return <EvidenceListItem fileHash={fileHash} key={fileHash} timestamp={Number(event.args.timestamp)} />;
       })}
     </div>

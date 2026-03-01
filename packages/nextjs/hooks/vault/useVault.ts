@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useAccount } from "wagmi";
+import { useScaffoldWriteContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
 import { getParsedError } from "~~/utils/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { computeCommitment, computeHash, encryptFile, generateSecret } from "~~/utils/vault/crypto";
@@ -25,6 +26,8 @@ export const useVault = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<VaultStep>("idle");
   const queryClient = useQueryClient();
+  const { address } = useAccount();
+  const selectedNetwork = useSelectedNetwork();
 
   const { writeContractAsync: createProof } = useScaffoldWriteContract({
     contractName: "EvidenceVault",
@@ -64,6 +67,23 @@ export const useVault = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["eventHistory"] });
+      queryClient.invalidateQueries({ queryKey: ["indexedProofs"] });
+      queryClient.invalidateQueries({ queryKey: ["supabaseProofs"] });
+
+      if (address && selectedNetwork?.id) {
+        fetch("/api/proofs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            owner: address,
+            fileHash,
+            timestamp: Math.floor(Date.now() / 1000),
+            arweaveTxId,
+            ipfsCid,
+            chainId: selectedNetwork.id,
+          }),
+        }).catch(() => {});
+      }
 
       notification.success("Evidence secured successfully!");
 
