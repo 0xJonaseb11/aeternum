@@ -14,6 +14,7 @@ import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { useScaffoldEventHistory, useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
+import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
@@ -233,7 +234,15 @@ export const EvidenceList = () => {
     refetch: refetchIndexed,
   } = useIndexedProofs(connectedAddress, selectedNetwork.id, INDEXER_URL);
 
-  const useEventHistory = !INDEXER_URL || indexedError;
+  const supabaseEnabled = !INDEXER_URL;
+  const {
+    data: supabaseProofs,
+    isLoading: supabaseLoading,
+    isError: supabaseError,
+    refetch: refetchSupabase,
+  } = useSupabaseProofs(connectedAddress, selectedNetwork.id, supabaseEnabled);
+
+  const useEventHistory = !INDEXER_URL ? supabaseError : indexedError;
   const {
     data: events,
     isLoading: eventsLoading,
@@ -246,18 +255,23 @@ export const EvidenceList = () => {
     filters: { owner: connectedAddress },
     fromBlock,
     blocksBatchSize: 200,
-    enabled: !!connectedAddress && blockNumber != null && useEventHistory,
+    enabled: !!connectedAddress && blockNumber != null && (useEventHistory || supabaseEnabled),
   });
 
   const useIndexerData = INDEXER_URL && !indexedError && indexedProofs != null;
+  const useSupabaseData = supabaseEnabled && !supabaseError && supabaseProofs != null;
   const stillLoading =
-    useIndexerData
+    useIndexerData || useSupabaseData
       ? false
-      : useEventHistory
-        ? eventsLoading || isFetchingNextPage
-        : indexedLoading;
+      : INDEXER_URL
+        ? indexedLoading
+        : supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage)) || (!supabaseError && !supabaseProofs && (eventsLoading || isFetchingNextPage));
 
-  const hasData = useIndexerData ? indexedProofs.length > 0 : (events != null && events.length > 0);
+  const hasData = useIndexerData
+    ? indexedProofs.length > 0
+    : useSupabaseData
+      ? supabaseProofs.length > 0
+      : (events != null && events.length > 0);
 
   // After timeout, stop showing skeleton and show error + Retry so UI never sticks
   useEffect(() => {
@@ -283,7 +297,8 @@ export const EvidenceList = () => {
 
   const refetch = () => {
     setLoadTimedOut(false);
-    if (useIndexerData) refetchIndexed();
+    if (INDEXER_URL && !indexedError) refetchIndexed();
+    else if (supabaseEnabled && !supabaseError) refetchSupabase();
     else refetchEvents();
   };
 
@@ -320,6 +335,25 @@ export const EvidenceList = () => {
     return (
       <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
         {activeProofs.map(p => (
+          <EvidenceCard
+            key={p.id}
+            proof={{
+              id: p.fileHash,
+              fileHash: p.fileHash,
+              timestamp: p.timestamp,
+              storageId: p.arweaveTxId,
+              ipfsCid: p.ipfsCid ?? undefined,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (useSupabaseData && supabaseProofs) {
+    return (
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+        {supabaseProofs.map(p => (
           <EvidenceCard
             key={p.id}
             proof={{

@@ -65,15 +65,16 @@ export const Header = () => {
   });
 
   return (
-    <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm w-full">
-      <div className="navbar min-h-0 justify-between gap-2 px-3 sm:px-6 lg:px-8 max-w-[100vw]">
-        <div className="navbar-start w-auto lg:w-1/2 min-w-0">
-          <details className="dropdown dropdown-end" ref={burgerMenuRef}>
-            <summary className="btn btn-ghost btn-sm lg:hidden p-2" aria-label="Open menu">
+    <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm w-full overflow-visible">
+      <div className="navbar min-h-0 justify-between gap-2 px-3 sm:px-6 lg:px-8 max-w-[100vw] overflow-visible">
+        <div className="navbar-start w-auto md:w-1/2 min-w-0 overflow-visible">
+          {/* Mobile: hamburger menu (opens to the right so it stays in view) */}
+          <details className="dropdown dropdown-start overflow-visible" ref={burgerMenuRef}>
+            <summary className="btn btn-ghost btn-sm md:hidden p-2" aria-label="Open menu">
               <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
             </summary>
             <ul
-              className="menu dropdown-content menu-compact mt-3 w-72 min-w-[280px] rounded-box border border-base-300 bg-base-100 p-2 shadow-lg z-30"
+              className="menu dropdown-content menu-compact mt-3 w-72 min-w-[260px] max-w-[calc(100vw-2rem)] rounded-box border border-base-300 bg-base-100 p-2 shadow-xl z-50"
               onClick={e => {
                 const target = e.target as HTMLElement;
                 if (target.closest("a[href]")) burgerMenuRef?.current?.removeAttribute("open");
@@ -118,7 +119,7 @@ export const Header = () => {
           <Link
             href="/"
             passHref
-            className="flex items-center gap-1.5 sm:gap-2 ml-0 mr-2 sm:mr-6 shrink-0 lg:ml-2 min-w-0"
+            className="flex items-center gap-1.5 sm:gap-2 ml-0 mr-2 sm:mr-6 shrink-0 md:ml-2 min-w-0"
             aria-label="Aeternum home"
           >
             <span className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-primary text-primary-content shadow-md shrink-0">
@@ -131,11 +132,11 @@ export const Header = () => {
               </span>
             </div>
           </Link>
-          <ul className="hidden lg:flex menu menu-horizontal gap-1 px-1">
+          <ul className="hidden md:flex menu menu-horizontal gap-1 px-1">
             <HeaderMenuLinks />
           </ul>
         </div>
-        <div className="navbar-end hidden lg:flex grow items-center justify-end gap-1.5 sm:gap-3 min-w-0 flex-shrink-0">
+        <div className="navbar-end hidden md:flex items-center justify-end gap-2 lg:gap-3 min-w-0 flex-shrink-0">
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
