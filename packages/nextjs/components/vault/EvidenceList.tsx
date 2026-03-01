@@ -219,8 +219,7 @@ export const EvidenceList = () => {
   const { address: connectedAddress } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
-  const fromBlock =
-    blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
+  const fromBlock = blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
 
   const {
     data: events,
