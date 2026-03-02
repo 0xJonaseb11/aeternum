@@ -4,6 +4,7 @@ import {
   ArrowDownTrayIcon,
   CalendarIcon,
   CheckCircleIcon,
+  ClipboardDocumentIcon,
   DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   KeyIcon,
@@ -26,6 +27,13 @@ interface EvidenceItem {
   timestamp: number;
   storageId: string;
   ipfsCid?: string;
+}
+
+/** Format hash for display: 0x123456.....abcdef (no secrets; this is the public proof/file hash) */
+function sliceHashDisplay(hex: string, start = 8, end = 6): string {
+  if (!hex || hex.length < start + end) return hex;
+  const s = hex.startsWith("0x") ? hex.slice(2) : hex;
+  return `0x${s.slice(0, start)}.....${s.slice(-end)}`;
 }
 
 export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
@@ -100,9 +108,29 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
           <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
         </div>
 
-        <h4 className="font-bold text-base-content truncate mb-1 text-sm sm:text-base min-w-0" title={proof.fileHash}>
-          {proof.fileHash.slice(0, 20)}...
-        </h4>
+        <div className="flex items-center gap-1.5 mb-1 min-w-0">
+          <h4
+            className="font-bold text-base-content text-sm sm:text-base font-mono truncate"
+            title={`Proof ID (file hash): ${proof.fileHash}. Click copy to copy full value.`}
+          >
+            {sliceHashDisplay(proof.fileHash)}
+          </h4>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(proof.fileHash);
+                notification.success("Proof ID copied");
+              } catch {
+                notification.error("Could not copy");
+              }
+            }}
+            className="btn btn-ghost btn-xs btn-square shrink-0 text-base-content/50 hover:text-primary hover:bg-primary/5"
+            aria-label="Copy proof ID"
+          >
+            <ClipboardDocumentIcon className="h-4 w-4" />
+          </button>
+        </div>
 
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-base-content/50 mt-3 sm:mt-4">
           <div className="flex items-center gap-1">
@@ -178,13 +206,13 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
             )}
           </div>
         ) : (
-          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-2">
+          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 flex items-center justify-center sm:justify-between gap-1 sm:gap-2 min-w-0">
             <button
               onClick={() => setShowRecover(true)}
-              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors"
+              className="btn btn-ghost btn-sm flex-1 min-w-0 max-w-[33%] gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors overflow-hidden"
             >
               <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Recover</span>
+              <span className="truncate">Recover</span>
             </button>
             <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
@@ -195,18 +223,18 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
                   ? "Prove ownership with zero-knowledge (no secret on-chain)"
                   : "ZK artifacts not loaded. Run zk:setup in hardhat and copy to public/zk/"
               }
-              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors disabled:opacity-50"
+              className="btn btn-ghost btn-sm flex-1 min-w-0 max-w-[33%] gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-primary/5 hover:text-primary transition-colors disabled:opacity-50 overflow-hidden"
             >
               <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Verify</span>
+              <span className="truncate">Verify</span>
             </button>
             <div className="w-px h-4 bg-base-300 shrink-0 hidden sm:block" />
             <button
               onClick={handleDetails}
-              className="btn btn-ghost btn-sm flex-1 min-w-[80px] gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors"
+              className="btn btn-ghost btn-sm flex-1 min-w-0 max-w-[33%] gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-secondary/5 hover:text-secondary-content transition-colors overflow-hidden"
             >
               <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Certificate</span>
+              <span className="truncate">Certificate</span>
             </button>
           </div>
         )}

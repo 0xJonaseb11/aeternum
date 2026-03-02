@@ -37,7 +37,11 @@ const Home: NextPage = () => {
               <span>Zero-Knowledge Evidence Vault</span>
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-base-content sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-4 sm:mb-6 px-1">
-              Security for your <span className="text-primary">Digital Truth</span>
+              Security for your
+              <br />
+              <span className="text-primary text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl">
+                Digital Truth
+              </span>
             </h1>
             <p className="text-sm text-base-content/70 sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10 px-1">
               Aeternum provides a permanent, private, and verifiable vault for your most critical files. Encrypt
