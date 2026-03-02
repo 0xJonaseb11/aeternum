@@ -1,0 +1,13 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "yarn install"
+  },
+  "deploy": {
+    "startCommand": "npx ponder start --schema $RAILWAY_DEPLOYMENT_ID -p $PORT",
+    "healthcheckPath": "/ready",
+    "healthcheckTimeout": 3600,
+    "restartPolicyType": "on_failure"
+  }
+}
