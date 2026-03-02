@@ -38,7 +38,8 @@ async function fetchProofsFromIndexer(
   owner: `0x${string}`,
   chainId: number,
 ): Promise<IndexedProof[]> {
-  const url = indexerUrl.replace(/\/$/, "") + "/graphql";
+  const base = indexerUrl.replace(/\/$/, "").replace(/\/graphql$/i, "");
+  const url = `${base}/graphql`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -48,14 +49,17 @@ async function fetchProofsFromIndexer(
     }),
   });
   if (!res.ok) {
-    throw new Error(`Indexer request failed: ${res.status}`);
+    const text = await res.text();
+    throw new Error(
+      `Indexer (Ponder) failed ${res.status}: ${res.status === 404 ? "GraphQL endpoint not found — ensure Ponder has src/api/index.ts with graphql middleware" : text || res.statusText}`,
+    );
   }
   const json = (await res.json()) as {
     data?: { proofs?: { items?: IndexedProof[] } };
     errors?: Array<{ message: string }>;
   };
   if (json.errors?.length) {
-    throw new Error(json.errors[0]?.message ?? "GraphQL error");
+    throw new Error(`Indexer query error: ${json.errors[0]?.message ?? "unknown"}`);
   }
   const items = json.data?.proofs?.items ?? [];
   return items;
