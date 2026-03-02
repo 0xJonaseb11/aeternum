@@ -191,7 +191,8 @@ contract EvidenceVault is
         if (p.owner == address(0)) revert ProofNotFound();
         if (p.revoked) revert ProofIsRevoked();
         if (publicInputs.length != 2) revert InvalidInput();
-        if (publicInputs[0] != uint256(fileHash)) revert InvalidInput();
+        // Circuit outputs fileHash as BN254 field element (fileHash mod FIELD); compare in same representation.
+        if (publicInputs[0] != uint256(fileHash) % BN254_FIELD_SIZE) revert InvalidInput();
         if (publicInputs[1] != uint256(p.commitment)) revert InvalidInput();
 
         bool valid = IZKVerifier(_zkVerifier).verifyProof(zkProof, publicInputs);
