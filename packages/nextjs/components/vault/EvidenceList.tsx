@@ -264,7 +264,7 @@ export const EvidenceList = () => {
 
   const useIndexerData = hasIndexerData;
   const useSupabaseData = hasSupabaseData && !hasIndexerData;
-  const useEventData = hasEventData && !hasIndexerData && !hasSupabaseData;
+  // const useEventData = hasEventData && !hasIndexerData && !hasSupabaseData;
 
   const stillLoading =
     hasIndexerData || hasSupabaseData || hasEventData
