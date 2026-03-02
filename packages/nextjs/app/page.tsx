@@ -38,11 +38,11 @@ const Home: NextPage = () => {
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-base-content sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-4 sm:mb-6 px-1">
               Security for your{" "}
-              <span className="text-primary text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+              <span className="text-primary text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl">
                 Digital
               </span>
               <br />
-              <span className="text-primary text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+              <span className="text-primary text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl">
                 Truth
               </span>
             </h1>
