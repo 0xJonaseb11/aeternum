@@ -6,6 +6,9 @@ import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 //  Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** BN254 scalar field size — EvidenceVault compares fileHash in this field. */
+const BN254_FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+
 /** Simulate Poseidon(fileHash, secret) off-chain with keccak for testing.
  *  In production the real Poseidon hash (circomlibjs) is used. */
 function mockCommitment(fileHash: string, secret: string): string {
@@ -32,7 +35,8 @@ describe("EvidenceVault", function () {
 
   // Encode a fake ZK proof (32*8 = 256 bytes)
   const fakeProof = ethers.zeroPadBytes("0x" + "ab".repeat(128), 256);
-  const publicInputs = [BigInt(fileHash), BigInt(commitment)];
+  // Contract expects publicInputs[0] = fileHash as BN254 field element (see verifyOwnership)
+  const publicInputs = [BigInt(fileHash) % BN254_FIELD_SIZE, BigInt(commitment)];
 
   beforeEach(async () => {
     [owner, alice, bob, auditor] = await ethers.getSigners();
@@ -274,7 +278,8 @@ describe("EvidenceVault", function () {
       const mockV = await MockVerifier.deploy(true);
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
-      const wrongInputs = [BigInt(fileHash) + 1n, BigInt(commitment)];
+      const fileHashFelt = BigInt(fileHash) % BN254_FIELD_SIZE;
+      const wrongInputs = [fileHashFelt + 1n, BigInt(commitment)];
       await expect(vault.verifyOwnership(fileHash, fakeProof, wrongInputs)).to.be.revertedWithCustomError(
         vault,
         "InvalidInput",
@@ -286,7 +291,7 @@ describe("EvidenceVault", function () {
       const mockV = await MockVerifier.deploy(true);
       await vault.connect(owner).setZKVerifier(await mockV.getAddress());
 
-      const wrongInputs = [BigInt(fileHash), BigInt(commitment) + 1n];
+      const wrongInputs = [BigInt(fileHash) % BN254_FIELD_SIZE, BigInt(commitment) + 1n];
       await expect(vault.verifyOwnership(fileHash, fakeProof, wrongInputs)).to.be.revertedWithCustomError(
         vault,
         "InvalidInput",
