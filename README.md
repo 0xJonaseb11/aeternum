@@ -7,8 +7,11 @@
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Solidity-363636?style=flat-square&logo=solidity&logoColor=white" />
   <img src="https://img.shields.io/badge/Arweave-000000?style=flat-square&logo=arweave&logoColor=white" />
+  <img src="https://img.shields.io/badge/IPFS-65C2CB?style=flat-square&logo=ipfs&logoColor=white" />
   <img src="https://img.shields.io/badge/Base-0052FF?style=flat-square&logo=base&logoColor=white" />
   <img src="https://img.shields.io/badge/ZK-6C5CE7?style=flat-square&logo=simple-analytics&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ponder-000000?style=flat-square" alt="Ponder" />
+  <img src="https://img.shields.io/badge/Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white" />
 </div>
 
 <br/>
@@ -16,6 +19,21 @@
 **Permanent. Private. Verifiable.**
 
 A zero-knowledge, blockchain-timestamped evidence vault. Store and prove ownership of files: client-side encrypted, permanently on Arweave (optional IPFS), with Groth16 ZK proofs and immutable records on Base.
+
+---
+
+## Deployed contracts (Base Sepolia)
+
+Contracts are live on **Base Sepolia** (chainId `84532`). Use the proxy address for the app and integrations.
+
+| Contract | Address |
+|----------|---------|
+| **EvidenceVault** (proxy) | `0x5e9C84A4A38fe109F4aB4032c05882C6a49Cc654` |
+| EvidenceVault (implementation) | `0x9a6B9E407cD918783089FCBE060278A44e4dB292` |
+| **CommitmentVerifier** (Groth16) | `0x2D322C9a3263191C979c3584173396456701464e` |
+| **Groth16VerifierWrapper** | `0x6b70354Fa89F08B56382d5b730EEb2835F19d815` |
+
+The vault’s ZK verifier is set to the Groth16VerifierWrapper. Indexer (Ponder) runs on Railway for proof list retrieval.
 
 ---
 

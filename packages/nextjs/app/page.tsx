@@ -36,13 +36,13 @@ const Home: NextPage = () => {
               <ShieldCheckIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
               <span>Zero-Knowledge Evidence Vault</span>
             </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-base-content sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-4 sm:mb-6 px-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-base-content sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-4 sm:mb-6 px-1">
               Security for your{" "}
-              <span className="text-primary text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl">
+              <span className="text-primary text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl">
                 Digital
               </span>
               <br />
-              <span className="text-primary text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl">
+              <span className="text-primary text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl">
                 Truth
               </span>
             </h1>
