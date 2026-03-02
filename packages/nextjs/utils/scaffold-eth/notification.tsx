@@ -54,7 +54,11 @@ const Notification = ({
         }`}
       >
         <div className="leading-[0] self-center">{icon ? icon : ENUM_STATUSES[status]}</div>
-        <div className={`overflow-x-hidden break-words whitespace-pre-line ${icon ? "mt-1" : ""}`}>{content}</div>
+        <div
+          className={`overflow-x-hidden overflow-y-auto break-words whitespace-pre-line max-h-32 ${icon ? "mt-1" : ""}`}
+        >
+          {content}
+        </div>
 
         <div className={`cursor-pointer text-lg ${icon ? "mt-1" : ""}`} onClick={() => toast.dismiss(t.id)}>
           <XMarkIcon className="w-6 cursor-pointer" onClick={() => toast.remove(t.id)} />
