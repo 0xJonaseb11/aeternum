@@ -234,15 +234,18 @@ export const EvidenceList = () => {
     refetch: refetchIndexed,
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
-  const supabaseEnabled = !INDEXER_URL;
+  // Always try Supabase as fallback (redundancy when indexer/events fail or return empty).
   const {
     data: supabaseProofs,
     isLoading: supabaseLoading,
     isError: supabaseError,
     refetch: refetchSupabase,
-  } = useSupabaseProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, supabaseEnabled);
+  } = useSupabaseProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, !!connectedAddress);
 
-  const useEventHistory = !INDEXER_URL ? supabaseError : indexedError;
+  const needEventHistory =
+    !INDEXER_URL ||
+    indexedError ||
+    (indexedProofs != null && indexedProofs.length === 0);
   const {
     data: events,
     isLoading: eventsLoading,
@@ -255,25 +258,29 @@ export const EvidenceList = () => {
     filters: { owner: connectedAddress },
     fromBlock,
     blocksBatchSize: 200,
-    enabled: !!connectedAddress && blockNumber != null && (useEventHistory || supabaseEnabled),
+    enabled: !!connectedAddress && blockNumber != null && needEventHistory,
   });
 
-  const useIndexerData = INDEXER_URL && !indexedError && indexedProofs != null;
-  const useSupabaseData = supabaseEnabled && !supabaseError && supabaseProofs != null;
+  const hasIndexerData = INDEXER_URL && !indexedError && indexedProofs != null && indexedProofs.length > 0;
+  const hasSupabaseData = !supabaseError && supabaseProofs != null && supabaseProofs.length > 0;
+  const hasEventData = events != null && events.length > 0;
+
+  const useIndexerData = hasIndexerData;
+  const useSupabaseData = hasSupabaseData && !hasIndexerData;
+  const useEventData = hasEventData && !hasIndexerData && !hasSupabaseData;
+
   const stillLoading =
-    useIndexerData || useSupabaseData
+    hasIndexerData || hasSupabaseData || hasEventData
       ? false
       : INDEXER_URL
         ? indexedLoading
         : supabaseLoading ||
-          (supabaseError && (eventsLoading || isFetchingNextPage)) ||
-          (!supabaseError && !supabaseProofs && (eventsLoading || isFetchingNextPage));
+          (indexedError && supabaseError && (eventsLoading || isFetchingNextPage)) ||
+          (indexedProofs != null &&
+            indexedProofs.length === 0 &&
+            (supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage))));
 
-  const hasData = useIndexerData
-    ? indexedProofs.length > 0
-    : useSupabaseData
-      ? supabaseProofs.length > 0
-      : events != null && events.length > 0;
+  const hasData = hasIndexerData || hasSupabaseData || hasEventData;
 
   // After timeout, stop showing skeleton and show error + Retry so UI never sticks
   useEffect(() => {
@@ -299,12 +306,12 @@ export const EvidenceList = () => {
 
   const refetch = () => {
     setLoadTimedOut(false);
-    if (INDEXER_URL && !indexedError) refetchIndexed();
-    else if (supabaseEnabled && !supabaseError) refetchSupabase();
-    else refetchEvents();
+    refetchIndexed();
+    refetchSupabase();
+    refetchEvents();
   };
 
-  if ((useEventHistory && eventsError != null) || loadTimedOut) {
+  if ((needEventHistory && eventsError != null) || loadTimedOut) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
         <p className="text-base-content/60 font-medium mb-2">Could not load evidence proofs.</p>

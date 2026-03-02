@@ -54,7 +54,7 @@ export default function PrivacyPolicyPage() {
           <h2 className="text-lg font-bold text-base-content mt-8">Contact</h2>
           <p>
             For questions about this privacy policy, please open an issue or contact the project maintainers via the
-            Aeternum repository.
+            <a href="https://github.com/0xJonaseb11/aeternum" target="_blank" rel="noreferrer">aeternum repository</a>.
           </p>
         </div>
       </div>

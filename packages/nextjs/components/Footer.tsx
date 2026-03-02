@@ -64,7 +64,7 @@ export const Footer = () => {
 
         <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[10px] sm:text-xs text-base-content/40 text-center md:text-left max-w-full">
-            © {new Date().getFullYear()} Aeternum. Built for the future of evidence. Built by{" "}
+            © {new Date().getFullYear()} Aeternum. Built for the future of evidence. Built with 💙 and ☕️ by{" "}
             <a
               href="https://github.com/0xJonaseb11"
               target="_blank"
