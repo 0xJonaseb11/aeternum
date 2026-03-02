@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePublicClient } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+import { getParsedError } from "~~/utils/scaffold-eth/getParsedError";
 import { generateZKProofBundle } from "~~/utils/vault/zkProof";
 
 type VerifyResult = { verified: boolean; error?: string };
@@ -35,8 +36,8 @@ export function useVerifyOwnership() {
       return { verified: result === true };
     } catch (e) {
       console.error("Verify ownership error:", e);
-      const message = e instanceof Error ? e.message : "Verification failed.";
-      return { verified: false, error: message };
+      const message = getParsedError(e);
+      return { verified: false, error: message || "Verification failed." };
     } finally {
       setIsVerifying(false);
     }
