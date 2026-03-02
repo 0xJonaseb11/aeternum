@@ -242,10 +242,7 @@ export const EvidenceList = () => {
     refetch: refetchSupabase,
   } = useSupabaseProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, !!connectedAddress);
 
-  const needEventHistory =
-    !INDEXER_URL ||
-    indexedError ||
-    (indexedProofs != null && indexedProofs.length === 0);
+  const needEventHistory = !INDEXER_URL || indexedError || (indexedProofs != null && indexedProofs.length === 0);
   const {
     data: events,
     isLoading: eventsLoading,
