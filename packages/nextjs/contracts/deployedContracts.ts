@@ -854,7 +854,7 @@ const deployedContracts = {
   },
   84532: {
     CommitmentVerifier: {
-      address: "0x9Ccaa9da1cF937bb20Ce715ACc833AcD707CC2A0",
+      address: "0x2D322C9a3263191C979c3584173396456701464e",
       abi: [
         {
           inputs: [
@@ -892,10 +892,10 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 38182543,
+      deployedOnBlock: 38340390,
     },
     EvidenceVault: {
-      address: "0x2a24E627ed64b9aD45C721901F49cBf6fCfC24A0",
+      address: "0x5e9C84A4A38fe109F4aB4032c05882C6a49Cc654",
       abi: [
         {
           inputs: [],
@@ -1632,7 +1632,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     Groth16VerifierWrapper: {
-      address: "0xa7a48f7d501e66Aa541bdfe7456652bFb9c460c4",
+      address: "0x6b70354Fa89F08B56382d5b730EEb2835F19d815",
       abi: [
         {
           inputs: [
@@ -1696,7 +1696,7 @@ const deployedContracts = {
       inheritedFunctions: {
         verifyProof: "contracts/interface/IZKVerifier.sol",
       },
-      deployedOnBlock: 38182546,
+      deployedOnBlock: 38340412,
     },
   },
 } as const;
