@@ -39,7 +39,6 @@ const scaffoldConfig = {
     CommitmentVerifier: "0x2D322C9a3263191C979c3584173396456701464e",
     Groth16VerifierWrapper: "0x6b70354Fa89F08B56382d5b730EEb2835F19d815",
     zkVerifier: "0x6b70354Fa89F08B56382d5b730EEb2835F19d815",
-
   },
 } as const satisfies ScaffoldConfig;
 
