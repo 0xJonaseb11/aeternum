@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useBlockNumber } from "wagmi";
+import { usePublicClient } from "wagmi";
 import {
   ArrowDownTrayIcon,
   CalendarIcon,
@@ -27,7 +28,6 @@ import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
-import { usePublicClient } from "wagmi";
 
 interface EvidenceItem {
   id: string;
@@ -332,7 +332,9 @@ const SecretFinderSection = ({
         disabled={isFinding || !pastedSecret.trim() || fileHashes.length === 0}
         className={`btn btn-primary join-item px-4 w-full sm:w-auto ${isFinding ? "loading" : ""}`}
       >
-        {isFinding ? "" : (
+        {isFinding ? (
+          ""
+        ) : (
           <>
             <MagnifyingGlassIcon className="h-4 w-4" />
             Find my evidence
