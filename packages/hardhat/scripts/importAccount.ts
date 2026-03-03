@@ -23,7 +23,7 @@ const getWalletFromPrivateKey = async () => {
     try {
       const wallet = new ethers.Wallet(privateKey);
       return wallet;
-    } catch (e) {
+    } catch {
       console.log("❌ Invalid private key format. Please try again.");
     }
   }
