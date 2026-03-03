@@ -1,10 +1,5 @@
 import { PINATA_JWT, getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 
-/**
- * Service for decentralized storage uploads.
- * IPFS: Pinata gateway for backup; uploads go only to Pinata (requires NEXT_PUBLIC_PINATA_JWT).
- */
-
 const PINATA_PIN_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
 
 async function uploadToPinata(data: ArrayBuffer): Promise<string> {
@@ -26,9 +21,6 @@ async function uploadToPinata(data: ArrayBuffer): Promise<string> {
   return json.IpfsHash;
 }
 
-/**
- * Uploads a buffer to IPFS using Pinata. Requires NEXT_PUBLIC_PINATA_JWT and never falls back to Infura.
- */
 export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
   if (!PINATA_JWT) {
     throw new Error("IPFS upload failed: NEXT_PUBLIC_PINATA_JWT is not configured.");
@@ -54,9 +46,6 @@ export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
   return json.txId;
 };
 
-/**
- * Helper to get the public URL for a storage ID (uses Pinata gateway for IPFS).
- */
 export const getStorageUrl = (id: string, type: "ipfs" | "arweave"): string => {
   if (type === "ipfs") return getIpfsUrl(id);
   return `https://arweave.net/${id}`;

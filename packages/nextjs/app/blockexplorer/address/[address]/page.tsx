@@ -74,7 +74,6 @@ const getContractData = async (address: Address) => {
   }
 
   if (!contractPath) {
-    // No contract found at this address
     return null;
   }
 
@@ -84,7 +83,6 @@ const getContractData = async (address: Address) => {
 };
 
 export function generateStaticParams() {
-  // An workaround to enable static exports in Next.js, generating single dummy page.
   return [{ address: "0x0000000000000000000000000000000000000000" }];
 }
 

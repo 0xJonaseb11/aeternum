@@ -17,7 +17,6 @@ async function main() {
   let wallet: Wallet;
   try {
     wallet = (await Wallet.fromEncryptedJson(encryptedKey, pass)) as Wallet;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     console.log("❌ Failed to decrypt private key. Wrong password?");
     return;
@@ -27,7 +26,6 @@ async function main() {
   console.log(await QRCode.toString(address, { type: "terminal", small: true }));
   console.log("Public address:", address, "\n");
 
-  // Balance on each network
   const availableNetworks = config.networks;
   for (const networkName in availableNetworks) {
     try {
@@ -39,7 +37,6 @@ async function main() {
       console.log("--", networkName, "-- 📡");
       console.log("   balance:", +ethers.formatEther(balance));
       console.log("   nonce:", +(await provider.getTransactionCount(address)));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       console.log("Can't connect to network", networkName);
     }

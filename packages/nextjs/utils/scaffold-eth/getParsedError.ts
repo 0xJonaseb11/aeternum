@@ -11,10 +11,6 @@ function truncateForToast(msg: string): string {
   return `${firstLine.slice(0, MAX_MESSAGE_LENGTH - 1)}…`;
 }
 
-/**
- * Parses an viem/wagmi error to get a short displayable string (for toasts).
- * Avoids huge "Contract Call" dumps with full args (e.g. ZK proof bytes).
- */
 export const getParsedError = (error: any): string => {
   const parsedError = error?.walk ? error.walk() : error;
 

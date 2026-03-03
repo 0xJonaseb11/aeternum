@@ -1,9 +1,5 @@
 import { index, onchainTable } from "ponder";
 
-/**
- * Indexed proof metadata for reliable list retrieval by owner.
- * Mirrors on-chain Proof (owner, fileHash, timestamp, arweaveTxId, ipfsCid, revoked).
- */
 export const proof = onchainTable(
   "proof",
   (t) => ({

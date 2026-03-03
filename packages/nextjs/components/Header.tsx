@@ -70,7 +70,6 @@ export const Header = () => {
     <header className="sticky top-0 z-20 shrink-0 border-b border-base-300 bg-base-100/95 backdrop-blur-sm w-full overflow-visible">
       <div className="navbar min-h-0 justify-between gap-2 px-3 sm:px-6 lg:px-8 max-w-[100vw] overflow-visible">
         <div className="navbar-start w-auto md:w-1/2 min-w-0 overflow-visible">
-          {/* Mobile: hamburger menu (opens to the right so it stays in view) */}
           <details className="dropdown dropdown-start overflow-visible" ref={burgerMenuRef}>
             <summary className="btn btn-ghost btn-sm md:hidden p-2" aria-label="Open menu">
               <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />

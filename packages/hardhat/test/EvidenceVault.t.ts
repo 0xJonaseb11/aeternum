@@ -2,25 +2,14 @@ import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** BN254 scalar field size — EvidenceVault compares fileHash in this field. */
 const BN254_FIELD_SIZE = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 
-/** Simulate Poseidon(fileHash, secret) off-chain with keccak for testing.
- *  In production the real Poseidon hash (circomlibjs) is used. */
 function mockCommitment(fileHash: string, secret: string): string {
   return ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(["bytes32", "bytes32"], [fileHash, secret]));
 }
 
 const ARWEAVE_TX_ID = "a".repeat(43); // valid 43-char Arweave TxID
 const IPFS_CID = "QmTestCIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Test Suite
-// ─────────────────────────────────────────────────────────────────────────────
 
 describe("EvidenceVault", function () {
   let vault: any;
@@ -33,9 +22,8 @@ describe("EvidenceVault", function () {
   const secret = ethers.hexlify(ethers.randomBytes(32));
   const commitment = mockCommitment(fileHash, secret);
 
-  // Encode a fake ZK proof (32*8 = 256 bytes)
   const fakeProof = ethers.zeroPadBytes("0x" + "ab".repeat(128), 256);
-  // Contract expects publicInputs[0] = fileHash as BN254 field element (see verifyOwnership)
+
   const publicInputs = [BigInt(fileHash) % BN254_FIELD_SIZE, BigInt(commitment)];
 
   beforeEach(async () => {
@@ -50,7 +38,6 @@ describe("EvidenceVault", function () {
     await vault.waitForDeployment();
   });
 
-  // ─── Initialization ─────────────────────────────────────────────────────
   describe("Initialization", () => {
     it("sets the correct owner", async () => {
       expect(await vault.owner()).to.equal(owner.address);
@@ -72,7 +59,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── createProof ────────────────────────────────────────────────────────
   describe("createProof()", () => {
     it("creates a proof and emits ProofCreated", async () => {
       const tx = await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
@@ -139,7 +125,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── addBackup ──────────────────────────────────────────────────────────
   describe("addBackup()", () => {
     beforeEach(async () => {
       await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
@@ -169,7 +154,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── revokeProof ────────────────────────────────────────────────────────
   describe("revokeProof()", () => {
     beforeEach(async () => {
       await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
@@ -202,7 +186,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── Access Control ─────────────────────────────────────────────────────
   describe("Access Control (grantAccess / revokeAccess)", () => {
     beforeEach(async () => {
       await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
@@ -241,7 +224,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── ZK Verification ────────────────────────────────────────────────────
   describe("verifyOwnership() — ZK Groth16", () => {
     beforeEach(async () => {
       await vault.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
@@ -311,7 +293,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── Admin ──────────────────────────────────────────────────────────────
   describe("Admin", () => {
     it("non-owner cannot setZKVerifier", async () => {
       await expect(vault.connect(alice).setZKVerifier(ethers.ZeroAddress)).to.be.revertedWithCustomError(
@@ -332,7 +313,6 @@ describe("EvidenceVault", function () {
     });
   });
 
-  // ─── Upgradeability ─────────────────────────────────────────────────────
   describe("UUPS Upgradeability", () => {
     it("non-owner cannot upgrade", async () => {
       const V2 = await ethers.getContractFactory("EvidenceVault");
@@ -350,7 +330,7 @@ describe("EvidenceVault", function () {
       const upgraded = await upgrades.upgradeProxy(proxyAddr, V2, { kind: "uups", unsafeAllow: ["constructor"] });
       const newImpl = await upgrades.erc1967.getImplementationAddress(proxyAddr);
       expect(newImpl).to.be.properAddress;
-      // State is preserved across upgrade
+
       await upgraded.connect(alice).createProof(fileHash, commitment, ARWEAVE_TX_ID, "");
       const proof = await upgraded.connect(alice).getProof(fileHash);
       expect(proof.owner).to.equal(alice.address);

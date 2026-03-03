@@ -15,16 +15,10 @@ type DeployedContractData<TContractName extends ContractName> = {
   isLoading: boolean;
 };
 
-/**
- * Gets the matching contract info for the provided contract name from the contracts present in deployedContracts.ts
- * and externalContracts.ts corresponding to targetNetworks configured in scaffold.config.ts
- */
 export function useDeployedContractInfo<TContractName extends ContractName>(
   config: UseDeployedContractConfig<TContractName>,
 ): DeployedContractData<TContractName>;
-/**
- * @deprecated Use object parameter version instead: useDeployedContractInfo({ contractName: "YourContract" })
- */
+
 export function useDeployedContractInfo<TContractName extends ContractName>(
   contractName: TContractName,
 ): DeployedContractData<TContractName>;
@@ -64,7 +58,6 @@ export function useDeployedContractInfo<TContractName extends ContractName>(
           address: deployedContract.address,
         });
 
-        // If contract code is `0x` => no contract deployed on that address
         if (code === "0x") {
           setStatus(ContractCodeStatus.NOT_FOUND);
           return;

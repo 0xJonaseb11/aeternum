@@ -1,20 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
-/**
- * EvidenceVault — Full deployment (scaffold style).
- *
- * Deploys in order:
- *   1. CommitmentVerifier (SnarkJS-generated Groth16 verifier)
- *   2. Groth16VerifierWrapper (adapts to IZKVerifier)
- *   3. EvidenceVault UUPS proxy + initialize
- *   4. setZKVerifier(wrapper)
- *   5. transferOwnership(MULTISIG) if MULTISIG env is set
- *
- * Usage:
- *   Full deploy:  yarn deploy  (or yarn deploy --tags EvidenceVaultFull)
- *   With multisig: MULTISIG=0x... yarn deploy
- */
 const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, save } = hre.deployments;
@@ -34,7 +20,6 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   console.log(`  Balance  : ${ethers.formatEther(await ethers.provider.getBalance(deployer))} ETH`);
   console.log("───────────────────────────────────────────────────");
 
-  // ── 1. CommitmentVerifier ────────────────────────────────────────────────
   console.log("\n[1/4] Deploying CommitmentVerifier (Groth16)...");
   const verifierResult = await deploy("CommitmentVerifier", {
     from: deployer,
@@ -45,7 +30,6 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   const verifierAddr = verifierResult.address;
   console.log(`      ✓ CommitmentVerifier: ${verifierAddr}`);
 
-  // ── 2. Groth16VerifierWrapper ────────────────────────────────────────────
   console.log("\n[2/4] Deploying Groth16VerifierWrapper...");
   const wrapperResult = await deploy("Groth16VerifierWrapper", {
     from: deployer,
@@ -56,7 +40,6 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   const wrapperAddr = wrapperResult.address;
   console.log(`      ✓ Groth16VerifierWrapper: ${wrapperAddr}`);
 
-  // ── 3. EvidenceVault proxy (UUPS) ──────────────────────────────────────
   console.log("\n[3/4] Deploying EvidenceVault (UUPS proxy)...");
   const VaultFactory = await ethers.getContractFactory("EvidenceVault");
   const vault = await upgrades.deployProxy(
@@ -80,13 +63,11 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
   console.log(`      ✓ Proxy (use this address): ${proxyAddr}`);
   console.log(`      ✓ Implementation:           ${implAddr}`);
 
-  // ── 4. Wire ZK verifier ─────────────────────────────────────────────────
   console.log("\n[4/4] Wiring ZK verifier into vault...");
   const setTx = await vault.setZKVerifier(wrapperAddr);
   await setTx.wait();
   console.log(`      ✓ zkVerifier set to: ${wrapperAddr}`);
 
-  // ── 5. Transfer ownership to multisig ───────────────────────────────────
   const multisig = process.env.MULTISIG;
   if (multisig && ethers.isAddress(multisig)) {
     console.log(`\n[5/5] Transferring ownership to multisig ${multisig}...`);

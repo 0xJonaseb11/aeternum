@@ -9,9 +9,6 @@ export function getNetworkColor(network: ChainWithAttributes, isDarkMode: boolea
   return Array.isArray(colorConfig) ? (isDarkMode ? colorConfig[1] : colorConfig[0]) : colorConfig;
 }
 
-/**
- * Gets the color of the target network
- */
 export const useNetworkColor = (chainId?: AllowedChainIds) => {
   const { resolvedTheme } = useTheme();
 

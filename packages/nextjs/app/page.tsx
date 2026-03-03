@@ -28,7 +28,6 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
-      {/* Hero Section */}
       <section className="relative overflow-hidden bg-pattern pt-16 pb-12 sm:pt-24 sm:pb-20 md:pt-32 md:pb-28 border-b border-base-300 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full max-w-[100vw]">
           <div className="max-w-4xl mx-auto text-center min-w-0">
@@ -47,8 +46,8 @@ const Home: NextPage = () => {
               </span>
             </h1>
             <p className="text-base text-base-content/70 sm:text-lg md:text-xl lg:text-2xl max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10 px-1">
-              Aeternum provides a permanent, private, and verifiable vault for your most critical files. Encrypt
-              locally, store forever on Arweave, and prove ownership without ever revealing the content.
+              Only you hold the key to your evidence. Encrypt locally, store forever on Arweave, and prove ownership
+              without ever revealing the content—no one else can access your vault.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link
@@ -68,7 +67,6 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* Feature Cards */}
       <section className="py-12 sm:py-16 md:py-20 bg-base-100 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl w-full min-w-0">
           <div className="grid gap-6 sm:gap-8 md:grid-cols-3">
@@ -78,13 +76,18 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-base-content mb-2 sm:mb-3">Permanent Storage</h3>
               <p className="text-sm sm:text-base text-base-content/60 leading-relaxed mb-4">
-                Your evidence is stored on Arweave, a permanent decentralized web, ensuring it&apos;s available for
-                decades, not just years.
+                Your evidence lives on Arweave—a permanent decentralized web—available for decades. Only you hold the
+                key to decrypt it.
               </p>
-              <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                href="https://docs.arweave.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+              >
                 <span>Learn more</span>
                 <ArrowRightIcon className="h-4 w-4" />
-              </div>
+              </a>
             </div>
 
             <div className="card rounded-2xl border border-base-300 bg-base-100 p-5 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 group min-w-0">
@@ -93,13 +96,18 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-base-content mb-2 sm:mb-3">Zero-Knowledge</h3>
               <p className="text-sm sm:text-base text-base-content/60 leading-relaxed mb-4">
-                Prove you own a file without sharing the file itself. We use advanced cryptography to create
-                tamper-proof proofs.
+                Prove you own a file without sharing it. Your secret stays on your device; we use ZK proofs so only you
+                hold the key.
               </p>
-              <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-secondary-content opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                href="https://docs.circom.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-secondary-content opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+              >
                 <span>Learn more</span>
                 <ArrowRightIcon className="h-4 w-4" />
-              </div>
+              </a>
             </div>
 
             <div className="card rounded-2xl border border-base-300 bg-base-100 p-5 sm:p-6 md:p-8 hover:shadow-xl transition-all duration-300 group min-w-0">
@@ -108,19 +116,22 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-base-content mb-2 sm:mb-3">Immutable Proofs</h3>
               <p className="text-sm sm:text-base text-base-content/60 leading-relaxed mb-4">
-                Every proof is anchored to the blockchain, creating an unalterable timestamp of when your evidence was
-                first recorded.
+                Every proof is anchored on Base—an unalterable timestamp. Only you can verify or recover with your key.
               </p>
-              <div className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-base-content/40 opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                href="https://docs.base.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold text-base-content/40 opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+              >
                 <span>Learn more</span>
                 <ArrowRightIcon className="h-4 w-4" />
-              </div>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Vault Section */}
       <section id="vault" className="bg-base-200/50 py-12 sm:py-16 md:py-20 border-t border-base-300 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl w-full min-w-0">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
@@ -178,7 +189,7 @@ const Home: NextPage = () => {
             <div className="rounded-2xl border border-2 border-dashed border-base-300 bg-base-100 p-8 sm:p-12 md:p-20 text-center min-w-0">
               <h3 className="text-lg sm:text-xl font-bold mb-2">Vault locked</h3>
               <p className="text-sm sm:text-base text-base-content/60 mb-0">
-                Connect your wallet to access your private evidence proofs.
+                Connect your wallet to access your evidence. Only you hold the key.
               </p>
             </div>
           )}

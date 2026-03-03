@@ -12,9 +12,6 @@ type TransactionFunc = (
   options?: TransactorFuncOptions,
 ) => Promise<Hash | undefined>;
 
-/**
- * Custom notification content for TXs.
- */
 const TxnNotification = ({ message, blockExplorerLink }: { message: string; blockExplorerLink?: string }) => {
   return (
     <div className={`flex flex-col ml-1 cursor-default`}>
@@ -28,11 +25,6 @@ const TxnNotification = ({ message, blockExplorerLink }: { message: string; bloc
   );
 };
 
-/**
- * Runs Transaction passed in to returned function showing UI feedback.
- * @param _walletClient - Optional wallet client to use. If not provided, will use the one from useWalletClient.
- * @returns function that takes in transaction function as callback, shows UI feedback for transaction and returns a promise of the transaction hash
- */
 export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => {
   let walletClient = _walletClient;
   const { data } = useWalletClient();
@@ -54,12 +46,11 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
     let chainId: number = scaffoldConfig.targetNetworks[0].id;
     try {
       chainId = await walletClient.getChainId();
-      // Get full transaction from public client
+
       const publicClient = getPublicClient(wagmiConfig);
 
       notificationId = notification.loading(<TxnNotification message="Awaiting for user confirmation" />);
       if (typeof tx === "function") {
-        // Tx is already prepared by the caller
         const result = await tx();
         transactionHash = result;
       } else if (tx != null) {
@@ -98,7 +89,6 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
       console.error("⚡️ ~ file: useTransactor.ts ~ error", error);
       const message = getParsedErrorWithAllAbis(error, chainId as AllowedChainIds);
 
-      // if receipt was reverted, show notification with block explorer link and return error
       if (transactionReceipt?.status === "reverted") {
         notification.error(<TxnNotification message={message} blockExplorerLink={blockExplorerTxURL} />);
         throw error;

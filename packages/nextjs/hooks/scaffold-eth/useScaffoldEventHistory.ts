@@ -54,26 +54,6 @@ const getEvents = async (
   return finalEvents;
 };
 
-/**
- * @deprecated **Recommended only for local (hardhat/anvil) chains and development.**
- * It uses getLogs which can overload RPC endpoints (especially on L2s with short block times).
- * For production, use an indexer such as ponder.sh or similar to query contract events efficiently.
- *
- * Reads events from a deployed contract.
- * @param config - The config settings
- * @param config.contractName - deployed contract name
- * @param config.eventName - name of the event to listen for
- * @param config.fromBlock - optional block number to start reading events from (defaults to `deployedOnBlock` in deployedContracts.ts if set for contract, otherwise defaults to 0)
- * @param config.toBlock - optional block number to stop reading events at (if not provided, reads until current block)
- * @param config.chainId - optional chainId that is configured with the scaffold project to make use for multi-chain interactions.
- * @param config.filters - filters to be applied to the event (parameterName: value)
- * @param config.blockData - if set to true it will return the block data for each event (default: false)
- * @param config.transactionData - if set to true it will return the transaction data for each event (default: false)
- * @param config.receiptData - if set to true it will return the receipt data for each event (default: false)
- * @param config.watch - if set to true, the events will be updated every pollingInterval milliseconds set at scaffoldConfig (default: false)
- * @param config.enabled - set this to false to disable the hook from running (default: true)
- * @param config.blocksBatchSize - optional batch size for fetching events. If specified, each batch will contain at most this many blocks (default: 500)
- */
 export const useScaffoldEventHistory = <
   TContractName extends ContractName,
   TEventName extends ExtractAbiEventNames<ContractAbi<TContractName>>,
@@ -96,7 +76,6 @@ export const useScaffoldEventHistory = <
 }: UseScaffoldEventHistoryConfig<TContractName, TEventName, TBlockData, TTransactionData, TReceiptData>) => {
   const selectedNetwork = useSelectedNetwork(chainId);
 
-  // Runtime warning for non-local chains (dev only to avoid console noise)
   useEffect(() => {
     if (typeof process !== "undefined" && process.env.NODE_ENV === "development" && selectedNetwork.id !== hardhat.id) {
       console.warn(
@@ -151,7 +130,6 @@ export const useScaffoldEventHistory = <
     queryFn: async ({ pageParam }) => {
       if (!isContractAddressAndClientReady) return undefined;
 
-      // Calculate the toBlock for this batch
       let batchToBlock = toBlock;
       const batchEndBlock = pageParam + BigInt(blocksBatchSize) - 1n;
       const maxBlock = toBlock || (blockNumber ? BigInt(blockNumber) : undefined);
@@ -182,7 +160,6 @@ export const useScaffoldEventHistory = <
 
       const nextBlock = lastPageParam + BigInt(blocksBatchSize);
 
-      // Don't go beyond the specified toBlock or current block
       const maxBlock = toBlock && toBlock < blockNumber ? toBlock : blockNumber;
 
       if (nextBlock > maxBlock) return undefined;
@@ -205,14 +182,12 @@ export const useScaffoldEventHistory = <
     },
   });
 
-  // Check if we're caught up and should start polling
   const shouldStartPolling = () => {
     if (!watch || !blockNumber || isPollingActive) return false;
 
     return !query.hasNextPage && query.status === "success";
   };
 
-  // Poll for new events when watch mode is enabled
   useQuery({
     queryKey: ["liveEvents", contractName, eventName, blockNumber?.toString(), lastFetchedBlock?.toString()],
     enabled: Boolean(
@@ -228,7 +203,6 @@ export const useScaffoldEventHistory = <
       const maxBlock = toBlock && toBlock < blockNumber ? toBlock : blockNumber;
       const startBlock = lastFetchedBlock || maxBlock;
 
-      // Only fetch if there are new blocks to check
       if (startBlock >= maxBlock) return null;
 
       const newEvents = await getEvents(
@@ -253,7 +227,6 @@ export const useScaffoldEventHistory = <
     refetchInterval: false,
   });
 
-  // Manual trigger to fetch next page when previous page completes (only when not polling)
   useEffect(() => {
     if (
       !isPollingActive &&
@@ -266,11 +239,9 @@ export const useScaffoldEventHistory = <
     }
   }, [query, isPollingActive]);
 
-  // Combine historical data from infinite query with live events from watch hook
   const historicalEvents = query.data?.pages || [];
   const allEvents = [...liveEvents, ...historicalEvents] as typeof historicalEvents;
 
-  // remove duplicates
   const seenEvents = new Set<string>();
   const combinedEvents = allEvents.filter(event => {
     const eventKey = `${event?.transactionHash}-${event?.logIndex}-${event?.blockHash}`;

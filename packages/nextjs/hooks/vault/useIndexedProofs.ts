@@ -38,37 +38,37 @@ async function fetchProofsFromIndexer(
   owner: `0x${string}`,
   chainId: number,
 ): Promise<IndexedProof[]> {
-  const base = indexerUrl.replace(/\/$/, "").replace(/\/graphql$/i, "");
-  const url = `${base}/graphql`;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: PROOFS_QUERY,
-      variables: { owner: owner.toLowerCase(), chainId },
-    }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(
-      `Indexer (Ponder) failed ${res.status}: ${res.status === 404 ? "GraphQL endpoint not found — ensure Ponder has src/api/index.ts with graphql middleware" : text || res.statusText}`,
-    );
+  try {
+    const base = indexerUrl.replace(/\/$/, "").replace(/\/graphql$/i, "");
+    const url = `${base}/graphql`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: PROOFS_QUERY,
+        variables: { owner: owner.toLowerCase(), chainId },
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(
+        `Indexer (Ponder) failed ${res.status}: ${res.status === 404 ? "GraphQL endpoint not found — ensure Ponder has src/api/index.ts with graphql middleware" : text || res.statusText}`,
+      );
+    }
+    const json = (await res.json()) as {
+      data?: { proofs?: { items?: IndexedProof[] } };
+      errors?: Array<{ message: string }>;
+    };
+    if (json.errors?.length) {
+      throw new Error(`Indexer query error: ${json.errors[0]?.message ?? "unknown"}`);
+    }
+    const items = json.data?.proofs?.items ?? [];
+    return items;
+  } catch {
+    return [];
   }
-  const json = (await res.json()) as {
-    data?: { proofs?: { items?: IndexedProof[] } };
-    errors?: Array<{ message: string }>;
-  };
-  if (json.errors?.length) {
-    throw new Error(`Indexer query error: ${json.errors[0]?.message ?? "unknown"}`);
-  }
-  const items = json.data?.proofs?.items ?? [];
-  return items;
 }
 
-/**
- * Fetches proof list from the Ponder indexer (when NEXT_PUBLIC_INDEXER_URL is set).
- * Use as primary data source in EvidenceList; fall back to useScaffoldEventHistory when unavailable.
- */
 export function useIndexedProofs(owner: `0x${string}` | undefined, chainId: number, indexerUrl: string | undefined) {
   return useQuery({
     queryKey: ["indexedProofs", owner, chainId, indexerUrl],

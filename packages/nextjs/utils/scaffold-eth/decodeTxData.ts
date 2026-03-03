@@ -37,9 +37,7 @@ export const decodeTransactionData = (tx: TransactionWithFunction) => {
         })?.inputs.map((input: any) => input.type);
         foundInterface = true;
         break;
-      } catch {
-        // do nothing
-      }
+      } catch {}
     }
     if (!foundInterface) {
       tx.functionName = "⚠️ Unknown";
