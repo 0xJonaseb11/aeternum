@@ -1,4 +1,5 @@
 # Aeternum
+![Aeternum Logo](./packages/nextjs/public/logo.svg)
 
 <div align="center">
   <br/>
@@ -21,6 +22,13 @@
 A zero-knowledge, blockchain-timestamped evidence vault. Only you hold the key to your evidence: client-side encrypted, permanently on Arweave (optional IPFS), with Groth16 ZK proofs and immutable records on Base. No one else can access or decrypt your files.
 
 ---
+
+![Landing](./assets/img1.png)
+![Upload](./assets/img3.png)
+![Sample evidences](./assets/img2.png)
+![Verification](./assets/img4.png)
+![Evidence secured sample](./assets/img5.png)
+
 
 ## Deployed contracts (Base Sepolia)
 
