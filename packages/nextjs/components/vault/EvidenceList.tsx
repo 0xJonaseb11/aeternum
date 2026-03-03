@@ -399,8 +399,8 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
       setIsFinding(true);
       setMatchingFileHashes(new Set());
       try {
-        if (!vaultContract?.address || !publicClient) {
-          notification.error("Contract not ready.");
+        if (!vaultContract?.address || !publicClient || !connectedAddress) {
+          notification.error("Contract or wallet not ready.");
           return;
         }
         const secretHex = pastedSecret.trim().startsWith("0x") ? pastedSecret.trim() : `0x${pastedSecret.trim()}`;
@@ -411,6 +411,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
             abi: vaultContract.abi,
             functionName: "getProof",
             args: [fh as `0x${string}`],
+            account: connectedAddress,
           })) as { commitment: string };
           const onChainCommitment = proof.commitment;
           const expected = await computeCommitment(fh, secretHex);
@@ -426,7 +427,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
         setIsFinding(false);
       }
     },
-    [vaultContract, publicClient, pastedSecret],
+    [vaultContract, publicClient, pastedSecret, connectedAddress],
   );
 
   const hasIndexerData = INDEXER_URL && !indexedError && indexedProofs != null && indexedProofs.length > 0;
