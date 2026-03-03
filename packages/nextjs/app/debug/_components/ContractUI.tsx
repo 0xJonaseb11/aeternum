@@ -1,6 +1,5 @@
 "use client";
 
-// @refresh reset
 import { Contract } from "@scaffold-ui/debug-contracts";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
@@ -11,9 +10,6 @@ type ContractUIProps = {
   className?: string;
 };
 
-/**
- * UI component to interface with deployed contracts.
- **/
 export const ContractUI = ({ contractName }: ContractUIProps) => {
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo({ contractName });

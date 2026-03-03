@@ -1,12 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
-/**
- * Deploys Groth16VerifierWrapper (adapts SnarkJS verifier to IZKVerifier).
- * Depends on CommitmentVerifier being deployed.
- *
- * Deploy alone: yarn deploy --tags Groth16VerifierWrapper
- */
 const deployGroth16VerifierWrapper: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, get } = hre.deployments;
@@ -22,7 +16,6 @@ const deployGroth16VerifierWrapper: DeployFunction = async function (hre: Hardha
     autoMine: true,
   });
 
-  // If EvidenceVault is already deployed (e.g. after verifier-only redeploy), point it at the new wrapper
   try {
     const vaultDeployment = await get("EvidenceVault");
     const vault = await ethers.getContractAt("EvidenceVault", vaultDeployment.address);
@@ -32,9 +25,7 @@ const deployGroth16VerifierWrapper: DeployFunction = async function (hre: Hardha
       await tx.wait();
       console.log(`      ✓ Vault zkVerifier updated to ${wrapperResult.address}`);
     }
-  } catch {
-    // EvidenceVault not deployed yet (e.g. first full deploy); 00 or 03 will set it
-  }
+  } catch {}
 };
 
 export default deployGroth16VerifierWrapper;

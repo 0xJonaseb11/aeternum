@@ -23,7 +23,6 @@ const getWalletFromPrivateKey = async () => {
     try {
       const wallet = new ethers.Wallet(privateKey);
       return wallet;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       console.log("❌ Invalid private key format. Please try again.");
     }
@@ -43,7 +42,6 @@ const setNewEnvConfig = async (existingEnvConfig = {}) => {
     DEPLOYER_PRIVATE_KEY_ENCRYPTED: encryptedJson,
   };
 
-  // Store in .env
   fs.writeFileSync(envFilePath, stringify(newEnvConfig));
   console.log("\n📄 Encrypted Private Key saved to packages/hardhat/.env file");
   console.log("🪄 Imported wallet address:", wallet.address, "\n");
@@ -52,7 +50,6 @@ const setNewEnvConfig = async (existingEnvConfig = {}) => {
 
 async function main() {
   if (!fs.existsSync(envFilePath)) {
-    // No .env file yet.
     await setNewEnvConfig();
     return;
   }

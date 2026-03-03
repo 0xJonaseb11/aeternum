@@ -1,13 +1,3 @@
-/**
- * EvidenceVault — Upgrade Script
- *
- * Safely upgrades the UUPS proxy to a new implementation.
- * Validates storage layout before broadcasting to prevent collisions.
- *
- * Usage:
- *   PROXY=0x... npx hardhat run scripts/upgrade.ts --network base
- */
-
 import { ethers, upgrades } from "hardhat";
 import * as fs from "fs";
 import * as path from "path";
@@ -32,14 +22,11 @@ async function main() {
   const oldImpl = await upgrades.erc1967.getImplementationAddress(PROXY);
   console.log(`  Old impl : ${oldImpl}`);
 
-  // ── Validate storage layout BEFORE deploying ─────────────────────────────
-  // This catches any storage collision or incompatible changes.
   console.log("\n[1/3] Validating storage layout compatibility...");
   const V2 = await ethers.getContractFactory("EvidenceVaultV2"); // change to your new contract name
   await upgrades.validateUpgrade(PROXY, V2, { kind: "uups" });
   console.log("      ✓ Storage layout is compatible");
 
-  // ── Deploy new implementation + upgrade proxy ─────────────────────────────
   console.log("\n[2/3] Deploying new implementation + upgrading proxy...");
   const upgraded = await upgrades.upgradeProxy(PROXY, V2, { kind: "uups" });
   await upgraded.waitForDeployment();
@@ -47,7 +34,6 @@ async function main() {
   const newImpl = await upgrades.erc1967.getImplementationAddress(PROXY);
   console.log(`      ✓ New implementation: ${newImpl}`);
 
-  // ── Update deployment manifest ────────────────────────────────────────────
   console.log("\n[3/3] Updating deployment manifest...");
   const manifestPath = path.join(__dirname, "../deployments", `${network.name}.json`);
 

@@ -24,10 +24,6 @@ async function fetchProofsFromSupabase(owner: `0x${string}`, chainId: number): P
   return json.items ?? [];
 }
 
-/**
- * Fetches proof list from Supabase via GET /api/proofs (when indexer is not used).
- * Use when NEXT_PUBLIC_INDEXER_URL is not set; fall back to event history on error or 503.
- */
 export function useSupabaseProofs(owner: `0x${string}` | undefined, chainId: number, enabled: boolean) {
   return useQuery({
     queryKey: ["supabaseProofs", owner, chainId],

@@ -8,10 +8,6 @@ import { generateZKProofBundle } from "~~/utils/vault/zkProof";
 
 type VerifyResult = { verified: boolean; error?: string };
 
-/**
- * Hook to verify ownership of a proof via ZK (view call).
- * Returns verify(fileHash, secret) that generates a Groth16 proof and calls vault.verifyOwnership.
- */
 export function useVerifyOwnership() {
   const [isVerifying, setIsVerifying] = useState(false);
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });

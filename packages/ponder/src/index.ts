@@ -35,7 +35,7 @@ ponder.on("EvidenceVault:ProofRevoked", async ({ event, context }) => {
   if (existing) {
     await context.db.update(proof, { id }).set({ revoked: true });
   }
-  // If no row (e.g. proof created before our startBlock), optionally backfill from chain
+
   else {
     const full = await client.readContract({
       abi: contracts.EvidenceVault.abi,

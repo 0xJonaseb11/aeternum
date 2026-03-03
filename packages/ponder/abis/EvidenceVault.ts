@@ -1,7 +1,5 @@
-/**
- * Minimal ABI for EvidenceVault: ProofCreated, ProofRevoked, getProof.
- * Used by the Ponder indexer.
- */
+
+
 export const EvidenceVaultAbi = [
   {
     anonymous: false,

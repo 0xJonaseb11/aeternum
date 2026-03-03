@@ -36,21 +36,12 @@ type ScaffoldWriteContractReturnType<TContractName extends ContractName> = Omit<
 export function useScaffoldWriteContract<TContractName extends ContractName>(
   config: UseScaffoldWriteConfig<TContractName>,
 ): ScaffoldWriteContractReturnType<TContractName>;
-/**
- * @deprecated Use object parameter version instead: useScaffoldWriteContract({ contractName: "YourContract" })
- */
+
 export function useScaffoldWriteContract<TContractName extends ContractName>(
   contractName: TContractName,
   writeContractParams?: UseWriteContractParameters,
 ): ScaffoldWriteContractReturnType<TContractName>;
 
-/**
- * Wrapper around wagmi's useWriteContract hook which automatically loads (by name) the contract ABI and address from
- * the contracts present in deployedContracts.ts & externalContracts.ts corresponding to targetNetworks configured in scaffold.config.ts
- * @param contractName - name of the contract to be written to
- * @param config.chainId - optional chainId that is configured with the scaffold project to make use for multi-chain interactions.
- * @param writeContractParams - wagmi's useWriteContract parameters
- */
 export function useScaffoldWriteContract<TContractName extends ContractName>(
   configOrName: UseScaffoldWriteConfig<TContractName> | TContractName,
   writeContractParams?: UseWriteContractParameters,
@@ -186,9 +177,9 @@ export function useScaffoldWriteContract<TContractName extends ContractName>(
   return {
     ...wagmiContractWrite,
     isMining,
-    // Overwrite wagmi's writeContactAsync
+
     writeContractAsync: sendContractWriteAsyncTx,
-    // Overwrite wagmi's writeContract
+
     writeContract: sendContractWriteTx,
   };
 }

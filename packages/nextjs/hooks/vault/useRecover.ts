@@ -52,14 +52,11 @@ export const useRecover = () => {
         }
       }
 
-      // 2. Decrypt locally
       const decrypted = await decryptFile(combined, secret);
 
-      // 3. Detect type from magic bytes so download has correct MIME and extension
       const { mime, extension } = detectMimeFromBuffer(decrypted);
       const downloadName = extension ? `${fileName}.${extension}` : fileName;
 
-      // 4. Create blob and download
       const blob = new Blob([decrypted], { type: mime });
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");

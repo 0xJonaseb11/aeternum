@@ -24,7 +24,6 @@ export const UploadEvidence = () => {
   const [secretSavedConfirmed, setSecretSavedConfirmed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Warn before leaving the page if the user hasn't confirmed saving the secret
   useEffect(() => {
     if (!result || secretSavedConfirmed) return;
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -72,9 +71,7 @@ export const UploadEvidence = () => {
     try {
       const uploadResult = await uploadEvidence(file);
       if (uploadResult) setResult(uploadResult);
-    } catch {
-      // Error handled in hook
-    }
+    } catch {}
   };
 
   const copyToClipboard = (text: string) => {

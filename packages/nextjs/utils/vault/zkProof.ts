@@ -1,8 +1,3 @@
-/**
- * Browser-side Groth16 ZK proof generation for verifyOwnership().
- * Proves knowledge of secret such that commitment = Poseidon(fileHash, secret)
- * without revealing the secret. Requires ZK artifacts in /zk/ (see README).
- */
 import { buildPoseidon } from "circomlibjs";
 
 const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
@@ -15,9 +10,6 @@ export interface ZKProofBundle {
   publicInputs: [bigint, bigint];
 }
 
-/**
- * Normalize hex to field element (BN254). Handles 0x prefix and 64-char hex.
- */
 function toFieldHex(hex: string): string {
   const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
   const value = BigInt("0x" + clean) % BN254_FIELD_SIZE;
@@ -25,9 +17,6 @@ function toFieldHex(hex: string): string {
   return value.toString();
 }
 
-/**
- * Compute Poseidon(fileHash, secret) and return as bytes32 hex and as field string.
- */
 async function getCommitmentFelt(
   fileHash: string,
   secret: string,
@@ -41,14 +30,6 @@ async function getCommitmentFelt(
   return { commitmentHex, commitmentFelt };
 }
 
-/**
- * Generate a Groth16 proof bundle for verifyOwnership(fileHash, zkProof, publicInputs).
- * Uses /zk/commitment.wasm and /zk/commitment_final.zkey (must be present in public/zk/).
- *
- * @param fileHash - bytes32 hex (0x-prefixed)
- * @param secret - 32-byte secret as hex (with or without 0x)
- * @returns { zkProof, publicInputs } for contract.verifyOwnership(fileHash, zkProof, publicInputs)
- */
 export async function generateZKProofBundle(fileHash: string, secret: string): Promise<ZKProofBundle> {
   const { commitmentFelt } = await getCommitmentFelt(fileHash, secret);
   const fileHashFelt = toFieldHex(fileHash);
@@ -85,9 +66,6 @@ export async function generateZKProofBundle(fileHash: string, secret: string): P
   return { zkProof, publicInputs };
 }
 
-/**
- * Check if ZK artifacts are available (for UI to show "Verify ownership" or a message).
- */
 export async function isZKArtifactsAvailable(): Promise<boolean> {
   if (typeof window === "undefined") return false;
   try {

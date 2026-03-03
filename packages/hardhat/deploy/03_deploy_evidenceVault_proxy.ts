@@ -1,14 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 
-/**
- * Deploys EvidenceVault as UUPS proxy, wires ZK verifier, and optionally
- * transfers ownership to MULTISIG.
- * Depends on Groth16VerifierWrapper being deployed.
- *
- * Deploy alone: yarn deploy --tags EvidenceVaultProxy
- * Set MULTISIG=0x... to transfer ownership after deploy.
- */
 const deployEvidenceVaultProxy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { get, getOrNull, save } = hre.deployments;

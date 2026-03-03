@@ -2,17 +2,14 @@ import * as chains from "viem/chains";
 import scaffoldConfig from "~~/scaffold.config";
 
 type ChainAttributes = {
-  // color | [lightThemeColor, darkThemeColor]
   color: string | [string, string];
-  // Used to fetch price by providing mainnet token address
-  // for networks having native currency other than ETH
+
   nativeCurrencyTokenAddress?: string;
 };
 
 export type ChainWithAttributes = chains.Chain & Partial<ChainAttributes>;
 export type AllowedChainIds = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
-// Mapping of chainId to RPC chain name an format followed by alchemy and infura
 export const RPC_CHAIN_NAMES: Record<number, string> = {
   [chains.mainnet.id]: "eth-mainnet",
   [chains.goerli.id]: "eth-goerli",
@@ -93,9 +90,6 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
 };
 
-/**
- * Gives the block explorer transaction URL, returns empty string if the network is a local chain
- */
 export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
   const chainNames = Object.keys(chains);
 
@@ -118,10 +112,6 @@ export function getBlockExplorerTxLink(chainId: number, txnHash: string) {
   return `${blockExplorerTxURL}/tx/${txnHash}`;
 }
 
-/**
- * Gives the block explorer URL for a given address.
- * Defaults to Etherscan if no (wagmi) block explorer is configured for the network.
- */
 export function getBlockExplorerAddressLink(network: chains.Chain, address: string) {
   const blockExplorerBaseURL = network.blockExplorers?.default?.url;
   if (network.id === chains.hardhat.id) {
@@ -135,9 +125,6 @@ export function getBlockExplorerAddressLink(network: chains.Chain, address: stri
   return `${blockExplorerBaseURL}/address/${address}`;
 }
 
-/**
- * @returns targetNetworks array containing networks configured in scaffold.config including extra network metadata
- */
 export function getTargetNetworks(): ChainWithAttributes[] {
   return scaffoldConfig.targetNetworks.map(targetNetwork => ({
     ...targetNetwork,

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* DaisyUI uses data-theme on html; next-themes will set it when attribute="data-theme" */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
@@ -14,7 +13,6 @@
     dark --prefersdark;
 }
 
-/* Aeternum light: white/light base, teal undertone, magenta primary CTA, lime secondary */
 @plugin "daisyui/theme" {
   name: "light";
 
@@ -40,7 +38,6 @@
   --tt-tailw: 6px;
 }
 
-/* Aeternum dark: deep teal base, lime/magenta accents (vault reference) */
 @plugin "daisyui/theme" {
   name: "dark";
 
@@ -67,14 +64,6 @@
   --tt-bg: var(--color-primary);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -113,7 +102,6 @@
   background: var(--color-base-200);
 }
 
-/* Subtle background pattern for depth (dark theme); use sparingly */
 .bg-pattern {
   background-image:
     radial-gradient(circle at 50% 50%, rgba(233, 30, 99, 0.03) 0%, transparent 50%),
