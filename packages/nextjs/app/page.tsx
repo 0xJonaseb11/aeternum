@@ -33,7 +33,7 @@ const Home: NextPage = () => {
           <div className="max-w-4xl mx-auto text-center min-w-0">
             <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-secondary/10 text-secondary-content text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6 border border-secondary/20 flex-wrap justify-center">
               <ShieldCheckIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
-              <span>Zero-Knowledge Evidence Vault</span>
+              <span>Zero-knowledge evidence vault</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight text-base-content sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-4 sm:mb-6 px-1">
               Security for your{" "}
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
             </h1>
             <p className="text-base text-base-content/70 sm:text-lg md:text-xl lg:text-2xl max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10 px-1">
               Only you hold the key to your evidence. Encrypt locally, store forever on Arweave, and prove ownership
-              without ever revealing the content—no one else can access your vault.
+              without ever revealing the content. No one else can access your vault.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
               <Link
@@ -76,8 +76,8 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-base-content mb-2 sm:mb-3">Permanent Storage</h3>
               <p className="text-sm sm:text-base text-base-content/60 leading-relaxed mb-4">
-                Your evidence lives on Arweave—a permanent decentralized web—available for decades. Only you hold the
-                key to decrypt it.
+                Your evidence lives on Arweave, a permanent decentralized web that keeps it available for decades. Only
+                you hold the key to decrypt it.
               </p>
               <a
                 href="https://docs.arweave.org/"
@@ -116,7 +116,8 @@ const Home: NextPage = () => {
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-base-content mb-2 sm:mb-3">Immutable Proofs</h3>
               <p className="text-sm sm:text-base text-base-content/60 leading-relaxed mb-4">
-                Every proof is anchored on Base—an unalterable timestamp. Only you can verify or recover with your key.
+                Every proof is anchored on Base, which creates an unalterable timestamp. Only you can verify or recover
+                with your key.
               </p>
               <a
                 href="https://docs.base.org/"
@@ -178,7 +179,7 @@ const Home: NextPage = () => {
                 <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                   <div className="h-px grow bg-base-300 min-w-0"></div>
                   <h3 className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-base-content/30 whitespace-nowrap shrink-0">
-                    Recent Evidence Proofs
+                    Recent evidence proofs
                   </h3>
                   <div className="h-px grow bg-base-300 min-w-0"></div>
                 </div>
