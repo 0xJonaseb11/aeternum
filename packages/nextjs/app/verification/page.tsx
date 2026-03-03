@@ -32,10 +32,10 @@ const VerificationPage: NextPage = () => {
               <AppLogo className="h-12 w-12 sm:h-14 sm:w-14 shrink-0" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2 sm:mb-3">
-              Verify & restore your evidence
+              Verify and restore your evidence
             </h1>
             <p className="text-sm text-base-content/70">
-              You hold the key. No one else can access your vault—verify or recover with your secret.
+              You hold the key. No one else can access your vault. Verify or recover with your secret.
             </p>
           </div>
         </div>
