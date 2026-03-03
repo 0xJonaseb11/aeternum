@@ -48,11 +48,10 @@ function normalizeHex(h: string | bigint): string {
   return ("0x" + clean.toLowerCase().padStart(64, "0")).slice(0, 66);
 }
 
-/** Format hash for display: 0x123456.....abcdef (no secrets; this is the public proof/file hash) */
 function sliceHashDisplay(hex: string, start = 8, end = 6): string {
   if (!hex || hex.length < start + end) return hex;
   const s = hex.startsWith("0x") ? hex.slice(2) : hex;
-  return `0x${s.slice(0, start)}.....${s.slice(-end)}`;
+  return `0x${s.slice(0, start)}...${s.slice(-end)}`;
 }
 
 export const EvidenceCard = ({
@@ -315,8 +314,7 @@ const SecretFinderSection = ({
       Find evidence by secret key
     </p>
     <p className="text-xs sm:text-sm text-base-content/70 mb-3">
-      Enter your secret key below to find which evidence it belongs to. Matching evidence will be highlighted and the
-      key pre-filled for Recover or Verify.
+      You hold the key. Paste it below to find matching evidence—then verify or recover.
     </p>
     <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
       <input
@@ -369,7 +367,6 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
     refetch: refetchIndexed,
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
-  // Always try Supabase as fallback (redundancy when indexer/events fail or return empty).
   const {
     data: supabaseProofs,
     isLoading: supabaseLoading,
@@ -420,10 +417,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
             const onChainCommitment = proof.commitment;
             const expected = await computeCommitment(fh, secretHex);
             if (normalizeHex(onChainCommitment) === normalizeHex(expected)) matching.push(fh);
-          } catch (err) {
-            // If the current vault has no proof for this fileHash (ProofNotFound/AccessDenied),
-            // just skip it instead of failing the whole \"Find my evidence\" flow.
-            console.error("getProof failed for fileHash during secret search", fh, err);
+          } catch {
             continue;
           }
         }
@@ -450,7 +444,6 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
 
   const useIndexerData = hasIndexerData;
   const useSupabaseData = hasSupabaseData && !hasIndexerData;
-  // const useEventData = hasEventData && !hasIndexerData && !hasSupabaseData;
 
   const stillLoading =
     hasIndexerData || hasSupabaseData || hasEventData
@@ -465,7 +458,6 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
 
   const hasData = hasIndexerData || hasSupabaseData || hasEventData;
 
-  // After timeout, stop showing skeleton and show error + Retry so UI never sticks
   useEffect(() => {
     if (!connectedAddress || !stillLoading || hasData) {
       setLoadTimedOut(false);
