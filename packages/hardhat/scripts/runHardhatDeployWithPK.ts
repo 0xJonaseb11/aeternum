@@ -44,7 +44,7 @@ async function main() {
     hardhat.on("exit", code => {
       process.exit(code || 0);
     });
-  } catch (e) {
+  } catch {
     console.error("Failed to decrypt private key. Wrong password?");
     process.exit(1);
   }
