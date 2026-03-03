@@ -3,11 +3,11 @@
 import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
+import { useAccount } from "wagmi";
 import { KeyIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import deployedContracts from "~~/contracts/deployedContracts";
-import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const VerificationPage: NextPage = () => {
