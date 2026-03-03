@@ -28,6 +28,7 @@ A zero-knowledge, blockchain-timestamped evidence vault. Only you hold the key t
 ![Sample evidences](./assets/img2.png)
 ![Verification](./assets/img4.png)
 ![Evidence secured sample](./assets/img5.png)
+![IPFS Data is encrypted](./assets/img6.png)
 
 
 ## Deployed contracts (Base Sepolia)
