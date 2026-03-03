@@ -74,7 +74,7 @@ function getContractDataFromDeployments() {
     let chainId;
     try {
       chainId = fs.readFileSync(`${DEPLOYMENTS_DIR}/${chainName}/.chainId`).toString();
-    } catch (error) {
+    } catch {
       console.log(`No chainId file found for ${chainName}`);
       continue;
     }
