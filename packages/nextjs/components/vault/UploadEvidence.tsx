@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CheckCircleIcon,
   ClipboardIcon,
@@ -21,7 +21,19 @@ export const UploadEvidence = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
+  const [secretSavedConfirmed, setSecretSavedConfirmed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Warn before leaving the page if the user hasn't confirmed saving the secret
+  useEffect(() => {
+    if (!result || secretSavedConfirmed) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [result, secretSavedConfirmed]);
 
   const { uploadEvidence, isProcessing, step } = useVault();
 
@@ -51,6 +63,7 @@ export const UploadEvidence = () => {
   const removeFile = () => {
     setFile(null);
     setResult(null);
+    setSecretSavedConfirmed(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -208,7 +221,7 @@ export const UploadEvidence = () => {
               <p className="text-sm sm:text-base font-medium mb-1">
                 <span className="text-primary font-bold">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs sm:text-sm text-base-content/40">Any file up to 50MB</p>
+              <p className="text-xs sm:text-sm text-base-content/40">Documents, images, video, audio — any evidence up to 50MB</p>
             </div>
           </div>
         ) : (

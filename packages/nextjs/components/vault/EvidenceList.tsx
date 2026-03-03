@@ -195,7 +195,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
                 disabled={isVerifying}
                 className={`btn btn-primary btn-sm join-item px-4 w-full sm:w-auto ${isVerifying ? "loading" : ""}`}
               >
-                {isVerifying ? "Proving…" : "Verify"}
+                {isVerifying ? "" : "Verify"}
               </button>
             </div>
             {verifyResult === true && (
