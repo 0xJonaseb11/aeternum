@@ -24,6 +24,7 @@ interface IEvidenceVault {
     error BackupAlreadySet();
     error ZKVerifierNotSet();
     error ZKProofInvalid();
+    error InvalidFileHash();
 
     /// @dev Storage layout: slot 0 owner+revoked; 1 timestamp+blockNumber; 2 fileHash; 3 commitment; 4 arweaveTxId; 5 ipfsCid.
     struct Proof {
