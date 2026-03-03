@@ -7,7 +7,8 @@ import { KeyIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import deployedContracts from "~~/contracts/deployedContracts";
-import { useAccount, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useAccount } from "wagmi";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const VerificationPage: NextPage = () => {
   const { address: connectedAddress, isConnecting, chain } = useAccount();
