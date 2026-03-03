@@ -30,8 +30,8 @@ Contracts are live on **Base Sepolia** (chainId `84532`). Use the proxy address 
 |----------|---------|
 | **EvidenceVault** (proxy) | `0x5e9C84A4A38fe109F4aB4032c05882C6a49Cc654` |
 | EvidenceVault (implementation) | `0x9a6B9E407cD918783089FCBE060278A44e4dB292` |
-| **CommitmentVerifier** (Groth16) | `0x2D322C9a3263191C979c3584173396456701464e` |
-| **Groth16VerifierWrapper** | `0x6b70354Fa89F08B56382d5b730EEb2835F19d815` |
+| **CommitmentVerifier** (Groth16) | `0xD203D6F0765200450bFDCFcE87B61dd46dE1FB0d` |
+| **Groth16VerifierWrapper** | `0x15c7577d602714769AD54856291A9325b806074d` |
 
 The vault’s ZK verifier is set to the Groth16VerifierWrapper. Indexer (Ponder) runs on Railway for proof list retrieval.
 

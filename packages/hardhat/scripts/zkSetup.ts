@@ -88,11 +88,15 @@ async function setup() {
   fs.writeFileSync(VKEY_FILE, JSON.stringify(vKey, null, 2));
   console.log(`      ✓ verification_key.json saved`);
 
-  // 6. Generate Solidity verifier
+  // 6. Generate Solidity verifier (use CLI to avoid ESM/CJS template arg issues)
   console.log("\n[6/6] Generating Solidity verifier contract...");
-  const templatePath = path.join(ROOT, "node_modules/snarkjs/templates/verifier_groth16.sol.ejs");
-  const template = fs.readFileSync(templatePath, "utf8");
-  const solidityCode = await (snarkjs.zKey as any).exportSolidityVerifier(ZKEY_FINAL, { groth16: template });
+  const verifierTmp = path.join(BUILD_DIR, "verifier.sol");
+  execSync(`npx snarkjs zkey export solidityverifier ${ZKEY_FINAL} ${verifierTmp}`, {
+    stdio: "inherit",
+    cwd: ROOT,
+  });
+  let solidityCode = fs.readFileSync(verifierTmp, "utf8");
+  fs.unlinkSync(verifierTmp);
 
   // Rename the contract from Groth16Verifier → CommitmentVerifier
   const renamed = solidityCode.replace("contract Groth16Verifier", "contract CommitmentVerifier");

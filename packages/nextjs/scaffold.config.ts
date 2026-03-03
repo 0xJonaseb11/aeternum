@@ -36,9 +36,9 @@ const scaffoldConfig = {
   // Base Sepolia deployed addresses (for reference / docs)
   deployedAddresses: {
     EvidenceVault: "0x5e9C84A4A38fe109F4aB4032c05882C6a49Cc654",
-    CommitmentVerifier: "0x2D322C9a3263191C979c3584173396456701464e",
-    Groth16VerifierWrapper: "0x6b70354Fa89F08B56382d5b730EEb2835F19d815",
-    zkVerifier: "0x6b70354Fa89F08B56382d5b730EEb2835F19d815",
+    CommitmentVerifier: "0xD203D6F0765200450bFDCFcE87B61dd46dE1FB0d",
+    Groth16VerifierWrapper: "0x15c7577d602714769AD54856291A9325b806074d",
+    zkVerifier: "0x15c7577d602714769AD54856291A9325b806074d",
   },
 } as const satisfies ScaffoldConfig;
 
