@@ -59,9 +59,13 @@ async function setup() {
   // https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau
   if (!fs.existsSync(PTAU_FILE)) {
     console.log("\n[2/6] Downloading Powers of Tau (pot15)...");
-    execFileSync("curl", ["-o", PTAU_FILE, "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau"], {
-      stdio: "inherit",
-    });
+    execFileSync(
+      "curl",
+      ["-o", PTAU_FILE, "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau"],
+      {
+        stdio: "inherit",
+      },
+    );
   } else {
     console.log("\n[2/6] Powers of Tau already present, skipping download.");
   }
