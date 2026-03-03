@@ -10,17 +10,31 @@ import { DeployFunction } from "hardhat-deploy/types";
 const deployGroth16VerifierWrapper: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, get } = hre.deployments;
+  const { ethers } = hre;
 
   const commitmentVerifier = await get("CommitmentVerifier");
   const verifierAddress = commitmentVerifier.address;
 
-  await deploy("Groth16VerifierWrapper", {
+  const wrapperResult = await deploy("Groth16VerifierWrapper", {
     from: deployer,
     args: [verifierAddress],
     log: true,
     autoMine: true,
-    skipIfAlreadyDeployed: true,
   });
+
+  // If EvidenceVault is already deployed (e.g. after verifier-only redeploy), point it at the new wrapper
+  try {
+    const vaultDeployment = await get("EvidenceVault");
+    const vault = await ethers.getContractAt("EvidenceVault", vaultDeployment.address);
+    const currentWrapper = await vault.zkVerifier();
+    if (currentWrapper !== wrapperResult.address) {
+      const tx = await vault.setZKVerifier(wrapperResult.address);
+      await tx.wait();
+      console.log(`      ✓ Vault zkVerifier updated to ${wrapperResult.address}`);
+    }
+  } catch {
+    // EvidenceVault not deployed yet (e.g. first full deploy); 00 or 03 will set it
+  }
 };
 
 export default deployGroth16VerifierWrapper;
