@@ -100,7 +100,7 @@ async function setup() {
     stdio: "inherit",
     cwd: ROOT,
   });
-  let solidityCode = fs.readFileSync(verifierTmp, "utf8");
+  const solidityCode = fs.readFileSync(verifierTmp, "utf8");
   fs.unlinkSync(verifierTmp);
 
   // Rename the contract from Groth16Verifier → CommitmentVerifier

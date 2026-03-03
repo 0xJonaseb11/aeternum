@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { Uploader } from "@irys/upload";
 import { BaseEth } from "@irys/upload-ethereum";
 
+/**
+ * Uploads encrypted evidence to Arweave via Irys.
+ * Accepts any file type: documents, images, video, audio, recordings, etc.
+ * Client sends already-encrypted bytes (ArrayBuffer); we store as application/octet-stream.
+ */
 export async function POST(req: NextRequest) {
   try {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
