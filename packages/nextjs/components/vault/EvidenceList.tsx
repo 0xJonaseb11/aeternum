@@ -403,23 +403,37 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
           notification.error("Contract or wallet not ready.");
           return;
         }
+
         const secretHex = pastedSecret.trim().startsWith("0x") ? pastedSecret.trim() : `0x${pastedSecret.trim()}`;
         const matching: string[] = [];
+
         for (const fh of fileHashes) {
-          const proof = (await publicClient.readContract({
-            address: vaultContract.address,
-            abi: vaultContract.abi,
-            functionName: "getProof",
-            args: [fh as `0x${string}`],
-            account: connectedAddress,
-          })) as { commitment: string };
-          const onChainCommitment = proof.commitment;
-          const expected = await computeCommitment(fh, secretHex);
-          if (normalizeHex(onChainCommitment) === normalizeHex(expected)) matching.push(fh);
+          try {
+            const proof = (await publicClient.readContract({
+              address: vaultContract.address,
+              abi: vaultContract.abi,
+              functionName: "getProof",
+              args: [fh as `0x${string}`],
+              account: connectedAddress,
+            })) as { commitment: string };
+
+            const onChainCommitment = proof.commitment;
+            const expected = await computeCommitment(fh, secretHex);
+            if (normalizeHex(onChainCommitment) === normalizeHex(expected)) matching.push(fh);
+          } catch (err) {
+            // If the current vault has no proof for this fileHash (ProofNotFound/AccessDenied),
+            // just skip it instead of failing the whole \"Find my evidence\" flow.
+            console.error("getProof failed for fileHash during secret search", fh, err);
+            continue;
+          }
         }
+
         setMatchingFileHashes(new Set(matching));
-        if (matching.length > 0) notification.success(`Found ${matching.length} evidence for this secret.`);
-        else notification.warning("No evidence matches this secret.");
+        if (matching.length > 0) {
+          notification.success(`Found ${matching.length} evidence for this secret.`);
+        } else {
+          notification.warning("No evidence on this vault matches this secret.");
+        }
       } catch (e) {
         console.error(e);
         notification.error("Could not check evidence.");

@@ -159,6 +159,7 @@ contract EvidenceVault is
     function getProof(bytes32 fileHash) external view override returns (Proof memory) {
         Proof storage p = _proofs[fileHash];
         if (p.owner == address(0)) revert ProofNotFound();
+        // if (p.fileHash == 0) revert InvalidFileHash();
 
         bool isOwner = p.owner == msg.sender;
         bool isGrantee = _accessGrants[fileHash][msg.sender];
