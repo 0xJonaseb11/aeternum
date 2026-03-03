@@ -315,8 +315,8 @@ const SecretFinderSection = ({
       Find evidence by secret key
     </p>
     <p className="text-xs sm:text-sm text-base-content/70 mb-3">
-      Paste your secret key below to see which evidence it unlocks. Matching evidence will be highlighted and the key
-      pre-filled for Recover or Verify.
+      Enter your secret key below to find which evidence it belongs to. Matching evidence will be highlighted and the
+      key pre-filled for Recover or Verify.
     </p>
     <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
       <input
