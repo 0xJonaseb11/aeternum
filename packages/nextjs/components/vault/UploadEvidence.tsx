@@ -112,7 +112,7 @@ export const UploadEvidence = () => {
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-2">
                 <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-base-content/50 shrink-0">
                   <KeyIcon className="h-3.5 w-3.5" />
-                  <span>Private Secret Key</span>
+                  <span>Private secret key</span>
                 </div>
                 <span className="badge badge-error badge-xs p-2 text-[8px] font-bold shrink-0">
                   CRITICAL: SAVE OFFLINE
@@ -239,7 +239,7 @@ export const UploadEvidence = () => {
                 <span className="text-primary font-bold">Click to upload</span> or drag and drop
               </p>
               <p className="text-xs sm:text-sm text-base-content/40">
-                Documents, images, video, audio — any evidence up to 50MB
+                Documents, images, video, or audio, any evidence up to 50MB
               </p>
             </div>
           </div>

@@ -189,7 +189,7 @@ export const EvidenceCard = ({
         {showRecover ? (
           <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200 min-w-0">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-bold uppercase text-base-content/40">Enter Secret Key</span>
+              <span className="text-[10px] font-bold uppercase text-base-content/40">Enter secret key</span>
               <button onClick={() => setShowRecover(false)} className="btn btn-ghost btn-xs btn-circle shrink-0">
                 <XMarkIcon className="h-3 w-3" />
               </button>
@@ -314,7 +314,7 @@ const SecretFinderSection = ({
       Find evidence by secret key
     </p>
     <p className="text-xs sm:text-sm text-base-content/70 mb-3">
-      You hold the key. Paste it below to find matching evidence—then verify or recover.
+      You hold the key. Paste it below to find matching evidence, then verify or recover.
     </p>
     <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
       <input

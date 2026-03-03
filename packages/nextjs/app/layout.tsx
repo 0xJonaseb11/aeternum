@@ -8,7 +8,7 @@ import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
-  title: "Aeternum : Private Evidence Vault",
+  title: "Aeternum: private evidence vault",
   description: "Private, permanent, zero-knowledge verifiable evidence vault on-chain.",
 });
 
