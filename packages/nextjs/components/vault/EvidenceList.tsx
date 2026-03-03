@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount, useBlockNumber } from "wagmi";
 import {
   ArrowDownTrayIcon,
@@ -8,18 +8,26 @@ import {
   DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   KeyIcon,
+  MagnifyingGlassIcon,
   ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
-import { useScaffoldEventHistory, useScaffoldReadContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import {
+  useDeployedContractInfo,
+  useScaffoldEventHistory,
+  useScaffoldReadContract,
+  useSelectedNetwork,
+} from "~~/hooks/scaffold-eth";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
+import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
+import { usePublicClient } from "wagmi";
 
 interface EvidenceItem {
   id: string;
@@ -29,6 +37,17 @@ interface EvidenceItem {
   ipfsCid?: string;
 }
 
+function normalizeHex(h: string | bigint): string {
+  const s =
+    typeof h === "string"
+      ? h
+      : typeof h === "bigint"
+        ? h.toString(16)
+        : (h as unknown as { toString: (radix: number) => string }).toString(16);
+  const clean = s.startsWith("0x") ? s.slice(2) : s;
+  return ("0x" + clean.toLowerCase().padStart(64, "0")).slice(0, 66);
+}
+
 /** Format hash for display: 0x123456.....abcdef (no secrets; this is the public proof/file hash) */
 function sliceHashDisplay(hex: string, start = 8, end = 6): string {
   if (!hex || hex.length < start + end) return hex;
@@ -36,15 +55,30 @@ function sliceHashDisplay(hex: string, start = 8, end = 6): string {
   return `0x${s.slice(0, start)}.....${s.slice(-end)}`;
 }
 
-export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
+export const EvidenceCard = ({
+  proof,
+  initialSecret,
+  isMatching,
+}: {
+  proof: EvidenceItem;
+  initialSecret?: string;
+  isMatching?: boolean;
+}) => {
   const [showRecover, setShowRecover] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
-  const [secret, setSecret] = useState("");
-  const [verifySecret, setVerifySecret] = useState("");
+  const [secret, setSecret] = useState(initialSecret ?? "");
+  const [verifySecret, setVerifySecret] = useState(initialSecret ?? "");
   const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
   const [zkAvailable, setZkAvailable] = useState(false);
   const { recoverFile, isRecovering } = useRecover();
   const { verify, isVerifying } = useVerifyOwnership();
+
+  useEffect(() => {
+    if (initialSecret != null && initialSecret !== "") {
+      setSecret(initialSecret);
+      setVerifySecret(initialSecret);
+    }
+  }, [initialSecret]);
 
   useEffect(() => {
     isZKArtifactsAvailable().then(setZkAvailable);
@@ -98,12 +132,22 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
   };
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden min-w-0">
+    <div
+      className={`card bg-base-100 border shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden min-w-0 ${isMatching ? "border-primary ring-2 ring-primary/30" : "border-base-300"}`}
+    >
       <div className="card-body p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
-          <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
-            <ShieldCheckIcon className="h-3 w-3" />
-            <span>Verified On-chain</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
+              <ShieldCheckIcon className="h-3 w-3" />
+              <span>Verified On-chain</span>
+            </div>
+            {isMatching && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-bold uppercase tracking-wider border border-success/30">
+                <KeyIcon className="h-3 w-3" />
+                <span>Matches key</span>
+              </div>
+            )}
           </div>
           <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
         </div>
@@ -251,12 +295,70 @@ const LOAD_TIMEOUT_MS = 18_000; // Stop showing skeleton after 18s; show error +
 
 const INDEXER_URL = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_INDEXER_URL : undefined;
 
-export const EvidenceList = () => {
+const SecretFinderSection = ({
+  onFind,
+  isFinding,
+  pastedSecret,
+  setPastedSecret,
+  matchingCount,
+  fileHashes,
+}: {
+  onFind: (fileHashes: string[]) => void;
+  isFinding: boolean;
+  pastedSecret: string;
+  setPastedSecret: (s: string) => void;
+  matchingCount: number;
+  fileHashes: string[];
+}) => (
+  <div className="mb-6 sm:mb-8 p-4 sm:p-5 rounded-2xl border border-base-300 bg-base-200/50">
+    <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-2">
+      Find evidence by secret key
+    </p>
+    <p className="text-xs sm:text-sm text-base-content/70 mb-3">
+      Paste your secret key below to see which evidence it unlocks. Matching evidence will be highlighted and the key
+      pre-filled for Recover or Verify.
+    </p>
+    <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
+      <input
+        type="password"
+        placeholder="0x... or hex secret"
+        className="input input-bordered join-item flex-1 min-w-0 text-xs font-mono w-full sm:w-auto"
+        value={pastedSecret}
+        onChange={e => setPastedSecret(e.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => onFind(fileHashes)}
+        disabled={isFinding || !pastedSecret.trim() || fileHashes.length === 0}
+        className={`btn btn-primary join-item px-4 w-full sm:w-auto ${isFinding ? "loading" : ""}`}
+      >
+        {isFinding ? "" : (
+          <>
+            <MagnifyingGlassIcon className="h-4 w-4" />
+            Find my evidence
+          </>
+        )}
+      </button>
+    </div>
+    {matchingCount > 0 && (
+      <p className="text-xs text-success mt-2 font-medium">
+        {matchingCount} evidence{matchingCount !== 1 ? "s" : ""} match this secret.
+      </p>
+    )}
+  </div>
+);
+
+export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: boolean } = {}) => {
   const { address: connectedAddress } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
   const fromBlock = blockNumber != null ? BigInt(blockNumber) - BigInt(RECENT_BLOCKS) : undefined;
   const [loadTimedOut, setLoadTimedOut] = useState(false);
+  const [pastedSecret, setPastedSecret] = useState("");
+  const [matchingFileHashes, setMatchingFileHashes] = useState<Set<string>>(new Set());
+  const [isFinding, setIsFinding] = useState(false);
+  const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
+  const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
 
   const {
     data: indexedProofs,
@@ -288,6 +390,42 @@ export const EvidenceList = () => {
     blocksBatchSize: 200,
     enabled: !!connectedAddress && blockNumber != null && needEventHistory,
   });
+
+  const handleFindBySecret = useCallback(
+    async (fileHashes: string[]) => {
+      if (!pastedSecret.trim()) return;
+      setIsFinding(true);
+      setMatchingFileHashes(new Set());
+      try {
+        if (!vaultContract?.address || !publicClient) {
+          notification.error("Contract not ready.");
+          return;
+        }
+        const secretHex = pastedSecret.trim().startsWith("0x") ? pastedSecret.trim() : `0x${pastedSecret.trim()}`;
+        const matching: string[] = [];
+        for (const fh of fileHashes) {
+          const proof = (await publicClient.readContract({
+            address: vaultContract.address,
+            abi: vaultContract.abi,
+            functionName: "getProof",
+            args: [fh as `0x${string}`],
+          })) as { commitment: string };
+          const onChainCommitment = proof.commitment;
+          const expected = await computeCommitment(fh, secretHex);
+          if (normalizeHex(onChainCommitment) === normalizeHex(expected)) matching.push(fh);
+        }
+        setMatchingFileHashes(new Set(matching));
+        if (matching.length > 0) notification.success(`Found ${matching.length} evidence for this secret.`);
+        else notification.warning("No evidence matches this secret.");
+      } catch (e) {
+        console.error(e);
+        notification.error("Could not check evidence.");
+      } finally {
+        setIsFinding(false);
+      }
+    },
+    [vaultContract, publicClient, pastedSecret],
+  );
 
   const hasIndexerData = INDEXER_URL && !indexedError && indexedProofs != null && indexedProofs.length > 0;
   const hasSupabaseData = !supabaseError && supabaseProofs != null && supabaseProofs.length > 0;
@@ -369,56 +507,117 @@ export const EvidenceList = () => {
 
   if (useIndexerData && indexedProofs) {
     const activeProofs = indexedProofs.filter(p => !p.revoked);
+    const fileHashes = activeProofs.map(p => p.fileHash);
     return (
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {activeProofs.map(p => (
-          <EvidenceCard
-            key={p.id}
-            proof={{
-              id: p.fileHash,
-              fileHash: p.fileHash,
-              timestamp: p.timestamp,
-              storageId: p.arweaveTxId,
-              ipfsCid: p.ipfsCid ?? undefined,
-            }}
+      <>
+        {showSecretFinder && (
+          <SecretFinderSection
+            fileHashes={fileHashes}
+            onFind={handleFindBySecret}
+            isFinding={isFinding}
+            pastedSecret={pastedSecret}
+            setPastedSecret={setPastedSecret}
+            matchingCount={matchingFileHashes.size}
           />
-        ))}
-      </div>
+        )}
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+          {activeProofs.map(p => (
+            <EvidenceCard
+              key={p.id}
+              proof={{
+                id: p.fileHash,
+                fileHash: p.fileHash,
+                timestamp: p.timestamp,
+                storageId: p.arweaveTxId,
+                ipfsCid: p.ipfsCid ?? undefined,
+              }}
+              initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
+              isMatching={matchingFileHashes.has(p.fileHash)}
+            />
+          ))}
+        </div>
+      </>
     );
   }
 
   if (useSupabaseData && supabaseProofs) {
+    const fileHashes = supabaseProofs.map(p => p.fileHash);
     return (
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {supabaseProofs.map(p => (
-          <EvidenceCard
-            key={p.id}
-            proof={{
-              id: p.fileHash,
-              fileHash: p.fileHash,
-              timestamp: p.timestamp,
-              storageId: p.arweaveTxId,
-              ipfsCid: p.ipfsCid ?? undefined,
-            }}
+      <>
+        {showSecretFinder && (
+          <SecretFinderSection
+            fileHashes={fileHashes}
+            onFind={handleFindBySecret}
+            isFinding={isFinding}
+            pastedSecret={pastedSecret}
+            setPastedSecret={setPastedSecret}
+            matchingCount={matchingFileHashes.size}
           />
-        ))}
-      </div>
+        )}
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+          {supabaseProofs.map(p => (
+            <EvidenceCard
+              key={p.id}
+              proof={{
+                id: p.fileHash,
+                fileHash: p.fileHash,
+                timestamp: p.timestamp,
+                storageId: p.arweaveTxId,
+                ipfsCid: p.ipfsCid ?? undefined,
+              }}
+              initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
+              isMatching={matchingFileHashes.has(p.fileHash)}
+            />
+          ))}
+        </div>
+      </>
     );
   }
 
   const sortedEvents = [...(events ?? [])].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
+  const fileHashes = sortedEvents.map(e => e.args.fileHash as string);
 
   return (
-    <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-      {sortedEvents.map(event => {
-        const fileHash = event.args.fileHash as string;
-        return <EvidenceListItem fileHash={fileHash} key={fileHash} timestamp={Number(event.args.timestamp)} />;
-      })}
-    </div>
+    <>
+      {showSecretFinder && (
+        <SecretFinderSection
+          fileHashes={fileHashes}
+          onFind={handleFindBySecret}
+          isFinding={isFinding}
+          pastedSecret={pastedSecret}
+          setPastedSecret={setPastedSecret}
+          matchingCount={matchingFileHashes.size}
+        />
+      )}
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
+        {sortedEvents.map(event => {
+          const fileHash = event.args.fileHash as string;
+          return (
+            <EvidenceListItem
+              fileHash={fileHash}
+              key={fileHash}
+              timestamp={Number(event.args.timestamp)}
+              initialSecret={matchingFileHashes.has(fileHash) ? pastedSecret : undefined}
+              isMatching={matchingFileHashes.has(fileHash)}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 };
 
-const EvidenceListItem = ({ fileHash, timestamp }: { fileHash: string; timestamp: number }) => {
+const EvidenceListItem = ({
+  fileHash,
+  timestamp,
+  initialSecret,
+  isMatching,
+}: {
+  fileHash: string;
+  timestamp: number;
+  initialSecret?: string;
+  isMatching?: boolean;
+}) => {
   const { data: proof, isLoading } = useScaffoldReadContract({
     contractName: "EvidenceVault",
     functionName: "getProof",
@@ -443,6 +642,8 @@ const EvidenceListItem = ({ fileHash, timestamp }: { fileHash: string; timestamp
         storageId: proof.arweaveTxId,
         ipfsCid: proof.ipfsCid && proof.ipfsCid.length > 0 ? proof.ipfsCid : undefined,
       }}
+      initialSecret={initialSecret}
+      isMatching={isMatching}
     />
   );
 };
