@@ -16,7 +16,7 @@
  *   npm install circomlibjs snarkjs ethers
  */
 
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as snarkjs from "snarkjs";
@@ -47,9 +47,9 @@ async function setup() {
 
   fs.mkdirSync(BUILD_DIR, { recursive: true });
 
-  // 1. Compile the Circom circuit
+  // 1. Compile the Circom circuit (execFileSync: paths as args, no shell parsing)
   console.log("\n[1/6] Compiling commitment.circom...");
-  execSync(`circom ${CIRCUIT} --r1cs --wasm --sym --c --output ${BUILD_DIR} -l ${ROOT}`, {
+  execFileSync("circom", [CIRCUIT, "--r1cs", "--wasm", "--sym", "--c", "--output", BUILD_DIR, "-l", ROOT], {
     stdio: "inherit",
   });
   console.log("      ✓ Circuit compiled");
@@ -59,7 +59,7 @@ async function setup() {
   // https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau
   if (!fs.existsSync(PTAU_FILE)) {
     console.log("\n[2/6] Downloading Powers of Tau (pot15)...");
-    execSync(`curl -o ${PTAU_FILE} https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau`, {
+    execFileSync("curl", ["-o", PTAU_FILE, "https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_15.ptau"], {
       stdio: "inherit",
     });
   } else {
@@ -89,9 +89,10 @@ async function setup() {
   console.log(`      ✓ verification_key.json saved`);
 
   // 6. Generate Solidity verifier (use CLI to avoid ESM/CJS template arg issues)
+  // execFileSync avoids shell parsing of paths (CodeQL: no interpolated command string)
   console.log("\n[6/6] Generating Solidity verifier contract...");
   const verifierTmp = path.join(BUILD_DIR, "verifier.sol");
-  execSync(`npx snarkjs zkey export solidityverifier ${ZKEY_FINAL} ${verifierTmp}`, {
+  execFileSync("npx", ["snarkjs", "zkey", "export", "solidityverifier", ZKEY_FINAL, verifierTmp], {
     stdio: "inherit",
     cwd: ROOT,
   });
