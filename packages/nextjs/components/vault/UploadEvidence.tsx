@@ -174,7 +174,27 @@ export const UploadEvidence = () => {
             </div>
           </div>
 
-          <button onClick={removeFile} className="btn btn-outline btn-block mt-8">
+          <div className="mt-6 p-4 bg-warning/10 border border-warning/30 rounded-xl">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                checked={secretSavedConfirmed}
+                onChange={e => setSecretSavedConfirmed(e.target.checked)}
+                className="checkbox checkbox-warning checkbox-sm mt-0.5 shrink-0"
+              />
+              <span className="text-sm font-medium text-base-content">
+                I have saved my secret key offline in a safe place. I understand that without it I cannot recover this
+                evidence.
+              </span>
+            </label>
+          </div>
+
+          <button
+            onClick={removeFile}
+            disabled={!secretSavedConfirmed}
+            className="btn btn-outline btn-block mt-6"
+            title={secretSavedConfirmed ? undefined : "Confirm you have saved your secret key above"}
+          >
             Secure Another File
           </button>
         </div>
@@ -221,7 +241,9 @@ export const UploadEvidence = () => {
               <p className="text-sm sm:text-base font-medium mb-1">
                 <span className="text-primary font-bold">Click to upload</span> or drag and drop
               </p>
-              <p className="text-xs sm:text-sm text-base-content/40">Documents, images, video, audio — any evidence up to 50MB</p>
+              <p className="text-xs sm:text-sm text-base-content/40">
+                Documents, images, video, audio — any evidence up to 50MB
+              </p>
             </div>
           </div>
         ) : (
