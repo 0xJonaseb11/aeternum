@@ -52,7 +52,7 @@ async function fetchProofsFromIndexer(
     if (!res.ok) {
       const text = await res.text();
       throw new Error(
-        `Indexer (Ponder) failed ${res.status}: ${res.status === 404 ? "GraphQL endpoint not found — ensure Ponder has src/api/index.ts with graphql middleware" : text || res.statusText}`,
+        `Indexer (Ponder) failed ${res.status}: ${res.status === 404 ? "GraphQL endpoint not found; ensure Ponder has src/api/index.ts with graphql middleware" : text || res.statusText}`,
       );
     }
     const json = (await res.json()) as {
