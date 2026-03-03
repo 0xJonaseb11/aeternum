@@ -55,7 +55,7 @@ export const EvidenceCard = ({ proof }: { proof: EvidenceItem }) => {
       notification.error("Please enter your secret key");
       return;
     }
-    await recoverFile(proof.storageId, secret, `aeternum_${proof.fileHash.slice(2, 10)}.enc`, proof.ipfsCid);
+    await recoverFile(proof.storageId, secret, `aeternum_recovered_${proof.fileHash.slice(2, 10)}`, proof.ipfsCid);
     setShowRecover(false);
     setSecret("");
   };
