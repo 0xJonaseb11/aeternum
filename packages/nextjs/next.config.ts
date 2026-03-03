@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "52mb", // Allow encrypted evidence up to ~50MB (encryption adds small overhead)
+    },
+  },
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
