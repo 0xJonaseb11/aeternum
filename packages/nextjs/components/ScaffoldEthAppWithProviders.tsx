@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
+import { SupabaseAuthProvider } from "~~/components/auth/SupabaseAuthProvider";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
@@ -56,7 +57,9 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           }
         >
           <ProgressBar height="3px" color="var(--color-primary, #e91e63)" />
-          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          <SupabaseAuthProvider>
+            <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          </SupabaseAuthProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
