@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Uploader } from "@irys/upload";
 import { BaseEth } from "@irys/upload-ethereum";
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
 export async function POST(req: NextRequest) {
   try {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
@@ -13,6 +15,12 @@ export async function POST(req: NextRequest) {
     const body = await req.arrayBuffer();
     if (!body || body.byteLength === 0) {
       return NextResponse.json({ error: "Empty body" }, { status: 400 });
+    }
+    if (body.byteLength > MAX_UPLOAD_BYTES) {
+      return NextResponse.json(
+        { error: `File too large. Maximum size is ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB.` },
+        { status: 413 },
+      );
     }
 
     const rpcUrl = process.env.IRYS_RPC_URL ?? "https://sepolia.base.org";

@@ -1,31 +1,21 @@
-import { PINATA_JWT, getIpfsUrl } from "~~/utils/vault/ipfsConfig";
-
-const PINATA_PIN_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
-
-async function uploadToPinata(data: ArrayBuffer): Promise<string> {
-  if (!PINATA_JWT) throw new Error("Pinata JWT not configured");
-  const blob = new Blob([data]);
-  const form = new FormData();
-  form.append("file", blob, "evidence.enc");
-  const res = await fetch(PINATA_PIN_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${PINATA_JWT}` },
-    body: form,
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Pinata upload failed: ${res.status} ${err}`);
-  }
-  const json = (await res.json()) as { IpfsHash?: string };
-  if (!json.IpfsHash) throw new Error("Pinata did not return IpfsHash");
-  return json.IpfsHash;
-}
+import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 
 export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
-  if (!PINATA_JWT) {
-    throw new Error("IPFS upload failed: NEXT_PUBLIC_PINATA_JWT is not configured.");
+  const res = await fetch("/api/ipfs-upload", {
+    method: "POST",
+    body: data,
+  });
+  if (!res.ok) {
+    const errorJson = await res.json().catch(() => undefined);
+    const message = (errorJson && (errorJson.error as string)) || `IPFS upload failed with status ${res.status}`;
+    console.error("IPFS upload failed:", errorJson ?? res.statusText);
+    throw new Error(message);
   }
-  return uploadToPinata(data);
+  const json = (await res.json()) as { cid?: string };
+  if (!json.cid) {
+    throw new Error("IPFS upload failed: missing cid.");
+  }
+  return json.cid;
 };
 
 export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
