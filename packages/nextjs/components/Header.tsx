@@ -8,6 +8,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { EmailAuthStatus } from "~~/components/auth/EmailAuthStatus";
+import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
@@ -150,8 +151,11 @@ export const Header = () => {
         <div className="navbar-end hidden md:flex items-center justify-end gap-2 lg:gap-3 min-w-0 flex-shrink-0">
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
-          <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
-            <EmailAuthStatus />
+          <div className="min-w-0 flex items-center gap-2 flex-wrap justify-end">
+            <div className="flex flex-col items-end gap-1 min-w-0">
+              <EmailAuthStatus />
+              <WalletLinkStatus />
+            </div>
             <RainbowKitCustomConnectButton />
           </div>
         </div>
