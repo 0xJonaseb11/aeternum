@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Empty body" }, { status: 400 });
     }
     if (body.byteLength > MAX_UPLOAD_BYTES) {
-      return NextResponse.json({ error: `File too large. Maximum size is ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB.` }, { status: 413 });
+      return NextResponse.json(
+        { error: `File too large. Maximum size is ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB.` },
+        { status: 413 },
+      );
     }
 
     const blob = new Blob([body], { type: "application/octet-stream" });
@@ -47,4 +50,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `IPFS upload failed: ${String(error)}` }, { status: 500 });
   }
 }
-

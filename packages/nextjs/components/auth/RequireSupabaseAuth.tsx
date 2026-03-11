@@ -32,4 +32,3 @@ export function RequireSupabaseAuth({
 
   return <>{children}</>;
 }
-

@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -123,4 +123,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
