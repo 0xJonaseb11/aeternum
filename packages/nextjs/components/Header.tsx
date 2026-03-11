@@ -7,6 +7,7 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
+import { EmailAuthStatus } from "~~/components/auth/EmailAuthStatus";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
@@ -20,6 +21,7 @@ export const menuLinks: HeaderMenuLink[] = [
   { label: "Home", href: "/" },
   { label: "Vault", href: "/#vault" },
   { label: "Verify", href: "/verification" },
+  { label: "Account", href: "/login" },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -83,6 +85,14 @@ export const Header = () => {
             >
               <HeaderMenuLinks />
               <li className="menu-title mt-2 pt-2 border-t border-base-300">
+                <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold">Account</span>
+              </li>
+              <li onClick={e => e.stopPropagation()} className="rounded-lg">
+                <div className="px-2 w-full min-w-0">
+                  <EmailAuthStatus />
+                </div>
+              </li>
+              <li className="menu-title mt-2 pt-2 border-t border-base-300">
                 <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold">App</span>
               </li>
               <li onClick={e => e.stopPropagation()} className="rounded-lg">
@@ -141,6 +151,7 @@ export const Header = () => {
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+            <EmailAuthStatus />
             <RainbowKitCustomConnectButton />
           </div>
         </div>
