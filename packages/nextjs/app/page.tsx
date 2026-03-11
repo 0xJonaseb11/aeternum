@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
-import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import {
   ArrowRightIcon,
@@ -12,19 +10,9 @@ import {
   ShieldCheckIcon,
   Squares2X2Icon,
 } from "@heroicons/react/24/outline";
-import { ProofListSkeleton } from "~~/components/ui/Skeleton";
-import { EvidenceList } from "~~/components/vault/EvidenceList";
-import { UploadEvidence } from "~~/components/vault/UploadEvidence";
-import deployedContracts from "~~/contracts/deployedContracts";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress, isConnecting, chain } = useAccount();
-  const { targetNetwork } = useTargetNetwork();
-  const isWrongNetwork = chain && chain.id !== targetNetwork.id;
-  const hasVaultContract = Boolean(
-    deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault,
-  );
+  const { address: connectedAddress } = useAccount();
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
