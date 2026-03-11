@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, usePublicClient } from "wagmi";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { useScaffoldWriteContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
-import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { getParsedError } from "~~/utils/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { computeCommitment, computeHash, encryptFile, generateSecret } from "~~/utils/vault/crypto";
