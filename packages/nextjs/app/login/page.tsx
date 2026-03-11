@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
@@ -56,11 +57,22 @@ export default function LoginPage() {
                 <div className="text-sm text-base-content/60">Loading…</div>
               ) : user ? (
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-base-300 bg-base-200/40 p-4">
-                    <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40 mb-1">
+                  <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40">
                       Signed in as
                     </div>
                     <div className="font-mono text-sm break-all">{user.email ?? user.id}</div>
+                  </div>
+
+                  <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40">
+                      Wallet link
+                    </div>
+                    <p className="text-xs text-base-content/60">
+                      Connect your wallet in the header, then link it to this account so evidence ownership can be
+                      associated with your identity.
+                    </p>
+                    <WalletLinkStatus />
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3">
