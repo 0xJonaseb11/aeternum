@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
