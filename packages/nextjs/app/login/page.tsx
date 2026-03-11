@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
@@ -43,10 +42,8 @@ export default function LoginPage() {
     <div className="flex flex-col grow w-full">
       <section className="bg-pattern pt-12 pb-10 sm:pt-16 sm:pb-14 border-b border-base-300 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2">Sign in</h1>
-          <p className="text-sm text-base-content/70">
-            Use email for your SaaS account. Wallet connection remains available for vault actions.
-          </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2">Account</h1>
+          <p className="text-sm text-base-content/70">Sign in with your email to manage your vault and settings.</p>
         </div>
       </section>
 
@@ -60,9 +57,9 @@ export default function LoginPage() {
                 <div className="space-y-4">
                   <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
                     <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40">
-                      Signed in as
+                      Signed in
                     </div>
-                    <div className="font-mono text-sm break-all">{user.email ?? user.id}</div>
+                    <div className="text-sm break-all">{user.email ?? "Email account"}</div>
                   </div>
 
                   <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
@@ -70,8 +67,8 @@ export default function LoginPage() {
                       Wallet link
                     </div>
                     <p className="text-xs text-base-content/60">
-                      Connect your wallet in the header, then link it to this account so evidence ownership can be
-                      associated with your identity.
+                      Connect your wallet in the header, then link it to this account so new evidence is clearly tied to
+                      you.
                     </p>
                     <WalletLinkStatus />
                   </div>
@@ -122,11 +119,6 @@ export default function LoginPage() {
                   >
                     Send magic link
                   </button>
-
-                  <div className="text-xs text-base-content/50">
-                    Make sure your Supabase Auth redirect URLs include{" "}
-                    <code className="px-1 py-0.5 rounded bg-base-200 border border-base-300">/auth/callback</code>.
-                  </div>
                 </div>
               )}
             </div>
