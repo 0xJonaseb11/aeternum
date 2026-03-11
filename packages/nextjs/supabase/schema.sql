@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS proofs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   chain_id INTEGER NOT NULL,
   owner_address TEXT NOT NULL,
+  user_id UUID,
   file_hash TEXT NOT NULL,
   "timestamp" BIGINT NOT NULL,
   block_number BIGINT NOT NULL,
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS proofs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_proofs_owner_chain ON proofs(owner_address, chain_id);
+CREATE INDEX IF NOT EXISTS idx_proofs_user_id ON proofs(user_id);
 
 -- Optional RLS: enable if you use anon key and auth.
 ALTER TABLE proofs ENABLE ROW LEVEL SECURITY;

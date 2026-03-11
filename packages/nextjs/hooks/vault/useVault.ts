@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, usePublicClient } from "wagmi";
 import { useScaffoldWriteContract, useSelectedNetwork } from "~~/hooks/scaffold-eth";
+import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { getParsedError } from "~~/utils/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import { computeCommitment, computeHash, encryptFile, generateSecret } from "~~/utils/vault/crypto";
@@ -29,6 +30,7 @@ export const useVault = () => {
   const { address } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
+  const { user } = useSupabaseAuth();
 
   const { writeContractAsync: createProof } = useScaffoldWriteContract({
     contractName: "EvidenceVault",
@@ -89,6 +91,7 @@ export const useVault = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               owner: address,
+              userId: user?.id,
               fileHash,
               timestamp: proofTimestamp,
               blockNumber,

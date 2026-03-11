@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
   }
   let body: {
     owner: string;
+    userId?: string;
     fileHash: string;
     timestamp: number;
     blockNumber?: number;
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { owner, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532 } = body;
+  const { owner, userId, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532 } = body;
   const blockNumber = body.blockNumber ?? 0;
   if (!owner || !fileHash || timestamp == null || !arweaveTxId) {
     return NextResponse.json(
@@ -89,6 +90,7 @@ export async function POST(req: NextRequest) {
     {
       chain_id: chainId,
       owner_address: owner.toLowerCase(),
+      user_id: userId ?? null,
       file_hash: fileHash,
       timestamp,
       block_number: blockNumber,
