@@ -8,9 +8,14 @@ export async function GET(req: NextRequest) {
   }
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
+  const userId = searchParams.get("userId");
   const chainIdParam = searchParams.get("chainId");
-  if (!owner || !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
-    return NextResponse.json({ error: "Missing or invalid owner" }, { status: 400 });
+
+  if (!owner && !userId) {
+    return NextResponse.json({ error: "Missing owner or userId" }, { status: 400 });
+  }
+  if (owner && !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
+    return NextResponse.json({ error: "Invalid owner" }, { status: 400 });
   }
   let chainId: number | undefined;
   if (chainIdParam != null) {
@@ -23,11 +28,16 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("proofs")
-    .select("id, chain_id, owner_address, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked")
-    .eq("owner_address", owner.toLowerCase())
+    .select("id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked")
     .eq("revoked", false)
     .order("timestamp", { ascending: false })
     .limit(100);
+
+  if (userId) {
+    query = query.eq("user_id", userId);
+  } else if (owner) {
+    query = query.eq("owner_address", owner.toLowerCase());
+  }
 
   if (chainId != null) {
     query = query.eq("chain_id", chainId);

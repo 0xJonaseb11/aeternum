@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 
 export interface SupabaseProofItem {
   id: string;
@@ -11,8 +12,21 @@ export interface SupabaseProofItem {
   revoked: boolean;
 }
 
-async function fetchProofsFromSupabase(owner: `0x${string}`, chainId: number): Promise<SupabaseProofItem[]> {
-  const params = new URLSearchParams({ owner: owner.toLowerCase(), chainId: String(chainId) });
+async function fetchProofsFromSupabase({
+  owner,
+  userId,
+  chainId,
+}: {
+  owner?: `0x${string}`;
+  userId?: string;
+  chainId: number;
+}): Promise<SupabaseProofItem[]> {
+  const params = new URLSearchParams({ chainId: String(chainId) });
+  if (userId) {
+    params.set("userId", userId);
+  } else if (owner) {
+    params.set("owner", owner.toLowerCase());
+  }
   const res = await fetch(`/api/proofs?${params}`);
   if (res.status === 503) {
     throw new Error("Supabase not configured");
@@ -25,9 +39,12 @@ async function fetchProofsFromSupabase(owner: `0x${string}`, chainId: number): P
 }
 
 export function useSupabaseProofs(owner: `0x${string}` | undefined, chainId: number, enabled: boolean) {
+  const { user } = useSupabaseAuth();
+  const userId = user?.id;
+
   return useQuery({
-    queryKey: ["supabaseProofs", owner, chainId],
-    queryFn: () => fetchProofsFromSupabase(owner!, chainId),
+    queryKey: ["supabaseProofs", owner, userId, chainId],
+    queryFn: () => fetchProofsFromSupabase({ owner: owner!, userId, chainId }),
     enabled: enabled && Boolean(owner),
     staleTime: 30_000,
     retry: 1,
