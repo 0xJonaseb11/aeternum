@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 
 export type EvidenceEvent = {
   id: string;
@@ -12,9 +11,8 @@ export type EvidenceEvent = {
   data: unknown;
 };
 
-async function fetchEvents(fileHash: string, userId?: string | null): Promise<EvidenceEvent[]> {
+async function fetchEvents(fileHash: string): Promise<EvidenceEvent[]> {
   const params = new URLSearchParams({ fileHash });
-  if (userId) params.set("userId", userId);
   const res = await fetch(`/api/events?${params}`);
   if (!res.ok) {
     throw new Error(`Events API failed: ${res.status}`);
@@ -24,12 +22,9 @@ async function fetchEvents(fileHash: string, userId?: string | null): Promise<Ev
 }
 
 export function useEvidenceEvents(fileHash: string | undefined) {
-  const { user } = useSupabaseAuth();
-  const userId = user?.id ?? null;
-
   return useQuery({
-    queryKey: ["evidenceEvents", fileHash, userId],
-    queryFn: () => fetchEvents(fileHash!, userId),
+    queryKey: ["evidenceEvents", fileHash],
+    queryFn: () => fetchEvents(fileHash!),
     enabled: Boolean(fileHash),
     staleTime: 30_000,
   });

@@ -119,7 +119,6 @@ export const useVault = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: user?.id,
             fileHash,
             eventType: "created",
             data: {
