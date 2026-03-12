@@ -13,9 +13,12 @@
   <img src="https://img.shields.io/badge/ZK-6C5CE7?style=flat-square&logo=simple-analytics&logoColor=white" />
   <img src="https://img.shields.io/badge/Ponder-000000?style=flat-square" alt="Ponder" />
   <img src="https://img.shields.io/badge/Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white" />
+  
 </div>
 
 <br/>
+
+
 
 **Permanent. Private. Verifiable. You hold the key.**
 
@@ -86,6 +89,10 @@ See `packages/hardhat/README.md` for deployment and `packages/nextjs/` for app c
 
 ## License
 [MIT LICENSE](./LICENCE)
+
+-------
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/0xJonaseb11/aeternum?utm_source=oss&utm_medium=github&utm_campaign=0xJonaseb11%2Faeternum&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 
 --------------------
 
