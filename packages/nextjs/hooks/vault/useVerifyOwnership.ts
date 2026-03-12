@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { usePublicClient } from "wagmi";
+import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { getParsedError } from "~~/utils/scaffold-eth/getParsedError";
 import { generateZKProofBundle } from "~~/utils/vault/zkProof";
@@ -12,6 +13,7 @@ export function useVerifyOwnership() {
   const [isVerifying, setIsVerifying] = useState(false);
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
   const publicClient = usePublicClient();
+  const { user } = useSupabaseAuth();
 
   const verify = async (fileHash: string, secret: string): Promise<VerifyResult> => {
     if (!vaultContract?.address || !publicClient) {
