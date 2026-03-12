@@ -9,19 +9,17 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const fileHash = searchParams.get("fileHash");
-  const userId = searchParams.get("userId");
 
   if (!fileHash) {
     return NextResponse.json({ error: "Missing fileHash" }, { status: 400 });
   }
 
-  let query = supabase.from("events").select("*").eq("file_hash", fileHash).order("at", { ascending: false }).limit(20);
-
-  if (userId) {
-    query = query.eq("user_id", userId);
-  }
-
-  const { data, error } = await query;
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("file_hash", fileHash)
+    .order("at", { ascending: false })
+    .limit(20);
   if (error) {
     console.error("Supabase GET /api/events error:", error);
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
@@ -37,7 +35,6 @@ export async function POST(req: NextRequest) {
   }
 
   let body: {
-    userId?: string;
     fileHash: string;
     eventType: string;
     data?: unknown;
@@ -49,17 +46,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { userId, fileHash, eventType, data } = body;
+  const { fileHash, eventType, data } = body;
   if (!fileHash || !eventType) {
     return NextResponse.json({ error: "Missing fileHash or eventType" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("events").insert({
-    user_id: userId ?? null,
-    file_hash: fileHash,
-    event_type: eventType,
-    data: data ?? null,
-  });
+  const { error } = await supabase
+    .from("events")
+    .insert({ user_id: null, file_hash: fileHash, event_type: eventType, data: data ?? null });
 
   if (error) {
     console.error("Supabase POST /api/events error:", error);
