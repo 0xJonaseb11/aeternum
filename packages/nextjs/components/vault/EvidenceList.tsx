@@ -20,6 +20,8 @@ import {
   useScaffoldReadContract,
   useSelectedNetwork,
 } from "~~/hooks/scaffold-eth";
+import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
+import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
@@ -76,6 +78,7 @@ export const EvidenceCard = ({
   const { recoverFile, isRecovering } = useRecover();
   const { verify, isVerifying } = useVerifyOwnership();
   const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash);
+  const { data: events } = useEvidenceEvents(proof.fileHash);
 
   useEffect(() => {
     if (initialSecret != null && initialSecret !== "") {
@@ -336,40 +339,78 @@ export const EvidenceCard = ({
             )}
           </div>
         ) : (
-          <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-0 min-w-0 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-            <button
-              type="button"
-              onClick={() => setShowRecover(true)}
-              className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary"
-            >
-              <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Recover</span>
-            </button>
-            <span className="text-base-content/40 px-1">|</span>
-            <button
-              type="button"
-              onClick={() => zkAvailable && setShowVerify(true)}
-              disabled={!zkAvailable}
-              title={
-                zkAvailable
-                  ? "Prove ownership with zero-knowledge (no secret on-chain)"
-                  : "ZK artifacts not loaded. Run zk:setup in hardhat and copy to public/zk/"
-              }
-              className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary disabled:opacity-50"
-            >
-              <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Verify</span>
-            </button>
-            <span className="text-base-content/40 px-1">|</span>
-            <button
-              type="button"
-              onClick={handleDetails}
-              className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-secondary-content"
-            >
-              <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
-              <span>Certificate</span>
-            </button>
-          </div>
+          <>
+            <div className="mt-4 sm:mt-5 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-0 min-w-0 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+              <button
+                type="button"
+                onClick={() => setShowRecover(true)}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary"
+              >
+                <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Recover</span>
+              </button>
+              <span className="text-base-content/40 px-1">|</span>
+              <button
+                type="button"
+                onClick={() => zkAvailable && setShowVerify(true)}
+                disabled={!zkAvailable}
+                title={
+                  zkAvailable
+                    ? "Prove ownership with zero-knowledge (no secret on-chain)"
+                    : "ZK proof not available right now."
+                }
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary disabled:opacity-50"
+              >
+                <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Verify</span>
+              </button>
+              <span className="text-base-content/40 px-1">|</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  handleDetails();
+                  try {
+                    void fetch("/api/events", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        fileHash: proof.fileHash,
+                        eventType: "certificate_downloaded",
+                      }),
+                    });
+                  } catch {
+                    // non-fatal
+                  }
+                }}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-secondary-content"
+              >
+                <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Certificate</span>
+              </button>
+            </div>
+
+            {events && events.length > 0 && (
+              <div className="mt-3 border-t border-base-200 pt-2">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-base-content/40 mb-1">Activity</p>
+                <ul className="space-y-0.5">
+                  {events.slice(0, 3).map(ev => (
+                    <li key={ev.id} className="text-[10px] text-base-content/60 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-base-content/30" />
+                      <span>
+                        {ev.event_type === "created"
+                          ? "Evidence created"
+                          : ev.event_type === "verified"
+                            ? "Ownership verified"
+                            : ev.event_type === "certificate_downloaded"
+                              ? "Certificate downloaded"
+                              : ev.event_type}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

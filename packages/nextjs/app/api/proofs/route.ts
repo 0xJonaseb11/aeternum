@@ -28,7 +28,9 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("proofs")
-    .select("id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked")
+    .select(
+      "id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked",
+    )
     .eq("revoked", false)
     .order("timestamp", { ascending: false })
     .limit(100);
