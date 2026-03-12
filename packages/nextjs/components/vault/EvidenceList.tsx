@@ -28,6 +28,7 @@ import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
+import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 
 interface EvidenceItem {
   id: string;
@@ -69,8 +70,12 @@ export const EvidenceCard = ({
   const [verifySecret, setVerifySecret] = useState(initialSecret ?? "");
   const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
   const [zkAvailable, setZkAvailable] = useState(false);
+  const [isEditingMeta, setIsEditingMeta] = useState(false);
+  const [draftTitle, setDraftTitle] = useState("");
+  const [draftDescription, setDraftDescription] = useState("");
   const { recoverFile, isRecovering } = useRecover();
   const { verify, isVerifying } = useVerifyOwnership();
+  const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash);
 
   useEffect(() => {
     if (initialSecret != null && initialSecret !== "") {
@@ -82,6 +87,12 @@ export const EvidenceCard = ({
   useEffect(() => {
     isZKArtifactsAvailable().then(setZkAvailable);
   }, []);
+
+  useEffect(() => {
+    if (!metadata) return;
+    setDraftTitle(metadata.title ?? "");
+    setDraftDescription(metadata.description ?? "");
+  }, [metadata]);
 
   const handleRecover = async () => {
     if (!secret) {
@@ -151,13 +162,89 @@ export const EvidenceCard = ({
           <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
         </div>
 
+        <div className="mb-2 min-w-0">
+          {isEditingMeta ? (
+            <div className="space-y-1">
+              <input
+                type="text"
+                className="input input-xs input-bordered w-full text-xs"
+                placeholder="Title (optional)"
+                value={draftTitle}
+                onChange={e => setDraftTitle(e.target.value)}
+              />
+              <textarea
+                className="textarea textarea-xs textarea-bordered w-full text-xs"
+                placeholder="Description (optional)"
+                rows={2}
+                value={draftDescription}
+                onChange={e => setDraftDescription(e.target.value)}
+              />
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => {
+                    if (metadata) {
+                      setDraftTitle(metadata.title ?? "");
+                      setDraftDescription(metadata.description ?? "");
+                    }
+                    setIsEditingMeta(false);
+                  }}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-primary btn-xs ${isSaving ? "loading" : ""}`}
+                  onClick={async () => {
+                    try {
+                      await save({ title: draftTitle || undefined, description: draftDescription || undefined });
+                      setIsEditingMeta(false);
+                      notification.success("Details saved.");
+                    } catch (e) {
+                      console.error(e);
+                      notification.error("Could not save details.");
+                    }
+                  }}
+                  disabled={isSaving}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <h4
+                  className="font-bold text-base-content text-sm sm:text-base truncate"
+                  title={metadata?.title || "Evidence"}
+                >
+                  {metaLoading ? "Loading…" : metadata?.title || "Untitled evidence"}
+                </h4>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingMeta(true)}
+                  className="btn btn-ghost btn-[10px] btn-circle text-base-content/40 hover:text-primary hover:bg-primary/5"
+                  aria-label="Edit details"
+                >
+                  •••
+                </button>
+              </div>
+              {metadata?.description && (
+                <p className="text-[10px] text-base-content/60 line-clamp-2">{metadata.description}</p>
+              )}
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-1.5 mb-1 min-w-0">
-          <h4
-            className="font-bold text-base-content text-sm sm:text-base font-mono truncate"
+          <p
+            className="font-mono text-[10px] text-base-content/70 truncate"
             title={`Proof ID (file hash): ${proof.fileHash}. Click copy to copy full value.`}
           >
             {sliceHashDisplay(proof.fileHash)}
-          </h4>
+          </p>
           <button
             type="button"
             onClick={async () => {

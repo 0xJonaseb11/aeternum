@@ -26,6 +26,42 @@ CREATE POLICY "Users can read own proofs" ON proofs FOR SELECT USING (owner_addr
 CREATE POLICY "Users can insert own proofs" ON proofs FOR INSERT WITH CHECK (owner_address = current_setting('request.jwt.claim.wallet', true));
 
 -- -----------------------------------------------------------------------------
+-- Evidence: user-scoped metadata records
+-- -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.evidence (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  file_hash TEXT NOT NULL,
+  title TEXT,
+  description TEXT,
+  case_id TEXT,
+  tags TEXT[],
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_evidence_user_id ON public.evidence(user_id);
+CREATE INDEX IF NOT EXISTS idx_evidence_file_hash ON public.evidence(file_hash);
+
+-- -----------------------------------------------------------------------------
+-- Events: evidence lifecycle timeline
+-- -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS public.events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  file_hash TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  data JSONB
+);
+
+CREATE INDEX IF NOT EXISTS idx_events_user_id ON public.events(user_id);
+CREATE INDEX IF NOT EXISTS idx_events_file_hash ON public.events(file_hash);
+
+-- -----------------------------------------------------------------------------
 -- Profiles: SaaS identity layer for Supabase-auth users
 -- -----------------------------------------------------------------------------
 -- This table extends auth.users with app-specific profile fields.
