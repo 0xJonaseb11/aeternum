@@ -21,6 +21,7 @@ import {
   useSelectedNetwork,
 } from "~~/hooks/scaffold-eth";
 import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
+import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
@@ -29,7 +30,6 @@ import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
-import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 
 interface EvidenceItem {
   id: string;
@@ -578,10 +578,10 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
       : INDEXER_URL
         ? indexedLoading
         : supabaseLoading ||
-        (indexedError && supabaseError && (eventsLoading || isFetchingNextPage)) ||
-        (indexedProofs != null &&
-          indexedProofs.length === 0 &&
-          (supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage))));
+          (indexedError && supabaseError && (eventsLoading || isFetchingNextPage)) ||
+          (indexedProofs != null &&
+            indexedProofs.length === 0 &&
+            (supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage))));
 
   const hasData = hasIndexerData || hasSupabaseData || hasEventData;
 
