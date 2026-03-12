@@ -30,6 +30,7 @@ import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
+import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 
 interface EvidenceItem {
   id: string;
