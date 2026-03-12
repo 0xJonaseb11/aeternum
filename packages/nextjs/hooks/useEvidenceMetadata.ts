@@ -27,12 +27,7 @@ async function fetchEvidence(fileHash: string, userId?: string | null): Promise<
   return json.item ?? null;
 }
 
-async function saveEvidence(input: {
-  fileHash: string;
-  userId?: string | null;
-  title?: string;
-  description?: string;
-}) {
+async function saveEvidence(input: { fileHash: string; userId?: string | null; title?: string; description?: string }) {
   const res = await fetch("/api/evidence", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,4 +73,3 @@ export function useEvidenceMetadata(fileHash: string | undefined) {
     isSaving: mutation.isPending,
   };
 }
-

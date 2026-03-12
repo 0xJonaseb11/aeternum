@@ -113,6 +113,28 @@ export const useVault = () => {
 
       notification.success("Evidence secured successfully!");
 
+      // Fire-and-forget event log (ignore failures)
+      try {
+        void fetch("/api/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user?.id,
+            fileHash,
+            eventType: "created",
+            data: {
+              arweaveTxId,
+              ipfsCid,
+              chainId: selectedNetwork?.id,
+              blockNumber,
+              timestamp: proofTimestamp,
+            },
+          }),
+        });
+      } catch {
+        // non-fatal
+      }
+
       return {
         fileHash,
         secret,
