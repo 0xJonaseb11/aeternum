@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowDownTrayIcon, CheckCircleIcon, ClipboardDocumentIcon, DocumentTextIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowDownTrayIcon,
+  CheckCircleIcon,
+  ClipboardDocumentIcon,
+  DocumentTextIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 
 type Proof = {
