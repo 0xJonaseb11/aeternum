@@ -5344,6 +5344,7 @@ __metadata:
     next-themes: ~0.3.0
     postcss: ~8.4.45
     prettier: ~3.5.3
+    qrcode: ^1.5.4
     qrcode.react: ~4.0.1
     react: ~19.2.3
     react-dom: ~19.2.3
@@ -20135,7 +20136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qrcode@npm:~1.5.4":
+"qrcode@npm:^1.5.4, qrcode@npm:~1.5.4":
   version: 1.5.4
   resolution: "qrcode@npm:1.5.4"
   dependencies:

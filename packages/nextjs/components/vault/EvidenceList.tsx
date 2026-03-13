@@ -126,9 +126,9 @@ export const EvidenceCard = ({
     }
   };
 
-  const handleDetails = () => {
+  const handleDetails = async () => {
     try {
-      const blob = createCertificatePdf({
+      const blob = await createCertificatePdf({
         fileHash: proof.fileHash,
         timestamp: proof.timestamp,
         storageId: proof.storageId,

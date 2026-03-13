@@ -135,7 +135,7 @@ export const Header = () => {
               </span>
             </div>
           </Link>
-          <ul className="hidden md:flex menu menu-horizontal gap-1 px-1">
+          <ul className="hidden md:flex menu menu-horizontal gap-1 px-1 whitespace-nowrap">
             <HeaderMenuLinks />
           </ul>
         </div>

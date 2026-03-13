@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import QRCode from "qrcode";
 
 export interface CertificateData {
   fileHash: string;
@@ -11,7 +12,28 @@ export interface CertificateData {
   verificationUrl?: string;
 }
 
-export function createCertificatePdf(data: CertificateData): Blob {
+async function loadLogoDataUrl(size = 32): Promise<string | null> {
+  if (typeof document === "undefined") return null;
+  try {
+    const img = new Image();
+    img.src = "/logo.svg";
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0, size, size);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return null;
+  }
+}
+
+export async function createCertificatePdf(data: CertificateData): Promise<Blob> {
   const doc = new jsPDF({ format: "a4", unit: "mm" });
   const margin = 22;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -19,14 +41,19 @@ export function createCertificatePdf(data: CertificateData): Blob {
   const accent = { r: 236, g: 72, b: 153 }; // Aeternum primary
   let y = margin;
 
-  // Branded header band
+  // Branded header band + logo
   doc.setFillColor(accent.r, accent.g, accent.b);
   doc.rect(0, 0, pageWidth, 26, "F");
+
+  const logoDataUrl = await loadLogoDataUrl(28);
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, "PNG", margin, 6, 12, 12);
+  }
 
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("AETERNUM", margin, 16);
+  doc.text("AETERNUM", margin + 16, 16);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -164,19 +191,16 @@ export function createCertificatePdf(data: CertificateData): Blob {
   );
   doc.text(verifyLines, rightX + 5, boxY + 14);
 
-  // Simple QR-style grid placeholder (no external deps; can be replaced by real QR later)
+  const qrTarget = data.transactionHash && data.chainName ? data.transactionHash : data.verificationUrl;
   const qrSize = 22;
   const qrX = rightX + boxWidth - qrSize - 6;
   const qrY = boxY + 6;
-  doc.setDrawColor(0, 0, 0);
-  doc.setFillColor(0, 0, 0);
-  const cells = 7;
-  const cellSize = qrSize / cells;
-  for (let row = 0; row < cells; row++) {
-    for (let col = 0; col < cells; col++) {
-      if ((row + col) % 2 === 0 || row === 0 || col === 0 || row === cells - 1 || col === cells - 1) {
-        doc.rect(qrX + col * cellSize, qrY + row * cellSize, cellSize, cellSize, "F");
-      }
+  if (qrTarget) {
+    try {
+      const qrDataUrl = await QRCode.toDataURL(qrTarget, { margin: 0 });
+      doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+    } catch {
+      // fall through silently if QR generation fails
     }
   }
 

@@ -69,9 +69,9 @@ export default function EvidenceVerificationPage() {
     void navigator.clipboard.writeText(proof.fileHash);
   }, [proof?.fileHash]);
 
-  const downloadCertificate = useCallback(() => {
+  const downloadCertificate = useCallback(async () => {
     if (!proof) return;
-    const blob = createCertificatePdf({
+    const blob = await createCertificatePdf({
       fileHash: proof.fileHash,
       timestamp: proof.timestamp,
       storageId: proof.arweaveTxId,
