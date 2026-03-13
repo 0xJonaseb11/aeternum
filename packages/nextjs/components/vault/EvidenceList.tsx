@@ -11,8 +11,8 @@ import {
   FingerPrintIcon,
   KeyIcon,
   MagnifyingGlassIcon,
-  ShieldCheckIcon,
   ShareIcon,
+  ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";

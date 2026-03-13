@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheckIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 
 /**
@@ -67,7 +67,8 @@ export default function VerifyPage() {
           </form>
 
           <p className="text-xs text-base-content/50 text-center">
-            You can find the proof ID in your vault when you click &quot;Share&quot; on an evidence item, or from the verification URL (e.g. /evidence/...).
+            You can find the proof ID in your vault when you click &quot;Share&quot; on an evidence item, or from the
+            verification URL (e.g. /evidence/...).
           </p>
         </div>
       </main>
