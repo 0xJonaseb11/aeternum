@@ -3,6 +3,7 @@ import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 
 export interface SupabaseProofItem {
   id: string;
+  proofId?: string;
   fileHash: string;
   owner: string;
   timestamp: number;

@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
 
   const items = (data ?? []).map(row => ({
     id: `${row.chain_id}-${row.file_hash}`,
+    proofId: row.id,
     fileHash: row.file_hash,
     owner: row.owner_address,
     timestamp: row.timestamp,

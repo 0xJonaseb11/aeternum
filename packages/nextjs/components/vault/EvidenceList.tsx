@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useAccount, useBlockNumber } from "wagmi";
 import { usePublicClient } from "wagmi";
 import {
@@ -11,6 +12,7 @@ import {
   KeyIcon,
   MagnifyingGlassIcon,
   ShieldCheckIcon,
+  ShareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
@@ -21,6 +23,7 @@ import {
   useSelectedNetwork,
 } from "~~/hooks/scaffold-eth";
 import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
+import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
@@ -29,9 +32,10 @@ import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 import { computeCommitment } from "~~/utils/vault/crypto";
 import { isZKArtifactsAvailable } from "~~/utils/vault/zkProof";
-import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
+
 interface EvidenceItem {
   id: string;
+  proofId?: string;
   fileHash: string;
   timestamp: number;
   storageId: string;
@@ -385,6 +389,21 @@ export const EvidenceCard = ({
                 <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
                 <span>Certificate</span>
               </button>
+              {proof.proofId && (
+                <>
+                  <span className="text-base-content/40 px-1">|</span>
+                  <Link
+                    href={`/evidence/${proof.proofId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary"
+                    title="Open public verification link"
+                  >
+                    <ShareIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span>Share</span>
+                  </Link>
+                </>
+              )}
             </div>
 
             {events && events.length > 0 && (
@@ -577,10 +596,10 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
       : INDEXER_URL
         ? indexedLoading
         : supabaseLoading ||
-        (indexedError && supabaseError && (eventsLoading || isFetchingNextPage)) ||
-        (indexedProofs != null &&
-          indexedProofs.length === 0 &&
-          (supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage))));
+          (indexedError && supabaseError && (eventsLoading || isFetchingNextPage)) ||
+          (indexedProofs != null &&
+            indexedProofs.length === 0 &&
+            (supabaseLoading || (supabaseError && (eventsLoading || isFetchingNextPage))));
 
   const hasData = hasIndexerData || hasSupabaseData || hasEventData;
 
@@ -695,6 +714,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
               key={p.id}
               proof={{
                 id: p.fileHash,
+                proofId: p.proofId,
                 fileHash: p.fileHash,
                 timestamp: p.timestamp,
                 storageId: p.arweaveTxId,
