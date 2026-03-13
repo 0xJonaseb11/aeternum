@@ -22,7 +22,6 @@ import {
 } from "~~/hooks/scaffold-eth";
 import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
-import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
