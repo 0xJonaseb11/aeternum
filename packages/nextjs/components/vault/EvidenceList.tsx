@@ -40,6 +40,7 @@ interface EvidenceItem {
   timestamp: number;
   storageId: string;
   ipfsCid?: string;
+  owner?: string;
 }
 
 function normalizeHex(h: string | bigint): string {
@@ -132,6 +133,11 @@ export const EvidenceCard = ({
         timestamp: proof.timestamp,
         storageId: proof.storageId,
         ipfsCid: proof.ipfsCid,
+        owner: proof.owner,
+        verificationUrl:
+          typeof window !== "undefined" && proof.proofId
+            ? `${window.location.origin}/evidence/${proof.proofId}`
+            : undefined,
       });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -719,6 +725,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
                 timestamp: p.timestamp,
                 storageId: p.arweaveTxId,
                 ipfsCid: p.ipfsCid ?? undefined,
+                owner: p.owner,
               }}
               initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(p.fileHash)}

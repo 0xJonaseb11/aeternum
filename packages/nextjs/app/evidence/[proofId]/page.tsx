@@ -10,7 +10,6 @@ import {
   DocumentTextIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import { AppLogo } from "~~/components/AppLogo";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 
 type Proof = {
@@ -77,6 +76,8 @@ export default function EvidenceVerificationPage() {
       timestamp: proof.timestamp,
       storageId: proof.arweaveTxId,
       ipfsCid: proof.ipfsCid ?? undefined,
+      owner: proof.owner,
+      verificationUrl: typeof window !== "undefined" ? window.location.href : undefined,
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -90,7 +91,6 @@ export default function EvidenceVerificationPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6">
         <div className="flex flex-col items-center gap-2">
-          <AppLogo className="h-12 w-12 animate-pulse opacity-80" />
           <p className="text-sm text-base-content/60">Loading verification…</p>
         </div>
       </div>
@@ -100,7 +100,6 @@ export default function EvidenceVerificationPage() {
   if (error || !proof) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-6">
-        <AppLogo className="h-12 w-12 shrink-0" />
         <div className="text-center max-w-md">
           <h1 className="text-xl font-bold text-base-content mb-2">Proof not found</h1>
           <p className="text-sm text-base-content/70 mb-4">
@@ -114,22 +113,8 @@ export default function EvidenceVerificationPage() {
     );
   }
 
-  const verificationUrl = typeof window !== "undefined" ? window.location.href : "";
-
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      <header className="border-b border-base-300 bg-base-100/95 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <AppLogo className="h-8 w-8" />
-            <span className="font-bold text-sm uppercase tracking-wider">Aeternum</span>
-          </Link>
-          <Link href="/verify" className="text-xs font-medium text-base-content/70 hover:text-primary">
-            Verify another
-          </Link>
-        </div>
-      </header>
-
       <main className="flex-1 container mx-auto px-4 py-8 sm:py-12 max-w-2xl">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
           <ShieldCheckIcon className="h-4 w-4 shrink-0" />
@@ -192,17 +177,10 @@ export default function EvidenceVerificationPage() {
                 <ArrowDownTrayIcon className="h-4 w-4 shrink-0" />
                 Download certificate (PDF)
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (verificationUrl) void navigator.clipboard.writeText(verificationUrl);
-                }}
-                className="btn btn-ghost btn-sm gap-2"
-                title="Verification URL"
-              >
+              <Link href="/verify" className="btn btn-ghost btn-sm gap-2" title="Verification portal">
                 <DocumentTextIcon className="h-4 w-4 shrink-0" />
-                Copy verification URL
-              </button>
+                Verify another file
+              </Link>
             </div>
           </div>
         </div>
