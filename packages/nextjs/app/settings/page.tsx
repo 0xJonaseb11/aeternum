@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { KeyIcon, CreditCardIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { CreditCardIcon, KeyIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 
 /**
@@ -51,7 +51,9 @@ export default function SettingsPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-bold text-base-content">API keys</h2>
-                <p className="text-xs text-base-content/60">Create and manage keys for the developer API (coming soon)</p>
+                <p className="text-xs text-base-content/60">
+                  Create and manage keys for the developer API (coming soon)
+                </p>
               </div>
             </div>
           </div>
@@ -67,6 +69,22 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+
+          <Link
+            href="/team"
+            className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-colors"
+          >
+            <div className="card-body flex-row items-center gap-4">
+              <div className="rounded-lg bg-primary/10 p-3">
+                <UserGroupIcon className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="font-bold text-base-content">Team</h2>
+                <p className="text-xs text-base-content/60">Organizations and members (coming soon)</p>
+              </div>
+              <span className="text-base-content/40">→</span>
+            </div>
+          </Link>
         </div>
       </main>
     </div>

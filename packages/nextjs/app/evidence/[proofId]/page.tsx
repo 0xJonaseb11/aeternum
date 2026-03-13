@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
+  ArrowDownTrayIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
-  ArrowDownTrayIcon,
-  ShieldCheckIcon,
   DocumentTextIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
@@ -103,7 +103,9 @@ export default function EvidenceVerificationPage() {
         <AppLogo className="h-12 w-12 shrink-0" />
         <div className="text-center max-w-md">
           <h1 className="text-xl font-bold text-base-content mb-2">Proof not found</h1>
-          <p className="text-sm text-base-content/70 mb-4">{error ?? "This verification link may be invalid or expired."}</p>
+          <p className="text-sm text-base-content/70 mb-4">
+            {error ?? "This verification link may be invalid or expired."}
+          </p>
           <Link href="/verify" className="btn btn-primary btn-sm">
             Go to verification portal
           </Link>
@@ -168,7 +170,9 @@ export default function EvidenceVerificationPage() {
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase text-base-content/50">Storage</p>
-                <p className="font-mono text-xs break-all text-base-content/80">Arweave · {sliceHash(proof.arweaveTxId, 12, 8)}</p>
+                <p className="font-mono text-xs break-all text-base-content/80">
+                  Arweave · {sliceHash(proof.arweaveTxId, 12, 8)}
+                </p>
               </div>
             </div>
 
@@ -184,28 +188,28 @@ export default function EvidenceVerificationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
-              <button
-                type="button"
-                onClick={downloadCertificate}
-                className="btn btn-primary btn-sm gap-2"
-              >
+              <button type="button" onClick={downloadCertificate} className="btn btn-primary btn-sm gap-2">
                 <ArrowDownTrayIcon className="h-4 w-4 shrink-0" />
                 Download certificate (PDF)
               </button>
-              <a
-                href={verificationUrl}
+              <button
+                type="button"
+                onClick={() => {
+                  if (verificationUrl) void navigator.clipboard.writeText(verificationUrl);
+                }}
                 className="btn btn-ghost btn-sm gap-2"
                 title="Verification URL"
               >
                 <DocumentTextIcon className="h-4 w-4 shrink-0" />
                 Copy verification URL
-              </a>
+              </button>
             </div>
           </div>
         </div>
 
         <p className="text-xs text-base-content/50 mt-6">
-          This page shows only verification metadata. The encrypted file is never exposed. To recover the file you need the original secret key and access from the vault.
+          This page shows only verification metadata. The encrypted file is never exposed. To recover the file you need
+          the original secret key and access from the vault.
         </p>
       </main>
     </div>

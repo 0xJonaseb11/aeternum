@@ -11,6 +11,7 @@ import {
   FingerPrintIcon,
   KeyIcon,
   MagnifyingGlassIcon,
+  ShareIcon,
   ShieldCheckIcon,
   ShareIcon,
   XMarkIcon,
