@@ -5,66 +5,191 @@ export interface CertificateData {
   timestamp: number;
   storageId: string;
   ipfsCid?: string;
+  owner?: string;
+  chainName?: string;
+  transactionHash?: string;
+  verificationUrl?: string;
 }
 
 export function createCertificatePdf(data: CertificateData): Blob {
   const doc = new jsPDF({ format: "a4", unit: "mm" });
-  const margin = 20;
+  const margin = 22;
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const accent = { r: 236, g: 72, b: 153 }; // Aeternum primary
   let y = margin;
 
-  doc.setFontSize(22);
+  // Branded header band
+  doc.setFillColor(accent.r, accent.g, accent.b);
+  doc.rect(0, 0, pageWidth, 26, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("AETERNUM", margin, y);
-  y += 10;
-
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(100, 100, 100);
-  doc.text("Evidence Certificate", margin, y);
-  doc.setTextColor(0, 0, 0);
-  y += 18;
-
-  doc.setDrawColor(200, 200, 200);
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 14;
+  doc.text("AETERNUM", margin, 16);
 
   doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("File Hash", margin, y);
   doc.setFont("helvetica", "normal");
-  doc.text(data.fileHash, margin + 45, y);
+  doc.text("Zero-knowledge Evidence Vault", margin, 21);
+
+  // Badge
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(0.2);
+  const badgeText = "EVIDENCE CERTIFICATE";
+  const badgeWidth = doc.getTextWidth(badgeText) + 6;
+  doc.roundedRect(pageWidth - margin - badgeWidth, 10, badgeWidth, 8, 2, 2, "S");
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.text(badgeText, pageWidth - margin - badgeWidth + 3, 15);
+
+  // Reset for body
+  doc.setTextColor(0, 0, 0);
+  y = 32;
+
+  // Title
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text("Onchain Evidence Attestation", margin, y);
   y += 8;
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(80, 80, 80);
+  const intro =
+    "This certificate confirms that the evidence below has been immutably anchored and verified onchain via Aeternum.";
+  const introLines = doc.splitTextToSize(intro, pageWidth - margin * 2);
+  doc.text(introLines, margin, y);
+  y += introLines.length * 5 + 4;
+
+  doc.setTextColor(0, 0, 0);
+  doc.setDrawColor(220, 220, 220);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 8;
+
+  // Evidence section
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("Evidence details", margin, y);
+  y += 7;
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text("File hash", margin, y);
+  doc.setFont("helvetica", "normal");
+  const hashLines = doc.splitTextToSize(data.fileHash, pageWidth - margin * 2 - 35);
+  doc.text(hashLines, margin + 32, y);
+  y += hashLines.length * 5 + 3;
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Owner", margin, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(data.owner ?? "Not recorded", margin + 32, y);
+  y += 6;
 
   doc.setFont("helvetica", "bold");
   doc.text("Timestamp", margin, y);
   doc.setFont("helvetica", "normal");
-  doc.text(new Date(data.timestamp * 1000).toUTCString(), margin + 45, y);
-  y += 8;
+  doc.text(new Date(data.timestamp * 1000).toUTCString(), margin + 32, y);
+  y += 6;
 
   doc.setFont("helvetica", "bold");
-  doc.text("Storage ID", margin, y);
+  doc.text("Storage (Arweave)", margin, y);
   doc.setFont("helvetica", "normal");
-  const storageLines = doc.splitTextToSize(data.storageId, pageWidth - margin - margin - 45);
-  doc.text(storageLines, margin + 45, y);
-  y += storageLines.length * 5 + 4;
+  const storageLines = doc.splitTextToSize(data.storageId, pageWidth - margin * 2 - 50);
+  doc.text(storageLines, margin + 40, y);
+  y += storageLines.length * 5 + 3;
 
   if (data.ipfsCid && data.ipfsCid.length > 0) {
     doc.setFont("helvetica", "bold");
     doc.text("IPFS CID", margin, y);
     doc.setFont("helvetica", "normal");
-    const cidLines = doc.splitTextToSize(data.ipfsCid, pageWidth - margin - margin - 45);
-    doc.text(cidLines, margin + 45, y);
-    y += cidLines.length * 5 + 8;
+    const cidLines = doc.splitTextToSize(data.ipfsCid, pageWidth - margin * 2 - 32);
+    doc.text(cidLines, margin + 32, y);
+    y += cidLines.length * 5 + 3;
   }
 
+  y += 4;
+  doc.setDrawColor(230, 230, 230);
+  doc.line(margin, y, pageWidth - margin, y);
   y += 8;
-  doc.setFont("helvetica", "italic");
+
+  // On-chain section
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("On-chain record", margin, y);
+  y += 7;
+
   doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text("Network", margin, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(data.chainName ?? "Base (network details not fully recorded)", margin + 32, y);
+  y += 6;
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Transaction hash", margin, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(data.transactionHash ?? "Not recorded in this certificate", margin + 32, y);
+  y += 6;
+
+  if (data.verificationUrl) {
+    doc.setFont("helvetica", "bold");
+    doc.text("Verification URL", margin, y);
+    doc.setFont("helvetica", "normal");
+    const urlLines = doc.splitTextToSize(data.verificationUrl, pageWidth - margin * 2 - 42);
+    doc.text(urlLines, margin + 40, y);
+    y += urlLines.length * 5 + 3;
+  }
+
+  // Right-side verification block (QR placeholder)
+  const rightX = pageWidth / 2 + 10;
+  const boxWidth = pageWidth - rightX - margin;
+  const boxHeight = 40;
+  const boxY = pageHeight - margin - boxHeight - 10;
+
+  doc.setDrawColor(accent.r, accent.g, accent.b);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(rightX, boxY, boxWidth, boxHeight, 3, 3, "S");
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.text("Scan to verify", rightX + 5, boxY + 8);
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(90, 90, 90);
+  const verifyLines = doc.splitTextToSize(
+    "This QR code links to the live verification record for this evidence on Aeternum.",
+    boxWidth - 24,
+  );
+  doc.text(verifyLines, rightX + 5, boxY + 14);
+
+  // Simple QR-style grid placeholder (no external deps; can be replaced by real QR later)
+  const qrSize = 22;
+  const qrX = rightX + boxWidth - qrSize - 6;
+  const qrY = boxY + 6;
+  doc.setDrawColor(0, 0, 0);
+  doc.setFillColor(0, 0, 0);
+  const cells = 7;
+  const cellSize = qrSize / cells;
+  for (let row = 0; row < cells; row++) {
+    for (let col = 0; col < cells; col++) {
+      if ((row + col) % 2 === 0 || row === 0 || col === 0 || row === cells - 1 || col === cells - 1) {
+        doc.rect(qrX + col * cellSize, qrY + row * cellSize, cellSize, cellSize, "F");
+      }
+    }
+  }
+
+  // Footer / legal text
+  const footerY = pageHeight - margin;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "italic");
   doc.setTextColor(120, 120, 120);
-  doc.text("This certificate attests that the above proof is verified on-chain.", margin, y);
-  doc.text("Status: Verified", margin, y + 5);
-  doc.setTextColor(0, 0, 0);
+  const footer = [
+    "This certificate is generated by Aeternum based on onchain data and decentralized storage references.",
+    "Verification requires recomputing the evidence commitment and matching it against the recorded hash.",
+  ];
+  doc.text(footer, margin, footerY - 8);
 
   return doc.output("blob");
 }
