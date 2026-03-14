@@ -118,16 +118,7 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const {
-    owner,
-    userId,
-    fileHash,
-    timestamp,
-    arweaveTxId,
-    ipfsCid,
-    chainId = 84_532,
-    blockNumber = 0,
-  } = parsed.data;
+  const { owner, userId, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532, blockNumber = 0 } = parsed.data;
 
   const { error } = await supabase.from("proofs").upsert(
     {

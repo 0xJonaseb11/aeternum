@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiKeyAuth } from "~~/lib/api/withApiKey";
+import { getSupabase } from "~~/lib/supabase";
 
 /**
- * Developer API v1 — Certificate retrieval.
- * Planned: get certificate data or PDF for a proof (with API key auth and rate limiting).
+ * Developer API v1 — Certificate. Returns certificate data (JSON) for a proof.
  */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
@@ -15,6 +15,42 @@ export async function GET(req: NextRequest) {
   if (!proofId) {
     return NextResponse.json({ error: "Missing proofId" }, { status: 400 });
   }
-  // TODO: fetch proof, return certificate JSON or PDF
-  return NextResponse.json({ message: "Developer API v1 certificate — not yet implemented" }, { status: 501 });
+  const supabase = getSupabase();
+  if (!supabase) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(proofId);
+  let query = supabase
+    .from("proofs")
+    .select("id, chain_id, owner_address, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked")
+    .eq("revoked", false);
+  if (isUuid) query = query.eq("id", proofId);
+  else {
+    const parts = proofId.split("-");
+    if (parts.length >= 2) {
+      const chainId = parseInt(parts[0], 10);
+      const fh = parts.slice(1).join("-");
+      if (!Number.isNaN(chainId) && fh.startsWith("0x")) query = query.eq("chain_id", chainId).eq("file_hash", fh);
+    }
+  }
+  const { data, error } = await query.limit(1).maybeSingle();
+  if (error) {
+    console.error("v1 certificate GET error:", error);
+    return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
+  }
+  if (!data) {
+    return NextResponse.json({ error: "Proof not found" }, { status: 404 });
+  }
+  const baseUrl = req.nextUrl.origin;
+  return NextResponse.json({
+    proofId: data.id,
+    fileHash: data.file_hash,
+    timestamp: data.timestamp,
+    owner: data.owner_address,
+    blockNumber: data.block_number,
+    arweaveTxId: data.arweave_tx_id,
+    ipfsCid: data.ipfs_cid,
+    verificationUrl: `${baseUrl}/evidence/${data.id}`,
+    verified: !data.revoked,
+  });
 }
