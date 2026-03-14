@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -367,7 +367,7 @@ function BillingSection() {
   );
 }
 
-export default function SettingsPage() {
+function SettingsContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -438,5 +438,13 @@ export default function SettingsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={null}>
+      <SettingsContent />
+    </Suspense>
   );
 }
