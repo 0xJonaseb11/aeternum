@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 import { CreditCardIcon, KeyIcon, TrashIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { type PlanId, getPlanLimits } from "~~/lib/billing/plans";
 
 type ApiKeyRow = {
   id: string;
@@ -179,7 +182,196 @@ function ApiKeysSection() {
   );
 }
 
+type SubscriptionData = {
+  plan: PlanId;
+  status: string;
+  currentPeriodEnd: string | null;
+  stripeCustomerId: string | null;
+};
+
+function BillingSection() {
+  const { session, user } = useSupabaseAuth();
+  const [sub, setSub] = useState<SubscriptionData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanId | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const fetchSubscription = useCallback(async () => {
+    if (!session?.access_token) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/billing/subscription", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setError((j as { error?: string }).error ?? "Failed to load subscription");
+        return;
+      }
+      const data = (await res.json()) as SubscriptionData;
+      setSub(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [session?.access_token]);
+
+  useEffect(() => {
+    if (user && session?.access_token) void fetchSubscription();
+  }, [user, session?.access_token, fetchSubscription]);
+
+  const startCheckout = useCallback(
+    async (plan: PlanId) => {
+      if (!session?.access_token || plan === "free") return;
+      setCheckoutPlan(plan);
+      setError(null);
+      try {
+        const base = typeof window !== "undefined" ? window.location.origin : "";
+        const res = await fetch("/api/billing/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({
+            plan,
+            successUrl: `${base}/settings?billing=success`,
+            cancelUrl: `${base}/settings?billing=cancel`,
+          }),
+        });
+        const data = (await res.json()) as { url?: string; error?: string };
+        if (!res.ok) {
+          setError(data.error ?? "Checkout failed");
+          return;
+        }
+        if (data.url) window.location.href = data.url;
+      } finally {
+        setCheckoutPlan(null);
+      }
+    },
+    [session?.access_token],
+  );
+
+  const openPortal = useCallback(async () => {
+    if (!session?.access_token) return;
+    setPortalLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/billing/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          returnUrl: typeof window !== "undefined" ? `${window.location.origin}/settings` : "/settings",
+        }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        setError(data.error ?? "Could not open portal");
+        return;
+      }
+      if (data.url) window.location.href = data.url;
+    } finally {
+      setPortalLoading(false);
+    }
+  }, [session?.access_token]);
+
+  if (!user) {
+    return (
+      <div className="card bg-base-100 border border-base-300 shadow-sm">
+        <div className="card-body flex-row items-center gap-4">
+          <div className="rounded-lg bg-base-300/50 p-3">
+            <CreditCardIcon className="h-6 w-6 text-base-content/60" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-base-content">Billing</h2>
+            <p className="text-xs text-base-content/60">Sign in to view plans and manage your subscription.</p>
+          </div>
+          <Link href="/login" className="btn btn-primary btn-sm">
+            Sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const limits = sub ? getPlanLimits(sub.plan) : null;
+  const canManage = Boolean(sub?.stripeCustomerId);
+
+  return (
+    <div className="card bg-base-100 border border-base-300 shadow-sm">
+      <div className="card-body gap-4">
+        <div className="flex items-center gap-4">
+          <div className="rounded-lg bg-base-300/50 p-3">
+            <CreditCardIcon className="h-6 w-6 text-base-content/60" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-base-content">Billing</h2>
+            <p className="text-xs text-base-content/60">Plans and subscription</p>
+          </div>
+        </div>
+        {error && <div className="rounded-lg bg-error/10 text-error text-sm p-3">{error}</div>}
+        {loading ? (
+          <p className="text-sm text-base-content/60">Loading…</p>
+        ) : sub ? (
+          <>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="badge badge-lg capitalize">{sub.plan}</span>
+              <span className="text-sm text-base-content/70">{sub.status}</span>
+              {sub.currentPeriodEnd && (
+                <span className="text-xs text-base-content/50">
+                  Renews {new Date(sub.currentPeriodEnd).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            {limits && (
+              <p className="text-xs text-base-content/60">
+                {limits.proofsPerMonth === -1 ? "Unlimited" : limits.proofsPerMonth} proofs/month
+                {limits.apiRequestsPerMonth !== -1 &&
+                  ` · ${limits.apiRequestsPerMonth.toLocaleString()} API requests/month`}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {(["pro", "business", "enterprise"] as const).map(
+                plan =>
+                  plan !== "enterprise" && (
+                    <button
+                      key={plan}
+                      type="button"
+                      className="btn btn-primary btn-sm capitalize"
+                      disabled={sub.plan === plan || checkoutPlan !== null}
+                      onClick={() => startCheckout(plan)}
+                    >
+                      {checkoutPlan === plan ? "Redirecting…" : sub.plan === plan ? "Current" : `Upgrade to ${plan}`}
+                    </button>
+                  ),
+              )}
+              {canManage && (
+                <button type="button" className="btn btn-ghost btn-sm" disabled={portalLoading} onClick={openPortal}>
+                  {portalLoading ? "Opening…" : "Manage subscription"}
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-base-content/60">Free plan. Upgrade for more proofs and API usage.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const billing = searchParams.get("billing");
+    if (billing === "success") {
+      toast.success("Subscription updated.");
+      window.history.replaceState({}, "", "/settings");
+    } else if (billing === "cancel") {
+      toast("Checkout cancelled.");
+      window.history.replaceState({}, "", "/settings");
+    }
+  }, [searchParams]);
+
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
       <header className="border-b border-base-300 bg-base-100/95 backdrop-blur-sm sticky top-0 z-10">
@@ -217,17 +409,7 @@ export default function SettingsPage() {
 
           <ApiKeysSection />
 
-          <div className="card bg-base-100 border border-base-300 shadow-sm opacity-90">
-            <div className="card-body flex-row items-center gap-4">
-              <div className="rounded-lg bg-base-300/50 p-3">
-                <CreditCardIcon className="h-6 w-6 text-base-content/60" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-base-content">Billing</h2>
-                <p className="text-xs text-base-content/60">Plans and subscription (coming soon)</p>
-              </div>
-            </div>
-          </div>
+          <BillingSection />
 
           <Link
             href="/team"

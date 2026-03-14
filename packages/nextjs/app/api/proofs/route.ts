@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkProofLimit } from "~~/lib/billing/checkLimits";
 import { getSupabase } from "~~/lib/supabase";
 import { proofsPostSchema } from "~~/lib/validation/schemas";
 
@@ -119,6 +120,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
   const { owner, userId, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532, blockNumber = 0 } = parsed.data;
+
+  const limitCheck = await checkProofLimit(userId ?? null);
+  if (!limitCheck.allowed) {
+    return NextResponse.json({ error: limitCheck.reason ?? "Proof limit reached" }, { status: 403 });
+  }
 
   const { error } = await supabase.from("proofs").upsert(
     {
