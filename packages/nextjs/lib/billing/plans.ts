@@ -13,6 +13,7 @@ export interface PlanLimits {
   teamMembers: number;
 }
 
+/** Free plan is the default for users with no subscription; limits apply per month. */
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   free: {
     proofsPerMonth: 10,
