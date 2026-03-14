@@ -508,6 +508,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
   const [pastedSecret, setPastedSecret] = useState("");
   const [matchingFileHashes, setMatchingFileHashes] = useState<Set<string>>(new Set());
   const [isFinding, setIsFinding] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
 
@@ -665,11 +666,32 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
     );
   }
 
+  const searchLower = searchQuery.trim().toLowerCase();
+  const filterProof = (fileHash: string, proofId?: string) =>
+    !searchLower ||
+    fileHash.toLowerCase().includes(searchLower) ||
+    (proofId != null && proofId.toLowerCase().includes(searchLower));
+
   if (useIndexerData && indexedProofs) {
     const activeProofs = indexedProofs.filter(p => !p.revoked);
-    const fileHashes = activeProofs.map(p => p.fileHash);
+    const filtered = activeProofs.filter(p => filterProof(p.fileHash));
+    const fileHashes = filtered.map(p => p.fileHash);
     return (
       <>
+        <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+          <input
+            type="search"
+            placeholder="Search by file hash or proof ID…"
+            className="input input-bordered input-sm flex-1 max-w-xs"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          {searchLower && (
+            <span className="text-xs text-base-content/50">
+              {filtered.length} of {activeProofs.length}
+            </span>
+          )}
+        </div>
         {showSecretFinder && (
           <SecretFinderSection
             fileHashes={fileHashes}
@@ -681,7 +703,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
           />
         )}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-          {activeProofs.map(p => (
+          {filtered.map(p => (
             <EvidenceCard
               key={p.id}
               proof={{
@@ -701,9 +723,26 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
   }
 
   if (useSupabaseData && supabaseProofs) {
-    const fileHashes = supabaseProofs.map(p => p.fileHash);
+    const filteredSupabase = supabaseProofs.filter(p =>
+      filterProof(p.fileHash, p.proofId ?? undefined),
+    );
+    const fileHashes = filteredSupabase.map(p => p.fileHash);
     return (
       <>
+        <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+          <input
+            type="search"
+            placeholder="Search by file hash or proof ID…"
+            className="input input-bordered input-sm flex-1 max-w-xs"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+          {searchLower && (
+            <span className="text-xs text-base-content/50">
+              {filteredSupabase.length} of {supabaseProofs.length}
+            </span>
+          )}
+        </div>
         {showSecretFinder && (
           <SecretFinderSection
             fileHashes={fileHashes}

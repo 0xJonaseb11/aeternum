@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
+import { evidencePostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
   const supabase = getSupabase();
@@ -36,26 +37,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
 
-  let body: {
-    userId?: string;
-    fileHash: string;
-    title?: string;
-    description?: string;
-    caseId?: string;
-    tags?: string[];
-    notes?: string;
-  };
-
+  let raw: unknown;
   try {
-    body = await req.json();
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-
-  const { userId, fileHash, title, description, caseId, tags, notes } = body;
-  if (!fileHash) {
-    return NextResponse.json({ error: "Missing fileHash" }, { status: 400 });
+  const parsed = evidencePostSchema.safeParse(raw);
+  if (!parsed.success) {
+    const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
+    return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
+  const { userId, fileHash, title, description, caseId, tags, notes } = parsed.data;
 
   const payload = {
     title: title ?? null,
