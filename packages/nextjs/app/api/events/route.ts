@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
+import { eventsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
   const supabase = getSupabase();
@@ -34,22 +35,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
 
-  let body: {
-    fileHash: string;
-    eventType: string;
-    data?: unknown;
-  };
-
+  let raw: unknown;
   try {
-    body = await req.json();
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-
-  const { fileHash, eventType, data } = body;
-  if (!fileHash || !eventType) {
-    return NextResponse.json({ error: "Missing fileHash or eventType" }, { status: 400 });
+  const parsed = eventsPostSchema.safeParse(raw);
+  if (!parsed.success) {
+    const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
+    return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
+  const { fileHash, eventType, data } = parsed.data;
 
   const { error } = await supabase
     .from("events")

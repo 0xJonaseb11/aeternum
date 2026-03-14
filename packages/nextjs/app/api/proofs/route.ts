@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
+import { proofsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
   const supabase = getSupabase();
@@ -9,10 +10,44 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
   const userId = searchParams.get("userId");
+  const fileHash = searchParams.get("fileHash");
   const chainIdParam = searchParams.get("chainId");
 
+  // Lookup by commitment (file) hash: return first matching proof for public verify flow
+  if (fileHash) {
+    if (!/^0x[a-fA-F0-9]{64}$/.test(fileHash)) {
+      return NextResponse.json({ error: "Invalid fileHash" }, { status: 400 });
+    }
+    const { data: row, error } = await supabase
+      .from("proofs")
+      .select("id, chain_id, owner_address, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked")
+      .eq("file_hash", fileHash)
+      .eq("revoked", false)
+      .order("timestamp", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.error("Supabase proofs GET by fileHash error:", error);
+      return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
+    }
+    if (!row) {
+      return NextResponse.json({ error: "Proof not found for this commitment hash" }, { status: 404 });
+    }
+    return NextResponse.json({
+      proofId: row.id,
+      chainId: row.chain_id,
+      owner: row.owner_address,
+      fileHash: row.file_hash,
+      timestamp: row.timestamp,
+      blockNumber: row.block_number,
+      arweaveTxId: row.arweave_tx_id,
+      ipfsCid: row.ipfs_cid,
+      revoked: row.revoked,
+    });
+  }
+
   if (!owner && !userId) {
-    return NextResponse.json({ error: "Missing owner or userId" }, { status: 400 });
+    return NextResponse.json({ error: "Missing owner, userId, or fileHash" }, { status: 400 });
   }
   if (owner && !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
     return NextResponse.json({ error: "Invalid owner" }, { status: 400 });
@@ -72,32 +107,27 @@ export async function POST(req: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
-  let body: {
-    owner: string;
-    userId?: string;
-    fileHash: string;
-    timestamp: number;
-    blockNumber?: number;
-    arweaveTxId: string;
-    ipfsCid?: string;
-    chainId?: number;
-  };
+  let raw: unknown;
   try {
-    body = await req.json();
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { owner, userId, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532 } = body;
-  const blockNumber = body.blockNumber ?? 0;
-  if (!owner || !fileHash || timestamp == null || !arweaveTxId) {
-    return NextResponse.json(
-      { error: "Missing required fields: owner, fileHash, timestamp, arweaveTxId" },
-      { status: 400 },
-    );
+  const parsed = proofsPostSchema.safeParse(raw);
+  if (!parsed.success) {
+    const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
+    return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  if (!/^0x[a-fA-F0-9]{64}$/.test(fileHash)) {
-    return NextResponse.json({ error: "Invalid fileHash" }, { status: 400 });
-  }
+  const {
+    owner,
+    userId,
+    fileHash,
+    timestamp,
+    arweaveTxId,
+    ipfsCid,
+    chainId = 84_532,
+    blockNumber = 0,
+  } = parsed.data;
 
   const { error } = await supabase.from("proofs").upsert(
     {
