@@ -1,4 +1,3 @@
-import { NextRequest } from "next/server";
 import Stripe from "stripe";
 import type { PlanId } from "~~/lib/billing/plans";
 import { getSupabase } from "~~/lib/supabase";
