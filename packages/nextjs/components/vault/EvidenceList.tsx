@@ -723,9 +723,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
   }
 
   if (useSupabaseData && supabaseProofs) {
-    const filteredSupabase = supabaseProofs.filter(p =>
-      filterProof(p.fileHash, p.proofId ?? undefined),
-    );
+    const filteredSupabase = supabaseProofs.filter(p => filterProof(p.fileHash, p.proofId ?? undefined));
     const fileHashes = filteredSupabase.map(p => p.fileHash);
     return (
       <>
@@ -754,7 +752,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
           />
         )}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-          {supabaseProofs.map(p => (
+          {filteredSupabase.map(p => (
             <EvidenceCard
               key={p.id}
               proof={{
@@ -776,10 +774,27 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
   }
 
   const sortedEvents = [...(events ?? [])].sort((a, b) => Number(b.args.timestamp) - Number(a.args.timestamp));
-  const fileHashes = sortedEvents.map(e => e.args.fileHash as string);
+  const filteredEvents = searchLower
+    ? sortedEvents.filter(e => (e.args.fileHash as string).toLowerCase().includes(searchLower))
+    : sortedEvents;
+  const fileHashes = filteredEvents.map(e => e.args.fileHash as string);
 
   return (
     <>
+      <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+        <input
+          type="search"
+          placeholder="Search by file hash or proof ID…"
+          className="input input-bordered input-sm flex-1 max-w-xs"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+        />
+        {searchLower && (
+          <span className="text-xs text-base-content/50">
+            {filteredEvents.length} of {sortedEvents.length}
+          </span>
+        )}
+      </div>
       {showSecretFinder && (
         <SecretFinderSection
           fileHashes={fileHashes}
@@ -791,7 +806,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
         />
       )}
       <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {sortedEvents.map(event => {
+        {filteredEvents.map(event => {
           const fileHash = event.args.fileHash as string;
           return (
             <EvidenceListItem
