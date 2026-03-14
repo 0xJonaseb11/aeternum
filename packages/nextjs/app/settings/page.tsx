@@ -187,6 +187,8 @@ type SubscriptionData = {
   status: string;
   currentPeriodEnd: string | null;
   stripeCustomerId: string | null;
+  proofsThisMonth: number;
+  proofsLimit: number; // -1 = unlimited
 };
 
 function BillingSection() {
@@ -323,7 +325,14 @@ function BillingSection() {
             </div>
             {limits && (
               <p className="text-xs text-base-content/60">
-                {limits.proofsPerMonth === -1 ? "Unlimited" : limits.proofsPerMonth} proofs/month
+                {sub.proofsLimit === -1 ? (
+                  <>{sub.proofsThisMonth} proofs this month (unlimited)</>
+                ) : (
+                  <strong className="text-base-content/80">
+                    {sub.proofsThisMonth} / {sub.proofsLimit}
+                  </strong>
+                )}{" "}
+                proofs this month
                 {limits.apiRequestsPerMonth !== -1 &&
                   ` · ${limits.apiRequestsPerMonth.toLocaleString()} API requests/month`}
               </p>
