@@ -119,7 +119,17 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const { owner, userId, fileHash, timestamp, arweaveTxId, ipfsCid, chainId = 84_532, blockNumber = 0 } = parsed.data;
+  const {
+    owner,
+    userId,
+    organizationId,
+    fileHash,
+    timestamp,
+    arweaveTxId,
+    ipfsCid,
+    chainId = 84_532,
+    blockNumber = 0,
+  } = parsed.data;
 
   const limitCheck = await checkProofLimit(userId ?? null);
   if (!limitCheck.allowed) {
@@ -131,6 +141,7 @@ export async function POST(req: NextRequest) {
       chain_id: chainId,
       owner_address: owner.toLowerCase(),
       user_id: userId ?? null,
+      organization_id: organizationId ?? null,
       file_hash: fileHash,
       timestamp,
       block_number: blockNumber,

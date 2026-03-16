@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const { userId, fileHash, title, description, caseId, tags, notes } = parsed.data;
+  const { userId, organizationId, fileHash, title, description, caseId, tags, notes } = parsed.data;
 
   const payload = {
     title: title ?? null,
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
     .from("evidence")
     .insert({
       user_id: userId ?? null,
+      organization_id: organizationId ?? null,
       file_hash: fileHash,
       ...payload,
     })
