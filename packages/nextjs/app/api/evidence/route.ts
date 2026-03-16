@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { canEditEvidence } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
+import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 import { evidencePostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
@@ -12,11 +13,31 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const fileHash = searchParams.get("fileHash");
-  const userId = searchParams.get("userId");
-  const organizationId = searchParams.get("organizationId");
+  const userIdParam = searchParams.get("userId");
+  const organizationIdParam = searchParams.get("organizationId");
 
   if (!fileHash) {
     return NextResponse.json({ error: "Missing fileHash" }, { status: 400 });
+  }
+
+  let userId: string | null = userIdParam;
+  let organizationId: string | null = organizationIdParam;
+  if (userIdParam != null || (organizationIdParam != null && organizationIdParam !== "")) {
+    const user = await getCurrentUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (organizationIdParam != null && organizationIdParam !== "") {
+      const membership = await getMembership(user.id, organizationIdParam);
+      if (!membership) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      userId = user.id;
+      organizationId = organizationIdParam;
+    } else {
+      userId = user.id;
+      organizationId = null;
+    }
   }
 
   let query = supabase.from("evidence").select("*").eq("file_hash", fileHash).limit(1);
@@ -54,18 +75,24 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const { userId, organizationId, fileHash, title, description, caseId, tags, notes } = parsed.data;
+  let { userId, organizationId, fileHash, title, description, caseId, tags, notes } = parsed.data;
 
-  if (organizationId) {
-    if (!userId) {
-      return NextResponse.json({ error: "userId is required for organization-scoped evidence" }, { status: 400 });
+  if (userId != null || (organizationId != null && organizationId !== "")) {
+    const user = await getCurrentUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const membership = await getMembership(userId, organizationId);
-    if (!membership) {
-      return NextResponse.json({ error: "Not a member of this organization" }, { status: 403 });
-    }
-    if (!canEditEvidence(membership.role)) {
-      return NextResponse.json({ error: "Insufficient role for organization-scoped evidence" }, { status: 403 });
+    userId = user.id;
+    if (organizationId != null && organizationId !== "") {
+      const membership = await getMembership(user.id, organizationId);
+      if (!membership) {
+        return NextResponse.json({ error: "Not a member of this organization" }, { status: 403 });
+      }
+      if (!canEditEvidence(membership.role)) {
+        return NextResponse.json({ error: "Insufficient role for organization-scoped evidence" }, { status: 403 });
+      }
+    } else {
+      organizationId = null;
     }
   }
 
@@ -79,12 +106,11 @@ export async function POST(req: NextRequest) {
   };
 
   // Select-then-update-or-insert: evidence table has no UNIQUE(file_hash), so we can't use upsert.
-  const { data: existing } = await supabase
-    .from("evidence")
-    .select("id")
-    .eq("file_hash", fileHash)
-    .limit(1)
-    .maybeSingle();
+  let existingQuery = supabase.from("evidence").select("id").eq("file_hash", fileHash).limit(1);
+  if (userId != null) existingQuery = existingQuery.eq("user_id", userId);
+  if (organizationId != null) existingQuery = existingQuery.eq("organization_id", organizationId);
+  else if (userId != null) existingQuery = existingQuery.is("organization_id", null);
+  const { data: existing } = await existingQuery.maybeSingle();
 
   if (existing?.id) {
     const { data: updated, error } = await supabase

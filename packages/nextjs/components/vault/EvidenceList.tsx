@@ -26,7 +26,10 @@ import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
 import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
-import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
+import {
+  type ProofsSearchParams,
+  useSupabaseProofs,
+} from "~~/hooks/vault/useSupabaseProofs";
 import type { VaultScope } from "~~/hooks/vault/useVaultScope";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
@@ -516,6 +519,9 @@ export const EvidenceList = ({
   const [matchingFileHashes, setMatchingFileHashes] = useState<Set<string>>(new Set());
   const [isFinding, setIsFinding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [serverSearch, setServerSearch] = useState("");
+  const [serverCaseId, setServerCaseId] = useState("");
+  const [serverTagsInput, setServerTagsInput] = useState("");
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
 
@@ -526,6 +532,17 @@ export const EvidenceList = ({
     refetch: refetchIndexed,
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
+  const serverSearchParams: ProofsSearchParams | undefined =
+    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim()
+      ? {
+          search: serverSearch.trim() || undefined,
+          caseId: serverCaseId.trim() || undefined,
+          tags: serverTagsInput
+            .split(",")
+            .map(t => t.trim())
+            .filter(Boolean),
+        }
+      : undefined;
   const {
     data: supabaseProofs,
     isLoading: supabaseLoading,
@@ -536,6 +553,7 @@ export const EvidenceList = ({
     selectedNetwork.id,
     !!connectedAddress,
     organizationId,
+    serverSearchParams,
   );
 
   const needEventHistory = !INDEXER_URL || indexedError || (indexedProofs != null && indexedProofs.length === 0);
@@ -604,10 +622,11 @@ export const EvidenceList = ({
 
   const hasIndexerData = INDEXER_URL && !indexedError && indexedProofs != null && indexedProofs.length > 0;
   const hasSupabaseData = !supabaseError && supabaseProofs != null && supabaseProofs.length > 0;
+  const hasSupabaseList = !supabaseError && Array.isArray(supabaseProofs);
   const hasEventData = events != null && events.length > 0;
 
   const useIndexerData = hasIndexerData;
-  const useSupabaseData = hasSupabaseData && !hasIndexerData;
+  const useSupabaseData = hasSupabaseList && !hasIndexerData;
 
   const stillLoading =
     hasIndexerData || hasSupabaseData || hasEventData
@@ -735,24 +754,50 @@ export const EvidenceList = ({
     );
   }
 
-  if (useSupabaseData && supabaseProofs) {
+  if (useSupabaseData && Array.isArray(supabaseProofs)) {
     const filteredSupabase = supabaseProofs.filter(p => filterProof(p.fileHash, p.proofId ?? undefined));
     const fileHashes = filteredSupabase.map(p => p.fileHash);
     return (
       <>
-        <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
-          <input
-            type="search"
-            placeholder="Search by file hash or proof ID…"
-            className="input input-bordered input-sm flex-1 max-w-xs"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          {searchLower && (
-            <span className="text-xs text-base-content/50">
-              {filteredSupabase.length} of {supabaseProofs.length}
-            </span>
-          )}
+        <div className="mb-4 flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center flex-wrap">
+            <input
+              type="search"
+              placeholder="Search by file hash or proof ID…"
+              className="input input-bordered input-sm flex-1 max-w-xs"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {searchLower && (
+              <span className="text-xs text-base-content/50">
+                {filteredSupabase.length} of {supabaseProofs.length}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs">
+            <span className="font-bold uppercase text-base-content/50">Filters</span>
+            <input
+              type="search"
+              placeholder="Title or description…"
+              className="input input-bordered input-sm w-40 max-w-[180px]"
+              value={serverSearch}
+              onChange={e => setServerSearch(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Case ID"
+              className="input input-bordered input-sm w-28 max-w-[120px]"
+              value={serverCaseId}
+              onChange={e => setServerCaseId(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Tags (comma-separated)"
+              className="input input-bordered input-sm w-40 max-w-[180px]"
+              value={serverTagsInput}
+              onChange={e => setServerTagsInput(e.target.value)}
+            />
+          </div>
         </div>
         {showSecretFinder && (
           <SecretFinderSection

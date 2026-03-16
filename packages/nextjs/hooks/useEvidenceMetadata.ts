@@ -20,11 +20,14 @@ async function fetchEvidence(
   fileHash: string,
   userId?: string | null,
   organizationId?: string | null,
+  accessToken?: string | null,
 ): Promise<EvidenceMetadata | null> {
   const params = new URLSearchParams({ fileHash });
   if (userId) params.set("userId", userId);
-  if (organizationId) params.set("organizationId", organizationId);
-  const res = await fetch(`/api/evidence?${params}`);
+  if (organizationId) params.set("organizationId", organizationId ?? "");
+  const headers: HeadersInit = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+  const res = await fetch(`/api/evidence?${params}`, { headers });
   if (!res.ok) {
     throw new Error(`Evidence API failed: ${res.status}`);
   }
@@ -38,10 +41,13 @@ async function saveEvidence(input: {
   organizationId?: string | null;
   title?: string;
   description?: string;
+  accessToken?: string | null;
 }) {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (input.accessToken) headers.Authorization = `Bearer ${input.accessToken}`;
   const res = await fetch("/api/evidence", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({
       fileHash: input.fileHash,
       userId: input.userId,
@@ -58,20 +64,27 @@ async function saveEvidence(input: {
 }
 
 export function useEvidenceMetadata(fileHash: string | undefined, organizationId?: string | null) {
-  const { user } = useSupabaseAuth();
+  const { user, session } = useSupabaseAuth();
   const userId = user?.id ?? null;
+  const accessToken = session?.access_token;
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
-    queryFn: () => fetchEvidence(fileHash!, userId, organizationId),
+    queryFn: () => fetchEvidence(fileHash!, userId, organizationId, accessToken),
     enabled: Boolean(fileHash),
     staleTime: 30_000,
   });
 
   const mutation = useMutation({
     mutationFn: (input: { title?: string; description?: string }) =>
-      saveEvidence({ fileHash: fileHash!, userId, organizationId, ...input }),
+      saveEvidence({
+        fileHash: fileHash!,
+        userId,
+        organizationId,
+        accessToken,
+        ...input,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
