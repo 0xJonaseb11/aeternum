@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMembership } from "~~/lib/rbac/getMembership";
-import { type OrgRole, canManageMembers } from "~~/lib/rbac/roles";
+import { canManageMembers } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
@@ -23,9 +23,9 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!email) return NextResponse.json({ error: "email is required" }, { status: 400 });
-  const role = (["admin", "contributor", "viewer"] as const).includes(body.role as OrgRole)
-    ? (body.role as OrgRole)
-    : "viewer";
+  const allowedRoles = ["admin", "contributor", "viewer"] as const;
+  type InviteRole = (typeof allowedRoles)[number];
+  const role: InviteRole = allowedRoles.includes(body.role as InviteRole) ? (body.role as InviteRole) : "viewer";
 
   const supabase = getSupabase();
   if (!supabase) return NextResponse.json({ error: "Server error" }, { status: 500 });

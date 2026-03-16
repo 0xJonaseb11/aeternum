@@ -9,10 +9,7 @@ export type FolderItem = {
   created_at: string;
 };
 
-async function fetchFolders(
-  organizationId?: string | null,
-  accessToken?: string | null,
-): Promise<FolderItem[]> {
+async function fetchFolders(organizationId?: string | null, accessToken?: string | null): Promise<FolderItem[]> {
   const params = new URLSearchParams();
   if (organizationId) params.set("organizationId", organizationId);
   const headers: HeadersInit = {};

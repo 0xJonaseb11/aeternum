@@ -169,11 +169,12 @@ export async function GET(req: NextRequest) {
     query = query.eq("chain_id", chainId);
   }
 
-  let { data, error } = await query;
+  const { data: queryData, error } = await query;
   if (error) {
     console.error("Supabase proofs GET error:", error);
     return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
+  let data = queryData ?? null;
 
   // Apply evidence file_hash filter (and optional date filter) in memory
   if (data != null && data.length > 0 && evidenceFileHashes != null && evidenceFileHashes.length > 0) {
@@ -189,11 +190,6 @@ export async function GET(req: NextRequest) {
     if (to != null && !Number.isNaN(to)) {
       data = data.filter(row => row.timestamp <= to);
     }
-  }
-
-  if (error) {
-    console.error("Supabase proofs GET error:", error);
-    return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
 
   const items = (data ?? []).map(row => ({

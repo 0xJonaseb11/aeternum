@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 import { usePublicClient } from "wagmi";
 import {
@@ -564,10 +564,7 @@ export const EvidenceList = ({
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
   const serverSearchParams: ProofsSearchParams | undefined =
-    serverSearch.trim() ||
-    serverCaseId.trim() ||
-    serverTagsInput.trim() ||
-    serverFolderId.trim()
+    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim() || serverFolderId.trim()
       ? {
           search: serverSearch.trim() || undefined,
           caseId: serverCaseId.trim() || undefined,

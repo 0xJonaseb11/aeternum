@@ -310,11 +310,7 @@ export default function TeamOrgPage() {
                       </option>
                     ))}
                   </select>
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-sm"
-                    disabled={inviting || !inviteEmail.trim()}
-                  >
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
                     {inviting ? "Inviting…" : "Invite"}
                   </button>
                 </form>

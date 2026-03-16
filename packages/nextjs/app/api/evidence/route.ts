@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  let { userId, organizationId, fileHash, title, description, caseId, tags, notes, folderId } = parsed.data;
+  let { userId, organizationId } = parsed.data;
+  const { fileHash, title, description, caseId, tags, notes, folderId } = parsed.data;
 
   if (userId != null || (organizationId != null && organizationId !== "")) {
     const user = await getCurrentUserFromRequest(req);

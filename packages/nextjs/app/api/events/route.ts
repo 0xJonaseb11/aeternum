@@ -63,19 +63,20 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const { fileHash, eventType, data, userId: _userId, organizationId: _organizationId } = parsed.data;
+  const { fileHash, eventType, data } = parsed.data;
 
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   let organizationId: string | null = null;
-  if (_organizationId != null && _organizationId !== "") {
-    const membership = await getMembership(user.id, _organizationId);
+  const orgIdFromBody = parsed.data.organizationId;
+  if (orgIdFromBody != null && orgIdFromBody !== "") {
+    const membership = await getMembership(user.id, orgIdFromBody);
     if (!membership) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    organizationId = _organizationId;
+    organizationId = orgIdFromBody;
   }
 
   const { error } = await supabase.from("events").insert({

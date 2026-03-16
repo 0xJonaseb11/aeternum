@@ -22,7 +22,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (folder.user_id !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (folder.organization_id) {
     const membership = await getMembership(user.id, folder.organization_id);
-    if (!membership || !canEditEvidence(membership.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!membership || !canEditEvidence(membership.role))
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   let body: { name?: string };
   try {
@@ -34,7 +35,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (!name || name.length > 200) return NextResponse.json({ error: "name required (1–200 chars)" }, { status: 400 });
   const { error } = await supabase.from("folders").update({ name }).eq("id", folderId);
   if (error) {
-    if (error.code === "23505") return NextResponse.json({ error: "Folder with this name already exists" }, { status: 409 });
+    if (error.code === "23505")
+      return NextResponse.json({ error: "Folder with this name already exists" }, { status: 409 });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json({ ok: true });
@@ -56,7 +58,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   if (folder.user_id !== user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (folder.organization_id) {
     const membership = await getMembership(user.id, folder.organization_id);
-    if (!membership || !canEditEvidence(membership.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!membership || !canEditEvidence(membership.role))
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { error } = await supabase.from("folders").delete().eq("id", folderId);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
