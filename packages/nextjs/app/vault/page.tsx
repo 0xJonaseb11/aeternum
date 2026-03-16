@@ -17,6 +17,9 @@ const VaultPage: NextPage = () => {
   const { address: connectedAddress, isConnecting, chain } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const { scope, setScope, organizations, loadingOrgs } = useVaultScope();
+  const currentOrg = scope.type === "org" ? organizations.find(o => o.id === scope.orgId) : undefined;
+  const currentRoleLabel =
+    currentOrg?.myRole != null ? `${currentOrg.myRole.charAt(0).toUpperCase()}${currentOrg.myRole.slice(1)}` : null;
   const isWrongNetwork = chain && chain.id !== targetNetwork.id;
   const hasVaultContract = Boolean(
     deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault,
@@ -37,9 +40,22 @@ const VaultPage: NextPage = () => {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2 sm:mb-3">
               Your encrypted evidence workspace
             </h1>
-            <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
-              Upload, anchor, and verify your evidence proofs. Files are encrypted locally; only you hold the keys.
-            </p>
+            <div className="space-y-1">
+              <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
+                Upload, anchor, and verify your evidence proofs. Files are encrypted locally; only you hold the keys.
+              </p>
+              {scope.type === "org" && currentOrg ? (
+                <p className="text-[11px] sm:text-xs text-primary font-semibold max-w-2xl mx-auto">
+                  Team vault for <span className="font-bold">{currentOrg.name}</span>
+                  {currentRoleLabel ? <span className="text-primary/80"> · Your role: {currentRoleLabel}</span> : null}
+                  .
+                </p>
+              ) : (
+                <p className="text-[11px] sm:text-xs text-base-content/60 max-w-2xl mx-auto">
+                  Personal vault scoped to your connected wallet.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>
