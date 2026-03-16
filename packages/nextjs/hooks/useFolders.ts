@@ -12,7 +12,7 @@ export type FolderItem = {
 async function fetchFolders(organizationId?: string | null, accessToken?: string | null): Promise<FolderItem[]> {
   const params = new URLSearchParams();
   if (organizationId) params.set("organizationId", organizationId);
-  const headers: HeadersInit = {};
+  const headers: Record<string, string> = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   const res = await fetch(`/api/folders?${params}`, { headers });
   if (!res.ok) {
