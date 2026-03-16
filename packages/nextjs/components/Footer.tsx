@@ -3,6 +3,24 @@ import Link from "next/link";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 
+const FOOTER_LINKS = {
+  product: [
+    { href: "/", label: "Home" },
+    { href: "/vault", label: "Vault" },
+    { href: "/verify", label: "Verify" },
+  ],
+  account: [
+    { href: "/settings", label: "Settings" },
+    { href: "/team", label: "Team" },
+    { href: "/login", label: "Login" },
+  ],
+  legal: [
+    { href: "/privacy-policy", label: "Privacy Policy" },
+    { href: "/tos", label: "Terms of Service" },
+  ],
+  dev: [{ href: "https://github.com/0xJonaseb11/aeternum", label: "Source Code", external: true }],
+} as const;
+
 export const Footer = () => {
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 w-full min-w-0">
@@ -20,44 +38,54 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Platform</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/" className="link link-hover text-base-content/70">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/#vault" className="link link-hover text-base-content/70">
-                  Vault
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy-policy" className="link link-hover text-base-content/70">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/tos" className="link link-hover text-base-content/70">
-                  Terms of Service
-                </Link>
-              </li>
+              {FOOTER_LINKS.product.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="link link-hover text-base-content/70">
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Tools</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Account</h3>
+            <ul className="space-y-2 text-sm">
+              {FOOTER_LINKS.account.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="link link-hover text-base-content/70">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Legal & Dev</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
-              <li>
-                <a
-                  href="https://github.com/0xJonaseb11/aeternum"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link link-hover flex items-center gap-1"
-                >
-                  <span>Source Code</span>
-                </a>
-              </li>
+              {FOOTER_LINKS.legal.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="link link-hover">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+              {FOOTER_LINKS.dev.map(({ href, label, external }) => (
+                <li key={href}>
+                  {external ? (
+                    <a href={href} target="_blank" rel="noreferrer" className="link link-hover">
+                      {label}
+                    </a>
+                  ) : (
+                    <Link href={href} className="link link-hover">
+                      {label}
+                    </Link>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
