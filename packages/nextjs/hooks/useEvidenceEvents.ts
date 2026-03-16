@@ -23,7 +23,7 @@ async function fetchEvents(
     params.set("userId", userId);
     if (organizationId) params.set("organizationId", organizationId ?? "");
   }
-  const headers: HeadersInit = {};
+  const headers: Record<string, string> = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   const res = await fetch(`/api/events?${params}`, { headers });
   if (!res.ok) {
@@ -39,9 +39,9 @@ export function useEvidenceEvents(fileHash: string | undefined, organizationId?:
   const accessToken = session?.access_token;
 
   return useQuery({
-    queryKey: ["evidenceEvents", fileHash, userId, organizationId],
+    queryKey: ["evidenceEvents", fileHash, userId, organizationId, accessToken],
     queryFn: () => fetchEvents(fileHash!, userId, organizationId, accessToken),
-    enabled: Boolean(fileHash),
+    enabled: Boolean(fileHash && accessToken),
     staleTime: 30_000,
   });
 }

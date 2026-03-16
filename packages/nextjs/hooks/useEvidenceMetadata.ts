@@ -26,7 +26,7 @@ async function fetchEvidence(
   const params = new URLSearchParams({ fileHash });
   if (userId) params.set("userId", userId);
   if (organizationId) params.set("organizationId", organizationId ?? "");
-  const headers: HeadersInit = {};
+  const headers: Record<string, string> = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   const res = await fetch(`/api/evidence?${params}`, { headers });
   if (!res.ok) {

@@ -50,7 +50,7 @@ async function fetchProofsFromSupabase({
   } else if (owner) {
     params.set("owner", owner.toLowerCase());
   }
-  const headers: HeadersInit = {};
+  const headers: Record<string, string> = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   const res = await fetch(`/api/proofs?${params}`, { headers });
   if (res.status === 503) {
