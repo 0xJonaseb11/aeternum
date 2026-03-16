@@ -2,7 +2,7 @@ import { getSubscriptionForUser } from "~~/lib/billing/getSubscription";
 import { type PlanId, getPlanLimits, isWithinLimit } from "~~/lib/billing/plans";
 import { getSupabase } from "~~/lib/supabase";
 
-/** LATER: API requests-per-month — see SAAS-FOUNDATION.md §10. Add api_usage (or counter) per user/month, increment in v1 routes, enforce isWithinLimit(plan, 'apiRequestsPerMonth', count). */
+/** Proofs-per-month limits only. API requests-per-month is in apiUsage.ts (api_usage table, v1 routes). */
 
 /** Start of current month (UTC) for proofs-per-month window. */
 function startOfCurrentMonth(): string {
