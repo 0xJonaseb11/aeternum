@@ -531,7 +531,12 @@ export const EvidenceList = ({
     isLoading: supabaseLoading,
     isError: supabaseError,
     refetch: refetchSupabase,
-  } = useSupabaseProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, !!connectedAddress);
+  } = useSupabaseProofs(
+    connectedAddress as `0x${string}` | undefined,
+    selectedNetwork.id,
+    !!connectedAddress,
+    organizationId,
+  );
 
   const needEventHistory = !INDEXER_URL || indexedError || (indexedProofs != null && indexedProofs.length === 0);
   const {

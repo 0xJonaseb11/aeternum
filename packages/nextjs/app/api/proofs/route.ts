@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
   const userId = searchParams.get("userId");
+  const organizationId = searchParams.get("organizationId");
   const fileHash = searchParams.get("fileHash");
   const chainIdParam = searchParams.get("chainId");
 
@@ -75,6 +76,11 @@ export async function GET(req: NextRequest) {
 
   if (userId) {
     query = query.eq("user_id", userId);
+    if (organizationId != null && organizationId !== "") {
+      query = query.eq("organization_id", organizationId);
+    } else {
+      query = query.is("organization_id", null);
+    }
   } else if (owner) {
     query = query.eq("owner_address", owner.toLowerCase());
   }
