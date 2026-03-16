@@ -9,6 +9,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useVault } from "~~/hooks/vault/useVault";
+import type { VaultScope } from "~~/hooks/vault/useVaultScope";
 
 interface UploadResult {
   fileHash: string;
@@ -17,7 +18,7 @@ interface UploadResult {
   ipfsCid: string;
 }
 
-export const UploadEvidence = () => {
+export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -34,7 +35,8 @@ export const UploadEvidence = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [result, secretSavedConfirmed]);
 
-  const { uploadEvidence, isProcessing, step } = useVault();
+  const organizationId = scope?.type === "org" ? scope.orgId : undefined;
+  const { uploadEvidence, isProcessing, step } = useVault(organizationId);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

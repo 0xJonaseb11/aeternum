@@ -23,7 +23,7 @@ function normalizeToArweaveTxId(id: string): string {
 
 export type VaultStep = "idle" | "encrypting" | "uploading_arweave" | "uploading_ipfs" | "confirming";
 
-export const useVault = () => {
+export const useVault = (organizationId?: string | null) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<VaultStep>("idle");
   const queryClient = useQueryClient();
@@ -92,6 +92,7 @@ export const useVault = () => {
             body: JSON.stringify({
               owner: address,
               userId: user?.id,
+              organizationId: organizationId ?? undefined,
               fileHash,
               timestamp: proofTimestamp,
               blockNumber,

@@ -16,9 +16,14 @@ export type EvidenceMetadata = {
   updated_at: string;
 };
 
-async function fetchEvidence(fileHash: string, userId?: string | null): Promise<EvidenceMetadata | null> {
+async function fetchEvidence(
+  fileHash: string,
+  userId?: string | null,
+  organizationId?: string | null,
+): Promise<EvidenceMetadata | null> {
   const params = new URLSearchParams({ fileHash });
   if (userId) params.set("userId", userId);
+  if (organizationId) params.set("organizationId", organizationId);
   const res = await fetch(`/api/evidence?${params}`);
   if (!res.ok) {
     throw new Error(`Evidence API failed: ${res.status}`);
@@ -27,13 +32,20 @@ async function fetchEvidence(fileHash: string, userId?: string | null): Promise<
   return json.item ?? null;
 }
 
-async function saveEvidence(input: { fileHash: string; userId?: string | null; title?: string; description?: string }) {
+async function saveEvidence(input: {
+  fileHash: string;
+  userId?: string | null;
+  organizationId?: string | null;
+  title?: string;
+  description?: string;
+}) {
   const res = await fetch("/api/evidence", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       fileHash: input.fileHash,
       userId: input.userId,
+      organizationId: input.organizationId ?? undefined,
       title: input.title,
       description: input.description,
     }),
@@ -45,23 +57,25 @@ async function saveEvidence(input: { fileHash: string; userId?: string | null; t
   return json.item;
 }
 
-export function useEvidenceMetadata(fileHash: string | undefined) {
+export function useEvidenceMetadata(fileHash: string | undefined, organizationId?: string | null) {
   const { user } = useSupabaseAuth();
   const userId = user?.id ?? null;
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["evidenceMetadata", fileHash, userId],
-    queryFn: () => fetchEvidence(fileHash!, userId),
+    queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
+    queryFn: () => fetchEvidence(fileHash!, userId, organizationId),
     enabled: Boolean(fileHash),
     staleTime: 30_000,
   });
 
   const mutation = useMutation({
     mutationFn: (input: { title?: string; description?: string }) =>
-      saveEvidence({ fileHash: fileHash!, userId, ...input }),
+      saveEvidence({ fileHash: fileHash!, userId, organizationId, ...input }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["evidenceMetadata", fileHash, userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
+      });
     },
   });
 
