@@ -1,6 +1,7 @@
 /**
  * Structured logger foundation for observability.
  * Replace with Pino/Winston or send to Sentry/Vercel in production.
+ * Sentry: add @sentry/nextjs, sentry.client.config.ts, sentry.server.config.ts, instrumentation.ts when ready.
  */
 
 type LogLevel = "debug" | "info" | "warn" | "error";

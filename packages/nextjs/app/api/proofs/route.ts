@@ -4,6 +4,7 @@ import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { hasRoleAtLeast } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
+import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 import { proofsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
@@ -17,10 +18,15 @@ export async function GET(req: NextRequest) {
   }
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
-  const userId = searchParams.get("userId");
+  const userIdParam = searchParams.get("userId");
   const organizationId = searchParams.get("organizationId");
   const fileHash = searchParams.get("fileHash");
   const chainIdParam = searchParams.get("chainId");
+  const search = searchParams.get("search");
+  const caseId = searchParams.get("caseId");
+  const tagsParam = searchParams.get("tags");
+  const dateFromParam = searchParams.get("dateFrom");
+  const dateToParam = searchParams.get("dateTo");
 
   // Lookup by commitment (file) hash: return first matching proof for public verify flow
   if (fileHash) {
@@ -55,12 +61,31 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  if (!owner && !userId) {
+  if (!owner && !userIdParam) {
     return NextResponse.json({ error: "Missing owner, userId, or fileHash" }, { status: 400 });
   }
   if (owner && !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
     return NextResponse.json({ error: "Invalid owner" }, { status: 400 });
   }
+
+  // When listing by userId/org, require session and enforce scope (ignore client-supplied userId).
+  let userId: string | null = userIdParam;
+  if (userIdParam != null || (organizationId != null && organizationId !== "")) {
+    const user = await getCurrentUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (organizationId != null && organizationId !== "") {
+      const membership = await getMembership(user.id, organizationId);
+      if (!membership) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      userId = user.id;
+    } else {
+      userId = user.id;
+    }
+  }
+
   let chainId: number | undefined;
   if (chainIdParam != null) {
     const parsed = parseInt(chainIdParam, 10);
@@ -68,6 +93,54 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid chainId" }, { status: 400 });
     }
     chainId = parsed;
+  }
+
+  // Optional evidence-based filters: get file_hashes from evidence table then filter proofs.
+  let evidenceFileHashes: string[] | null = null;
+  const hasEvidenceFilters =
+    (search != null && search.trim() !== "") ||
+    (caseId != null && caseId.trim() !== "") ||
+    (tagsParam != null && tagsParam.trim() !== "");
+  if (userId != null && hasEvidenceFilters) {
+    let evidenceQuery = supabase
+      .from("evidence")
+      .select("file_hash")
+      .eq("user_id", userId);
+    if (organizationId != null && organizationId !== "") {
+      evidenceQuery = evidenceQuery.eq("organization_id", organizationId);
+    } else {
+      evidenceQuery = evidenceQuery.is("organization_id", null);
+    }
+    if (search != null && search.trim() !== "") {
+      const raw = search.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+      const term = `%${raw}%`;
+      evidenceQuery = evidenceQuery.or(`title.ilike.${term},description.ilike.${term}`);
+    }
+    if (caseId != null && caseId.trim() !== "") {
+      evidenceQuery = evidenceQuery.eq("case_id", caseId.trim());
+    }
+    if (tagsParam != null && tagsParam.trim() !== "") {
+      const tags = tagsParam
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
+      if (tags.length > 0) {
+        evidenceQuery = evidenceQuery.overlaps("tags", tags);
+      }
+    }
+    const { data: evidenceRows, error: evidenceError } = await evidenceQuery.limit(500);
+    if (evidenceError) {
+      console.error("Supabase evidence filter error:", evidenceError);
+      return NextResponse.json({ error: "Failed to apply filters" }, { status: 500 });
+    }
+    evidenceFileHashes = (evidenceRows ?? []).map(r => r.file_hash);
+    if (evidenceFileHashes.length === 0) {
+      return NextResponse.json({ items: [] });
+    }
+    // Optional date filter on proofs.timestamp (apply when we have proof rows)
+    if (dateFromParam != null || dateToParam != null) {
+      // will filter proofs by timestamp below after fetch
+    }
   }
 
   let query = supabase
@@ -94,7 +167,27 @@ export async function GET(req: NextRequest) {
     query = query.eq("chain_id", chainId);
   }
 
-  const { data, error } = await query;
+  let { data, error } = await query;
+  if (error) {
+    console.error("Supabase proofs GET error:", error);
+    return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
+  }
+
+  // Apply evidence file_hash filter (and optional date filter) in memory
+  if (data != null && data.length > 0 && evidenceFileHashes != null && evidenceFileHashes.length > 0) {
+    const set = new Set(evidenceFileHashes);
+    data = data.filter(row => set.has(row.file_hash));
+  }
+  if (data != null && (dateFromParam != null || dateToParam != null)) {
+    const from = dateFromParam != null ? parseInt(dateFromParam, 10) : null;
+    const to = dateToParam != null ? parseInt(dateToParam, 10) : null;
+    if (from != null && !Number.isNaN(from)) {
+      data = data.filter(row => row.timestamp >= from);
+    }
+    if (to != null && !Number.isNaN(to)) {
+      data = data.filter(row => row.timestamp <= to);
+    }
+  }
 
   if (error) {
     console.error("Supabase proofs GET error:", error);
