@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkProofLimit } from "~~/lib/billing/checkLimits";
+import { getMembership } from "~~/lib/rbac/getMembership";
+import { hasRoleAtLeast } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
 import { proofsPostSchema } from "~~/lib/validation/schemas";
 
@@ -130,6 +132,19 @@ export async function POST(req: NextRequest) {
     chainId = 84_532,
     blockNumber = 0,
   } = parsed.data;
+
+  if (organizationId) {
+    if (!userId) {
+      return NextResponse.json({ error: "userId is required for organization-scoped proofs" }, { status: 400 });
+    }
+    const membership = await getMembership(userId, organizationId);
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this organization" }, { status: 403 });
+    }
+    if (!hasRoleAtLeast(membership.role, "contributor")) {
+      return NextResponse.json({ error: "Insufficient role for organization-scoped proofs" }, { status: 403 });
+    }
+  }
 
   const limitCheck = await checkProofLimit(userId ?? null);
   if (!limitCheck.allowed) {
