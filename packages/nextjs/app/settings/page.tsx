@@ -191,6 +191,12 @@ type SubscriptionData = {
   proofsLimit: number; // -1 = unlimited
 };
 
+type UsageSummary = {
+  plan: PlanId;
+  proofs: { used: number; limit: number };
+  apiRequests: { used: number; limit: number };
+};
+
 function BillingSection() {
   const { session, user } = useSupabaseAuth();
   const [sub, setSub] = useState<SubscriptionData | null>(null);
@@ -367,6 +373,104 @@ function BillingSection() {
   );
 }
 
+function UsageSection() {
+  const { session, user } = useSupabaseAuth();
+  const [usage, setUsage] = useState<UsageSummary | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsage = useCallback(async () => {
+    if (!session?.access_token) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/usage", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        setError((j as { error?: string }).error ?? "Failed to load usage");
+        return;
+      }
+      const data = (await res.json()) as UsageSummary;
+      setUsage(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [session?.access_token]);
+
+  useEffect(() => {
+    if (user && session?.access_token) void fetchUsage();
+  }, [user, session?.access_token, fetchUsage]);
+
+  if (!user) return null;
+
+  const planLimits = usage ? getPlanLimits(usage.plan) : null;
+  const proofsUsed = usage?.proofs.used ?? 0;
+  const proofsLimit = usage?.proofs.limit ?? planLimits?.proofsPerMonth ?? 0;
+  const apiUsed = usage?.apiRequests.used ?? 0;
+  const apiLimit = usage?.apiRequests.limit ?? planLimits?.apiRequestsPerMonth ?? 0;
+
+  const formatLimit = (v: number) => (v < 0 ? "∞" : v.toLocaleString());
+
+  return (
+    <div className="card bg-base-100 border border-base-300 shadow-sm">
+      <div className="card-body gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-3">
+              <UserGroupIcon className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base-content">Usage this month</h2>
+              <p className="text-xs text-base-content/60">
+                Track proofs and API requests against your{" "}
+                <span className="font-semibold">{usage?.plan ?? "free"}</span> plan.
+              </p>
+            </div>
+          </div>
+          <button type="button" onClick={fetchUsage} disabled={loading} className="btn btn-ghost btn-sm">
+            {loading ? "Refreshing…" : "Refresh"}
+          </button>
+        </div>
+        {error && <p className="text-sm text-error">{error}</p>}
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-xs text-base-content/60 mb-1">
+              <span>Proofs this month</span>
+              <span>
+                <span className="font-semibold text-base-content">
+                  {proofsUsed.toLocaleString()} / {formatLimit(proofsLimit)}
+                </span>
+              </span>
+            </div>
+            <progress
+              className="progress progress-primary w-full"
+              value={proofsLimit > 0 ? Math.min((proofsUsed / proofsLimit) * 100, 100) : 0}
+              max={100}
+            />
+          </div>
+          <div>
+            <div className="flex justify-between text-xs text-base-content/60 mb-1">
+              <span>API requests this month</span>
+              <span>
+                <span className="font-semibold text-base-content">
+                  {apiUsed.toLocaleString()} / {formatLimit(apiLimit)}
+                </span>
+              </span>
+            </div>
+            <progress
+              className="progress progress-secondary w-full"
+              value={apiLimit > 0 ? Math.min((apiUsed / apiLimit) * 100, 100) : 0}
+              max={100}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SettingsContent() {
   const searchParams = useSearchParams();
 
@@ -419,6 +523,8 @@ function SettingsContent() {
           <ApiKeysSection />
 
           <BillingSection />
+
+          <UsageSection />
 
           <Link
             href="/team"
