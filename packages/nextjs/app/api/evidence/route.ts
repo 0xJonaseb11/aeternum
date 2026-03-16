@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getMembership } from "~~/lib/rbac/getMembership";
+import { canEditEvidence } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
 import { evidencePostSchema } from "~~/lib/validation/schemas";
 
@@ -48,7 +50,20 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  const { userId, fileHash, title, description, caseId, tags, notes } = parsed.data;
+  const { userId, organizationId, fileHash, title, description, caseId, tags, notes } = parsed.data;
+
+  if (organizationId) {
+    if (!userId) {
+      return NextResponse.json({ error: "userId is required for organization-scoped evidence" }, { status: 400 });
+    }
+    const membership = await getMembership(userId, organizationId);
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this organization" }, { status: 403 });
+    }
+    if (!canEditEvidence(membership.role)) {
+      return NextResponse.json({ error: "Insufficient role for organization-scoped evidence" }, { status: 403 });
+    }
+  }
 
   const payload = {
     title: title ?? null,
@@ -85,6 +100,7 @@ export async function POST(req: NextRequest) {
     .from("evidence")
     .insert({
       user_id: userId ?? null,
+      organization_id: organizationId ?? null,
       file_hash: fileHash,
       ...payload,
     })

@@ -6,6 +6,7 @@ const hex40 = z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Must be 0x-prefixed 40-ch
 export const proofsPostSchema = z.object({
   owner: hex40,
   userId: z.string().uuid().optional(),
+  organizationId: z.string().uuid().optional().nullable(),
   fileHash: hex64,
   timestamp: z.number().int().min(0),
   blockNumber: z.number().int().min(0).optional(),
@@ -16,6 +17,7 @@ export const proofsPostSchema = z.object({
 
 export const evidencePostSchema = z.object({
   userId: z.string().uuid().optional().nullable(),
+  organizationId: z.string().uuid().optional().nullable(),
   fileHash: hex64,
   title: z.string().max(500).optional().nullable(),
   description: z.string().max(5000).optional().nullable(),
