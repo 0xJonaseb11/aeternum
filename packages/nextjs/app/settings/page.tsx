@@ -430,7 +430,7 @@ function SettingsContent() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-bold text-base-content">Team</h2>
-                <p className="text-xs text-base-content/60">Organizations and members (coming soon)</p>
+                <p className="text-xs text-base-content/60">Organizations and members</p>
               </div>
               <span className="text-base-content/40">→</span>
             </div>
