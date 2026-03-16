@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const fileHash = searchParams.get("fileHash");
   const userId = searchParams.get("userId");
+  const organizationId = searchParams.get("organizationId");
 
   if (!fileHash) {
     return NextResponse.json({ error: "Missing fileHash" }, { status: 400 });
@@ -21,6 +22,9 @@ export async function GET(req: NextRequest) {
   let query = supabase.from("evidence").select("*").eq("file_hash", fileHash).limit(1);
   if (userId) {
     query = query.eq("user_id", userId);
+  }
+  if (organizationId) {
+    query = query.eq("organization_id", organizationId);
   }
 
   const { data, error } = await query.maybeSingle();

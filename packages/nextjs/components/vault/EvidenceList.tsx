@@ -27,6 +27,7 @@ import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
 import { useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
+import type { VaultScope } from "~~/hooks/vault/useVaultScope";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
@@ -64,10 +65,12 @@ export const EvidenceCard = ({
   proof,
   initialSecret,
   isMatching,
+  organizationId,
 }: {
   proof: EvidenceItem;
   initialSecret?: string;
   isMatching?: boolean;
+  organizationId?: string | null;
 }) => {
   const [showRecover, setShowRecover] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
@@ -80,7 +83,7 @@ export const EvidenceCard = ({
   const [draftDescription, setDraftDescription] = useState("");
   const { recoverFile, isRecovering } = useRecover();
   const { verify, isVerifying } = useVerifyOwnership();
-  const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash);
+  const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash, organizationId);
   const { data: events } = useEvidenceEvents(proof.fileHash);
 
   useEffect(() => {
@@ -499,7 +502,11 @@ const SecretFinderSection = ({
   </div>
 );
 
-export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: boolean } = {}) => {
+export const EvidenceList = ({
+  scope,
+  showSecretFinder = false,
+}: { scope?: VaultScope; showSecretFinder?: boolean } = {}) => {
+  const organizationId = scope?.type === "org" ? scope.orgId : undefined;
   const { address: connectedAddress } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const { data: blockNumber } = useBlockNumber({ chainId: selectedNetwork.id });
@@ -715,6 +722,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
               }}
               initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(p.fileHash)}
+              organizationId={organizationId}
             />
           ))}
         </div>
@@ -766,6 +774,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
               }}
               initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(p.fileHash)}
+              organizationId={organizationId}
             />
           ))}
         </div>
@@ -815,6 +824,7 @@ export const EvidenceList = ({ showSecretFinder = false }: { showSecretFinder?: 
               timestamp={Number(event.args.timestamp)}
               initialSecret={matchingFileHashes.has(fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(fileHash)}
+              organizationId={organizationId}
             />
           );
         })}
@@ -828,11 +838,13 @@ const EvidenceListItem = ({
   timestamp,
   initialSecret,
   isMatching,
+  organizationId,
 }: {
   fileHash: string;
   timestamp: number;
   initialSecret?: string;
   isMatching?: boolean;
+  organizationId?: string | null;
 }) => {
   const { data: proof, isLoading } = useScaffoldReadContract({
     contractName: "EvidenceVault",
@@ -860,6 +872,7 @@ const EvidenceListItem = ({
       }}
       initialSecret={initialSecret}
       isMatching={isMatching}
+      organizationId={organizationId}
     />
   );
 };
