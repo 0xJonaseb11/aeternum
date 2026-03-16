@@ -14,6 +14,7 @@ import {
   MagnifyingGlassIcon,
   ShareIcon,
   ShieldCheckIcon,
+  UserGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
@@ -173,6 +174,12 @@ export const EvidenceCard = ({
               <ShieldCheckIcon className="h-3 w-3" />
               <span>Verified On-chain</span>
             </div>
+            {organizationId && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-base-200 text-base-content text-[10px] font-bold uppercase tracking-wider border border-base-300">
+                <UserGroupIcon className="h-3 w-3" />
+                <span>Team Vault</span>
+              </div>
+            )}
             {isMatching && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-bold uppercase tracking-wider border border-success/30">
                 <KeyIcon className="h-3 w-3" />
@@ -745,7 +752,9 @@ export const EvidenceList = ({
   if (!hasData) {
     return (
       <div className="text-center py-12 bg-base-200/30 rounded-2xl border border-dashed border-base-300">
-        <p className="text-base-content/40 font-medium">No archive evidence found for this wallet.</p>
+        <p className="text-base-content/40 font-medium">
+          {organizationId ? "No evidence found for this team vault yet." : "No archive evidence found for this wallet."}
+        </p>
         <p className="text-xs text-base-content/40 mt-2">
           {useIndexerData ? "Indexed proofs for this chain." : "Showing last ~2 days on Base Sepolia."}
         </p>

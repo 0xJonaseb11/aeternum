@@ -6,6 +6,7 @@ import {
   DocumentIcon,
   KeyIcon,
   ShieldCheckIcon,
+  UserGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useVault } from "~~/hooks/vault/useVault";
@@ -214,6 +215,18 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
               <span>Secure Local Encryption</span>
               <span className="badge badge-primary badge-xs py-2 px-2 text-[8px] font-bold">ZK-READY</span>
             </p>
+            {scope?.type === "org" ? (
+              <p className="text-[11px] text-base-content/60 mt-1 flex items-center gap-1.5">
+                <UserGroupIcon className="h-3.5 w-3.5 text-primary" />
+                <span>
+                  Evidence will be owned by team <span className="font-semibold">{scope.name}</span>.
+                </span>
+              </p>
+            ) : (
+              <p className="text-[11px] text-base-content/60 mt-1">
+                Evidence will be owned by your personal vault only.
+              </p>
+            )}
           </div>
         </div>
 
