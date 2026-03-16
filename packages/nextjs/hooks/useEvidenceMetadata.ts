@@ -12,6 +12,7 @@ export type EvidenceMetadata = {
   case_id: string | null;
   tags: string[] | null;
   notes: string | null;
+  folder_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +42,7 @@ async function saveEvidence(input: {
   organizationId?: string | null;
   title?: string;
   description?: string;
+  folderId?: string | null;
   accessToken?: string | null;
 }) {
   const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -54,6 +56,7 @@ async function saveEvidence(input: {
       organizationId: input.organizationId ?? undefined,
       title: input.title,
       description: input.description,
+      folderId: input.folderId ?? undefined,
     }),
   });
   if (!res.ok) {
@@ -77,7 +80,7 @@ export function useEvidenceMetadata(fileHash: string | undefined, organizationId
   });
 
   const mutation = useMutation({
-    mutationFn: (input: { title?: string; description?: string }) =>
+    mutationFn: (input: { title?: string; description?: string; folderId?: string | null }) =>
       saveEvidence({
         fileHash: fileHash!,
         userId,

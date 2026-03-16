@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 import { usePublicClient } from "wagmi";
 import {
@@ -15,6 +16,7 @@ import {
   ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import {
   useDeployedContractInfo,
@@ -24,12 +26,10 @@ import {
 } from "~~/hooks/scaffold-eth";
 import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
 import { useEvidenceMetadata } from "~~/hooks/useEvidenceMetadata";
+import { useFolders } from "~~/hooks/useFolders";
 import { useIndexedProofs } from "~~/hooks/vault/useIndexedProofs";
 import { useRecover } from "~~/hooks/vault/useRecover";
-import {
-  type ProofsSearchParams,
-  useSupabaseProofs,
-} from "~~/hooks/vault/useSupabaseProofs";
+import { type ProofsSearchParams, useSupabaseProofs } from "~~/hooks/vault/useSupabaseProofs";
 import type { VaultScope } from "~~/hooks/vault/useVaultScope";
 import { useVerifyOwnership } from "~~/hooks/vault/useVerifyOwnership";
 import { notification } from "~~/utils/scaffold-eth";
@@ -84,10 +84,13 @@ export const EvidenceCard = ({
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
+  const [draftFolderId, setDraftFolderId] = useState("");
   const { recoverFile, isRecovering } = useRecover();
-  const { verify, isVerifying } = useVerifyOwnership();
+  const { data: foldersForCard } = useFolders(organizationId);
+  const { verify, isVerifying } = useVerifyOwnership(organizationId);
   const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash, organizationId);
-  const { data: events } = useEvidenceEvents(proof.fileHash);
+  const { data: events } = useEvidenceEvents(proof.fileHash, organizationId);
+  const { session, user } = useSupabaseAuth();
 
   useEffect(() => {
     if (initialSecret != null && initialSecret !== "") {
@@ -104,6 +107,7 @@ export const EvidenceCard = ({
     if (!metadata) return;
     setDraftTitle(metadata.title ?? "");
     setDraftDescription(metadata.description ?? "");
+    setDraftFolderId(metadata.folder_id ?? "");
   }, [metadata]);
 
   const handleRecover = async () => {
@@ -196,6 +200,19 @@ export const EvidenceCard = ({
                 value={draftDescription}
                 onChange={e => setDraftDescription(e.target.value)}
               />
+              <select
+                className="select select-xs select-bordered w-full text-xs"
+                value={draftFolderId}
+                onChange={e => setDraftFolderId(e.target.value)}
+                title="Folder"
+              >
+                <option value="">No folder</option>
+                {(foldersForCard ?? []).map(f => (
+                  <option key={f.id} value={f.id}>
+                    {f.name}
+                  </option>
+                ))}
+              </select>
               <div className="flex justify-end gap-2 pt-1">
                 <button
                   type="button"
@@ -204,6 +221,7 @@ export const EvidenceCard = ({
                     if (metadata) {
                       setDraftTitle(metadata.title ?? "");
                       setDraftDescription(metadata.description ?? "");
+                      setDraftFolderId(metadata.folder_id ?? "");
                     }
                     setIsEditingMeta(false);
                   }}
@@ -216,7 +234,11 @@ export const EvidenceCard = ({
                   className={`btn btn-primary btn-xs ${isSaving ? "loading" : ""}`}
                   onClick={async () => {
                     try {
-                      await save({ title: draftTitle || undefined, description: draftDescription || undefined });
+                      await save({
+                        title: draftTitle || undefined,
+                        description: draftDescription || undefined,
+                        folderId: draftFolderId || null,
+                      });
                       setIsEditingMeta(false);
                       notification.success("Details saved.");
                     } catch (e) {
@@ -384,12 +406,16 @@ export const EvidenceCard = ({
                 onClick={async () => {
                   handleDetails();
                   try {
+                    const headers: HeadersInit = { "Content-Type": "application/json" };
+                    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
                     void fetch("/api/events", {
                       method: "POST",
-                      headers: { "Content-Type": "application/json" },
+                      headers,
                       body: JSON.stringify({
                         fileHash: proof.fileHash,
                         eventType: "certificate_downloaded",
+                        userId: user?.id,
+                        organizationId: organizationId ?? undefined,
                       }),
                     });
                   } catch {
@@ -522,6 +548,11 @@ export const EvidenceList = ({
   const [serverSearch, setServerSearch] = useState("");
   const [serverCaseId, setServerCaseId] = useState("");
   const [serverTagsInput, setServerTagsInput] = useState("");
+  const [serverFolderId, setServerFolderId] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const queryClient = useQueryClient();
+  const { session } = useSupabaseAuth();
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
 
@@ -533,7 +564,7 @@ export const EvidenceList = ({
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
   const serverSearchParams: ProofsSearchParams | undefined =
-    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim()
+    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim() || serverFolderId.trim()
       ? {
           search: serverSearch.trim() || undefined,
           caseId: serverCaseId.trim() || undefined,
@@ -541,6 +572,7 @@ export const EvidenceList = ({
             .split(",")
             .map(t => t.trim())
             .filter(Boolean),
+          folderId: serverFolderId.trim() || undefined,
         }
       : undefined;
   const {
@@ -555,6 +587,33 @@ export const EvidenceList = ({
     organizationId,
     serverSearchParams,
   );
+  const { data: folders } = useFolders(organizationId);
+  const handleCreateFolder = useCallback(async () => {
+    if (!newFolderName.trim() || !session?.access_token) return;
+    setCreatingFolder(true);
+    try {
+      const res = await fetch("/api/folders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          name: newFolderName.trim(),
+          organizationId: organizationId ?? undefined,
+        }),
+      });
+      if (res.ok) {
+        setNewFolderName("");
+        await queryClient.invalidateQueries({ queryKey: ["folders", organizationId] });
+      } else {
+        const d = await res.json().catch(() => ({}));
+        notification.error((d as { error?: string }).error ?? "Could not create folder");
+      }
+    } finally {
+      setCreatingFolder(false);
+    }
+  }, [newFolderName, session?.access_token, organizationId, queryClient]);
 
   const needEventHistory = !INDEXER_URL || indexedError || (indexedProofs != null && indexedProofs.length === 0);
   const {
@@ -797,6 +856,37 @@ export const EvidenceList = ({
               value={serverTagsInput}
               onChange={e => setServerTagsInput(e.target.value)}
             />
+            <select
+              className="select select-bordered select-sm w-36 max-w-[140px]"
+              value={serverFolderId}
+              onChange={e => setServerFolderId(e.target.value)}
+              title="Filter by folder"
+            >
+              <option value="">All folders</option>
+              {(folders ?? []).map(f => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+            </select>
+            <div className="flex items-center gap-1">
+              <input
+                type="text"
+                className="input input-bordered input-sm w-28 max-w-[120px]"
+                placeholder="New folder"
+                value={newFolderName}
+                onChange={e => setNewFolderName(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && (e.preventDefault(), handleCreateFolder())}
+              />
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                disabled={creatingFolder || !newFolderName.trim()}
+                onClick={handleCreateFolder}
+              >
+                {creatingFolder ? "…" : "Add"}
+              </button>
+            </div>
           </div>
         </div>
         {showSecretFinder && (

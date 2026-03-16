@@ -55,6 +55,22 @@ CREATE INDEX IF NOT EXISTS idx_evidence_user_id ON public.evidence(user_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_organization_id ON public.evidence(organization_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_file_hash ON public.evidence(file_hash);
 
+-- Folders: user/org-scoped groupings for evidence
+CREATE TABLE IF NOT EXISTS public.folders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  organization_id UUID,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, organization_id, name)
+);
+CREATE INDEX IF NOT EXISTS idx_folders_user_id ON public.folders(user_id);
+CREATE INDEX IF NOT EXISTS idx_folders_organization_id ON public.folders(organization_id);
+
+-- Evidence can belong to a folder (nullable)
+ALTER TABLE public.evidence ADD COLUMN IF NOT EXISTS folder_id UUID REFERENCES public.folders(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_evidence_folder_id ON public.evidence(folder_id);
+
 -- -----------------------------------------------------------------------------
 -- Events: evidence lifecycle timeline
 -- -----------------------------------------------------------------------------

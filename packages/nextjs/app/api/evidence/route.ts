@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
     const msg = parsed.error.flatten().formErrors[0] ?? parsed.error.message;
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
-  let { userId, organizationId, fileHash, title, description, caseId, tags, notes } = parsed.data;
+  let { userId, organizationId } = parsed.data;
+  const { fileHash, title, description, caseId, tags, notes, folderId } = parsed.data;
 
   if (userId != null || (organizationId != null && organizationId !== "")) {
     const user = await getCurrentUserFromRequest(req);
@@ -96,12 +97,31 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (folderId != null && folderId !== "" && (userId != null || organizationId != null)) {
+    const { data: folder } = await supabase
+      .from("folders")
+      .select("id, user_id, organization_id")
+      .eq("id", folderId)
+      .maybeSingle();
+    if (!folder) {
+      return NextResponse.json({ error: "Folder not found" }, { status: 404 });
+    }
+    const folderUserMatch = folder.user_id === userId;
+    const folderOrgMatch =
+      (organizationId != null && folder.organization_id === organizationId) ||
+      (organizationId == null && folder.organization_id == null);
+    if (!folderUserMatch || !folderOrgMatch) {
+      return NextResponse.json({ error: "Folder not in your scope" }, { status: 403 });
+    }
+  }
+
   const payload = {
     title: title ?? null,
     description: description ?? null,
     case_id: caseId ?? null,
     tags: tags ?? null,
     notes: notes ?? null,
+    folder_id: folderId ?? null,
     updated_at: new Date().toISOString(),
   };
 
@@ -132,7 +152,13 @@ export async function POST(req: NextRequest) {
       user_id: userId ?? null,
       organization_id: organizationId ?? null,
       file_hash: fileHash,
-      ...payload,
+      folder_id: folderId ?? null,
+      title: payload.title,
+      description: payload.description,
+      case_id: payload.case_id,
+      tags: payload.tags,
+      notes: payload.notes,
+      updated_at: payload.updated_at,
     })
     .select("*")
     .maybeSingle();

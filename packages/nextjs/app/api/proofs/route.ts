@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search");
   const caseId = searchParams.get("caseId");
   const tagsParam = searchParams.get("tags");
+  const folderIdParam = searchParams.get("folderId");
   const dateFromParam = searchParams.get("dateFrom");
   const dateToParam = searchParams.get("dateTo");
 
@@ -100,16 +101,17 @@ export async function GET(req: NextRequest) {
   const hasEvidenceFilters =
     (search != null && search.trim() !== "") ||
     (caseId != null && caseId.trim() !== "") ||
-    (tagsParam != null && tagsParam.trim() !== "");
+    (tagsParam != null && tagsParam.trim() !== "") ||
+    (folderIdParam != null && folderIdParam !== "");
   if (userId != null && hasEvidenceFilters) {
-    let evidenceQuery = supabase
-      .from("evidence")
-      .select("file_hash")
-      .eq("user_id", userId);
+    let evidenceQuery = supabase.from("evidence").select("file_hash").eq("user_id", userId);
     if (organizationId != null && organizationId !== "") {
       evidenceQuery = evidenceQuery.eq("organization_id", organizationId);
     } else {
       evidenceQuery = evidenceQuery.is("organization_id", null);
+    }
+    if (folderIdParam != null && folderIdParam !== "") {
+      evidenceQuery = evidenceQuery.eq("folder_id", folderIdParam);
     }
     if (search != null && search.trim() !== "") {
       const raw = search.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
@@ -167,11 +169,12 @@ export async function GET(req: NextRequest) {
     query = query.eq("chain_id", chainId);
   }
 
-  let { data, error } = await query;
+  const { data: queryData, error } = await query;
   if (error) {
     console.error("Supabase proofs GET error:", error);
     return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
+  let data = queryData ?? null;
 
   // Apply evidence file_hash filter (and optional date filter) in memory
   if (data != null && data.length > 0 && evidenceFileHashes != null && evidenceFileHashes.length > 0) {
@@ -187,11 +190,6 @@ export async function GET(req: NextRequest) {
     if (to != null && !Number.isNaN(to)) {
       data = data.filter(row => row.timestamp <= to);
     }
-  }
-
-  if (error) {
-    console.error("Supabase proofs GET error:", error);
-    return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
 
   const items = (data ?? []).map(row => ({
