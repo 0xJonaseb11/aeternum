@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiKeyAuth } from "~~/lib/api/withApiKey";
+import { checkAndIncrementApiUsage } from "~~/lib/billing/apiUsage";
+import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 import { evidencePostSchema } from "~~/lib/validation/schemas";
 
@@ -10,6 +12,14 @@ export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "API key required" }, { status: 401 });
+  }
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "v1")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+  const usage = await checkAndIncrementApiUsage(auth.userId);
+  if (!usage.allowed) {
+    return NextResponse.json({ error: usage.reason ?? "API limit exceeded" }, { status: 429 });
   }
   const supabase = getSupabase();
   if (!supabase) {
@@ -48,6 +58,14 @@ export async function POST(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "API key required" }, { status: 401 });
+  }
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "v1")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+  const usage = await checkAndIncrementApiUsage(auth.userId);
+  if (!usage.allowed) {
+    return NextResponse.json({ error: usage.reason ?? "API limit exceeded" }, { status: 429 });
   }
   const supabase = getSupabase();
   if (!supabase) {

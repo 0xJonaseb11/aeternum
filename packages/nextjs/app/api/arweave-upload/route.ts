@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Uploader } from "@irys/upload";
 import { BaseEth } from "@irys/upload-ethereum";
+import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "upload")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   try {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
     if (!privateKey) {

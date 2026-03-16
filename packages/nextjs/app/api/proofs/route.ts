@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkProofLimit } from "~~/lib/billing/checkLimits";
+import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { hasRoleAtLeast } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
 import { proofsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "proofs")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const supabase = getSupabase();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
@@ -13,6 +18,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
   const userId = searchParams.get("userId");
+  const organizationId = searchParams.get("organizationId");
   const fileHash = searchParams.get("fileHash");
   const chainIdParam = searchParams.get("chainId");
 
@@ -75,6 +81,11 @@ export async function GET(req: NextRequest) {
 
   if (userId) {
     query = query.eq("user_id", userId);
+    if (organizationId != null && organizationId !== "") {
+      query = query.eq("organization_id", organizationId);
+    } else {
+      query = query.is("organization_id", null);
+    }
   } else if (owner) {
     query = query.eq("owner_address", owner.toLowerCase());
   }
@@ -106,6 +117,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "upload")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const supabase = getSupabase();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });

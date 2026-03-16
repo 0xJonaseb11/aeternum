@@ -169,3 +169,15 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON public.subscriptions(user_id);
+
+-- -----------------------------------------------------------------------------
+-- API usage (per user per month for plan limits)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.api_usage (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  period_start DATE NOT NULL,
+  requests_count INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(user_id, period_start)
+);
+CREATE INDEX IF NOT EXISTS idx_api_usage_user_period ON public.api_usage(user_id, period_start);

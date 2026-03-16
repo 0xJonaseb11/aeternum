@@ -1,15 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ArrowDownTrayIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
+  DocumentArrowDownIcon,
   DocumentTextIcon,
+  ExclamationTriangleIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { certificateToJson } from "~~/utils/vault/certificateExport";
 import { createCertificatePdf } from "~~/utils/vault/certificatePdf";
 
 type Proof = {
@@ -69,23 +72,44 @@ export default function EvidenceVerificationPage() {
     void navigator.clipboard.writeText(proof.fileHash);
   }, [proof?.fileHash]);
 
+  const verificationUrl = typeof window !== "undefined" ? window.location.href : undefined;
+  const certData = useMemo(
+    () =>
+      proof
+        ? {
+            fileHash: proof.fileHash,
+            timestamp: proof.timestamp,
+            storageId: proof.arweaveTxId,
+            ipfsCid: proof.ipfsCid ?? undefined,
+            owner: proof.owner,
+            verificationUrl,
+          }
+        : null,
+    [proof, verificationUrl],
+  );
+
   const downloadCertificate = useCallback(async () => {
-    if (!proof) return;
-    const blob = await createCertificatePdf({
-      fileHash: proof.fileHash,
-      timestamp: proof.timestamp,
-      storageId: proof.arweaveTxId,
-      ipfsCid: proof.ipfsCid ?? undefined,
-      owner: proof.owner,
-      verificationUrl: typeof window !== "undefined" ? window.location.href : undefined,
-    });
+    if (!proof || !certData) return;
+    const blob = await createCertificatePdf(certData);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `aeternum-certificate-${proof.fileHash.slice(2, 10)}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [proof]);
+  }, [proof, certData]);
+
+  const downloadJson = useCallback(() => {
+    if (!certData) return;
+    const json = certificateToJson(certData);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `aeternum-certificate-${proof!.fileHash.slice(2, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [certData, proof]);
 
   if (loading) {
     return (
@@ -116,10 +140,17 @@ export default function EvidenceVerificationPage() {
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
       <main className="flex-1 container mx-auto px-4 py-8 sm:py-12 max-w-2xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
-          <ShieldCheckIcon className="h-4 w-4 shrink-0" />
-          <span>Verified on-chain</span>
-        </div>
+        {proof.revoked ? (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 text-warning text-xs font-bold uppercase tracking-widest mb-6 border border-warning/20">
+            <ExclamationTriangleIcon className="h-4 w-4 shrink-0" />
+            <span>Revoked</span>
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
+            <ShieldCheckIcon className="h-4 w-4 shrink-0" />
+            <span>Verified on-chain</span>
+          </div>
+        )}
 
         <h1 className="text-2xl font-bold text-base-content mb-6">Evidence verification</h1>
 
@@ -162,9 +193,13 @@ export default function EvidenceVerificationPage() {
             </div>
 
             <div className="pt-2 border-t border-base-300 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-success text-xs font-medium">
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-medium ${
+                  proof.revoked ? "text-warning" : "text-success"
+                }`}
+              >
                 <CheckCircleIcon className="h-4 w-4 shrink-0" />
-                Status: Verified
+                Status: {proof.revoked ? "Revoked" : "Verified"}
               </span>
               <span className="text-base-content/40">·</span>
               <span className="text-xs text-base-content/50">
@@ -172,10 +207,18 @@ export default function EvidenceVerificationPage() {
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 pt-2">
               <button type="button" onClick={downloadCertificate} className="btn btn-primary btn-sm gap-2">
                 <ArrowDownTrayIcon className="h-4 w-4 shrink-0" />
                 Download certificate (PDF)
+              </button>
+              <button
+                type="button"
+                onClick={downloadJson}
+                className="btn btn-ghost btn-sm gap-2 border border-base-300"
+              >
+                <DocumentArrowDownIcon className="h-4 w-4 shrink-0" />
+                Export JSON
               </button>
               <Link href="/verify" className="btn btn-ghost btn-sm gap-2" title="Verification portal">
                 <DocumentTextIcon className="h-4 w-4 shrink-0" />

@@ -16,15 +16,18 @@ export interface SupabaseProofItem {
 async function fetchProofsFromSupabase({
   owner,
   userId,
+  organizationId,
   chainId,
 }: {
   owner?: `0x${string}`;
   userId?: string;
+  organizationId?: string | null;
   chainId: number;
 }): Promise<SupabaseProofItem[]> {
   const params = new URLSearchParams({ chainId: String(chainId) });
   if (userId) {
     params.set("userId", userId);
+    if (organizationId) params.set("organizationId", organizationId);
   } else if (owner) {
     params.set("owner", owner.toLowerCase());
   }
@@ -39,13 +42,19 @@ async function fetchProofsFromSupabase({
   return json.items ?? [];
 }
 
-export function useSupabaseProofs(owner: `0x${string}` | undefined, chainId: number, enabled: boolean) {
+export function useSupabaseProofs(
+  owner: `0x${string}` | undefined,
+  chainId: number,
+  enabled: boolean,
+  organizationId?: string | null,
+) {
   const { user } = useSupabaseAuth();
   const userId = user?.id;
 
   return useQuery({
-    queryKey: ["supabaseProofs", owner, userId, chainId],
-    queryFn: () => fetchProofsFromSupabase({ owner: owner!, userId, chainId }),
+    queryKey: ["supabaseProofs", owner, userId, organizationId, chainId],
+    queryFn: () =>
+      fetchProofsFromSupabase({ owner: owner!, userId, organizationId, chainId }),
     enabled: enabled && Boolean(owner),
     staleTime: 30_000,
     retry: 1,
