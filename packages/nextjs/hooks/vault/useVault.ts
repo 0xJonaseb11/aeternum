@@ -30,7 +30,7 @@ export const useVault = (organizationId?: string | null) => {
   const { address } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
-  const { user } = useSupabaseAuth();
+  const { user, session } = useSupabaseAuth();
 
   const { writeContractAsync: createProof } = useScaffoldWriteContract({
     contractName: "EvidenceVault",
@@ -116,12 +116,16 @@ export const useVault = (organizationId?: string | null) => {
 
       // Fire-and-forget event log (ignore failures)
       try {
+        const headers: HeadersInit = { "Content-Type": "application/json" };
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
         void fetch("/api/events", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             fileHash,
             eventType: "created",
+            userId: user?.id,
+            organizationId: organizationId ?? undefined,
             data: {
               arweaveTxId,
               ipfsCid,

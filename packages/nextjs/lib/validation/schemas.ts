@@ -24,12 +24,19 @@ export const evidencePostSchema = z.object({
   caseId: z.string().max(200).optional().nullable(),
   tags: z.array(z.string().max(100)).max(50).optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
+  folderId: z.string().uuid().optional().nullable(),
+});
+
+export const folderPostSchema = z.object({
+  name: z.string().min(1).max(200),
 });
 
 export const eventsPostSchema = z.object({
   fileHash: hex64,
   eventType: z.string().min(1).max(100),
   data: z.unknown().optional(),
+  userId: z.string().uuid().optional().nullable(),
+  organizationId: z.string().uuid().optional().nullable(),
 });
 
 export type ProofsPostBody = z.infer<typeof proofsPostSchema>;

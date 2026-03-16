@@ -37,6 +37,9 @@ export default function TeamOrgPage() {
   const [addUserId, setAddUserId] = useState("");
   const [addRole, setAddRole] = useState<OrgRole>("viewer");
   const [adding, setAdding] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<OrgRole>("viewer");
+  const [inviting, setInviting] = useState(false);
   const [editingRole, setEditingRole] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
 
@@ -77,6 +80,36 @@ export default function TeamOrgPage() {
     setError(null);
     Promise.all([fetchOrg(), fetchMembers()]).finally(() => setLoading(false));
   }, [orgId, user, session?.access_token, fetchOrg, fetchMembers]);
+
+  const handleInviteByEmail = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!session?.access_token || !orgId || !inviteEmail.trim()) return;
+      setInviting(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/organizations/${orgId}/invite`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
+        });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setError((d as { error?: string }).error ?? "Failed to invite");
+          return;
+        }
+        setInviteEmail("");
+        setInviteRole("viewer");
+        void fetchMembers();
+      } finally {
+        setInviting(false);
+      }
+    },
+    [session?.access_token, orgId, inviteEmail, inviteRole, fetchMembers],
+  );
 
   const handleAddMember = useCallback(
     async (e: React.FormEvent) => {
@@ -252,35 +285,70 @@ export default function TeamOrgPage() {
           </section>
 
           {canManage && (
-            <section>
-              <h2 className="text-lg font-semibold text-base-content mb-3">Add member</h2>
-              <p className="text-xs text-base-content/60 mb-2">
-                Add by user ID (UUID). The user must already have an account.
-              </p>
-              <form onSubmit={handleAddMember} className="flex flex-wrap items-end gap-2">
-                <input
-                  type="text"
-                  className="input input-bordered flex-1 min-w-[200px]"
-                  placeholder="User ID (UUID)"
-                  value={addUserId}
-                  onChange={e => setAddUserId(e.target.value)}
-                />
-                <select
-                  className="select select-bordered"
-                  value={addRole}
-                  onChange={e => setAddRole(e.target.value as OrgRole)}
-                >
-                  {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className="btn btn-primary btn-sm" disabled={adding || !addUserId.trim()}>
-                  {adding ? "Adding…" : "Add"}
-                </button>
-              </form>
-            </section>
+            <>
+              <section className="mb-8">
+                <h2 className="text-lg font-semibold text-base-content mb-3">Invite by email</h2>
+                <p className="text-xs text-base-content/60 mb-2">
+                  They must have signed in at least once (have an account).
+                </p>
+                <form onSubmit={handleInviteByEmail} className="flex flex-wrap items-end gap-2">
+                  <input
+                    type="email"
+                    className="input input-bordered flex-1 min-w-[200px]"
+                    placeholder="colleague@example.com"
+                    value={inviteEmail}
+                    onChange={e => setInviteEmail(e.target.value)}
+                  />
+                  <select
+                    className="select select-bordered"
+                    value={inviteRole}
+                    onChange={e => setInviteRole(e.target.value as OrgRole)}
+                  >
+                    {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-sm"
+                    disabled={inviting || !inviteEmail.trim()}
+                  >
+                    {inviting ? "Inviting…" : "Invite"}
+                  </button>
+                </form>
+              </section>
+              <section>
+                <h2 className="text-lg font-semibold text-base-content mb-3">Add by user ID</h2>
+                <p className="text-xs text-base-content/60 mb-2">
+                  Add by user ID (UUID) if you know it. Prefer inviting by email above.
+                </p>
+                <form onSubmit={handleAddMember} className="flex flex-wrap items-end gap-2">
+                  <input
+                    type="text"
+                    className="input input-bordered flex-1 min-w-[200px]"
+                    placeholder="User ID (UUID)"
+                    value={addUserId}
+                    onChange={e => setAddUserId(e.target.value)}
+                  />
+                  <select
+                    className="select select-bordered"
+                    value={addRole}
+                    onChange={e => setAddRole(e.target.value as OrgRole)}
+                  >
+                    {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" className="btn btn-primary btn-sm" disabled={adding || !addUserId.trim()}>
+                    {adding ? "Adding…" : "Add"}
+                  </button>
+                </form>
+              </section>
+            </>
           )}
         </>
       )}

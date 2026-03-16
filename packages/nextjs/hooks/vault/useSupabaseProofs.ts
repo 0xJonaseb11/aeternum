@@ -17,6 +17,7 @@ export type ProofsSearchParams = {
   search?: string;
   caseId?: string;
   tags?: string[];
+  folderId?: string;
   dateFrom?: number;
   dateTo?: number;
 };
@@ -43,6 +44,7 @@ async function fetchProofsFromSupabase({
     if (searchParams?.search?.trim()) params.set("search", searchParams.search.trim());
     if (searchParams?.caseId?.trim()) params.set("caseId", searchParams.caseId.trim());
     if (searchParams?.tags?.length) params.set("tags", searchParams.tags.join(","));
+    if (searchParams?.folderId) params.set("folderId", searchParams.folderId);
     if (searchParams?.dateFrom != null) params.set("dateFrom", String(searchParams.dateFrom));
     if (searchParams?.dateTo != null) params.set("dateTo", String(searchParams.dateTo));
   } else if (owner) {

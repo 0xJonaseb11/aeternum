@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search");
   const caseId = searchParams.get("caseId");
   const tagsParam = searchParams.get("tags");
+  const folderIdParam = searchParams.get("folderId");
   const dateFromParam = searchParams.get("dateFrom");
   const dateToParam = searchParams.get("dateTo");
 
@@ -100,16 +101,17 @@ export async function GET(req: NextRequest) {
   const hasEvidenceFilters =
     (search != null && search.trim() !== "") ||
     (caseId != null && caseId.trim() !== "") ||
-    (tagsParam != null && tagsParam.trim() !== "");
+    (tagsParam != null && tagsParam.trim() !== "") ||
+    (folderIdParam != null && folderIdParam !== "");
   if (userId != null && hasEvidenceFilters) {
-    let evidenceQuery = supabase
-      .from("evidence")
-      .select("file_hash")
-      .eq("user_id", userId);
+    let evidenceQuery = supabase.from("evidence").select("file_hash").eq("user_id", userId);
     if (organizationId != null && organizationId !== "") {
       evidenceQuery = evidenceQuery.eq("organization_id", organizationId);
     } else {
       evidenceQuery = evidenceQuery.is("organization_id", null);
+    }
+    if (folderIdParam != null && folderIdParam !== "") {
+      evidenceQuery = evidenceQuery.eq("folder_id", folderIdParam);
     }
     if (search != null && search.trim() !== "") {
       const raw = search.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");

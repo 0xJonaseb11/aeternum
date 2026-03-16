@@ -9,11 +9,11 @@ import { generateZKProofBundle } from "~~/utils/vault/zkProof";
 
 type VerifyResult = { verified: boolean; error?: string };
 
-export function useVerifyOwnership() {
+export function useVerifyOwnership(organizationId?: string | null) {
   const [isVerifying, setIsVerifying] = useState(false);
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
   const publicClient = usePublicClient();
-  const { user } = useSupabaseAuth();
+  const { user, session } = useSupabaseAuth();
 
   const verify = async (fileHash: string, secret: string): Promise<VerifyResult> => {
     if (!vaultContract?.address || !publicClient) {
@@ -35,12 +35,16 @@ export function useVerifyOwnership() {
 
       if (verified) {
         try {
+          const headers: HeadersInit = { "Content-Type": "application/json" };
+          if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
           void fetch("/api/events", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify({
               fileHash,
               eventType: "verified",
+              userId: user?.id,
+              organizationId: organizationId ?? undefined,
               data: { publicInputs },
             }),
           });
