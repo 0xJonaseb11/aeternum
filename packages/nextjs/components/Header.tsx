@@ -9,6 +9,7 @@ import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useSubscription } from "~~/hooks/useSubscription";
 
 type HeaderMenuLink = {
   label: string;
@@ -55,6 +56,24 @@ export const HeaderMenuLinks = () => {
         );
       })}
     </>
+  );
+};
+
+const PlanBadge = () => {
+  const { subscription, isPaid, loading } = useSubscription();
+
+  if (loading || !subscription) return null;
+
+  return (
+    <div
+      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+        isPaid
+          ? "bg-primary/10 border-primary/30 text-primary"
+          : "bg-base-200 border-base-300 text-base-content/40"
+      }`}
+    >
+      {subscription.plan}
+    </div>
   );
 };
 
@@ -142,6 +161,7 @@ export const Header = () => {
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+            <PlanBadge />
             <RainbowKitCustomConnectButton />
           </div>
         </div>
