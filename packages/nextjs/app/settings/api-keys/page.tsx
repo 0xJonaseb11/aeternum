@@ -20,12 +20,10 @@ export default function ApiKeysPage() {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newKey, setNewKey] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchKeys = useCallback(async () => {
     if (!session?.access_token) return;
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/api-keys", {
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -34,7 +32,7 @@ export default function ApiKeysPage() {
       const data = await res.json();
       setKeys(data.keys ?? []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      console.error("API Keys error:", err);
     } finally {
       setLoading(false);
     }
@@ -43,7 +41,6 @@ export default function ApiKeysPage() {
   const createKey = useCallback(async () => {
     if (!session?.access_token) return;
     setCreating(true);
-    setError(null);
     try {
       const res = await fetch("/api/api-keys", {
         method: "POST",

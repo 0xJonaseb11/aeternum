@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
-import { PLAN_IDS, getPlanLimits } from "~~/lib/billing/plans";
+import { PLAN_IDS } from "~~/lib/billing/plans";
 
 const PLAN_FEATURES: Record<string, string[]> = {
   free: [
@@ -47,7 +47,7 @@ const PLAN_PRICES: Record<string, { monthly: string; priceId?: string }> = {
 };
 
 export default function PlansPage() {
-  const { session, user } = useSupabaseAuth();
+  const { session } = useSupabaseAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const startCheckout = useCallback(
@@ -95,7 +95,6 @@ export default function PlansPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {PLAN_IDS.map(plan => {
-          const isEnterprise = plan === "enterprise";
           const features = PLAN_FEATURES[plan] || [];
           const price = PLAN_PRICES[plan];
 
