@@ -1,13 +1,15 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { CreditCardIcon, KeyIcon, TrashIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { type PlanId, getPlanLimits } from "~~/lib/billing/plans";
+import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
 type ApiKeyRow = {
   id: string;
@@ -471,6 +473,117 @@ function UsageSection() {
   );
 }
 
+function AccountSection() {
+  const { user, isLoading, signOut } = useSupabaseAuth();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const sendMagicLink = async () => {
+    setError(null);
+    setMessage(null);
+    setSending(true);
+    try {
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const redirectTo = `${origin}/auth/callback`;
+      const { error: signInError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: redirectTo,
+        },
+      });
+      if (signInError) throw signInError;
+      setMessage("Check your email for the sign-in link.");
+      toast.success("Magic link sent!");
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : "Failed to send sign-in email.";
+      setError(errMsg);
+      toast.error(errMsg);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
+      <div className="card-body gap-4">
+        <div className="flex items-center gap-4">
+          <div className="rounded-lg bg-primary/10 p-3">
+            <UserCircleIcon className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-base-content">Account</h2>
+            <p className="text-xs text-base-content/60">Manage your identity and wallet link.</p>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="text-sm text-base-content/60 py-2">Loading…</div>
+        ) : user ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40">Signed in</div>
+                <div className="text-sm break-all font-medium">{user.email ?? "Email account"}</div>
+              </div>
+
+              <div className="rounded-xl border border-base-300 bg-base-200/40 p-4 space-y-2">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-base-content/40">Wallet link</div>
+                <WalletLinkStatus />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                className="btn btn-outline btn-error btn-sm"
+                onClick={async () => {
+                  await signOut();
+                  toast.success("Signed out successfully");
+                }}
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 pt-2">
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text font-bold">Sign in with email</span>
+              </label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  className="input input-bordered grow sm:w-auto"
+                  placeholder="you@company.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  autoComplete="email"
+                />
+                <button
+                  className={`btn btn-primary ${sending ? "loading" : ""}`}
+                  disabled={sending || !email.includes("@")}
+                  onClick={sendMagicLink}
+                >
+                  Send link
+                </button>
+              </div>
+              {error && <p className="mt-2 text-xs text-error">{error}</p>}
+              {message && <p className="mt-2 text-xs text-success">{message}</p>}
+            </div>
+            <p className="text-xs text-base-content/50">
+              New to Aeternum? Just enter your email to create an account instantly.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SettingsContent() {
   const searchParams = useSearchParams();
 
@@ -487,45 +600,19 @@ function SettingsContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      <header className="border-b border-base-300 bg-base-100/95 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <AppLogo className="h-8 w-8" />
-            <span className="font-bold text-sm uppercase tracking-wider">Aeternum</span>
-          </Link>
-          <Link href="/vault" className="text-xs font-medium text-base-content/70 hover:text-primary">
-            Back to Vault
-          </Link>
-        </div>
-      </header>
+      <Link href="/vault" className="text-xs font-medium text-base-content/70 hover:text-primary">
+        Back to Vault
+      </Link>
 
       <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-bold text-base-content mb-2">Settings</h1>
         <p className="text-sm text-base-content/60 mb-8">Manage your account, API keys, and billing.</p>
 
         <div className="flex flex-col gap-4">
-          <Link
-            href="/login"
-            className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-colors"
-          >
-            <div className="card-body flex-row items-center gap-4">
-              <div className="rounded-lg bg-primary/10 p-3">
-                <UserCircleIcon className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-base-content">Account</h2>
-                <p className="text-xs text-base-content/60">Email, wallet link, sign out</p>
-              </div>
-              <span className="text-base-content/40">→</span>
-            </div>
-          </Link>
-
+          <AccountSection />
           <ApiKeysSection />
-
           <BillingSection />
-
           <UsageSection />
-
           <Link
             href="/team"
             className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-colors"
