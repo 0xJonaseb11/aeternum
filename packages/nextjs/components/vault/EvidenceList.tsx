@@ -608,7 +608,12 @@ export const EvidenceList = ({
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
   const serverSearchParams: ProofsSearchParams | undefined =
-    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim() || serverFolderId.trim() || serverDateFrom || serverDateTo
+    serverSearch.trim() ||
+    serverCaseId.trim() ||
+    serverTagsInput.trim() ||
+    serverFolderId.trim() ||
+    serverDateFrom ||
+    serverDateTo
       ? {
           search: serverSearch.trim() || undefined,
           caseId: serverCaseId.trim() || undefined,
