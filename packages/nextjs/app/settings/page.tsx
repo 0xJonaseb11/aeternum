@@ -599,10 +599,6 @@ function SettingsContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      <Link href="/vault" className="text-xs font-medium text-base-content/70 hover:text-primary">
-        Back to Vault
-      </Link>
-
       <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-bold text-base-content mb-2">Settings</h1>
         <p className="text-sm text-base-content/60 mb-8">Manage your account, API keys, and billing.</p>

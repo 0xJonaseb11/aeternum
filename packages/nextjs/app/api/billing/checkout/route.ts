@@ -6,33 +6,43 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 /** POST: create Stripe Checkout session for a plan, return redirect URL. Body: { plan: "pro" | "business" }. */
 export async function POST(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  let body: { plan?: string };
   try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    const user = await getCurrentUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    let body: { plan?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+    const plan = (body.plan ?? "pro") as PlanId;
+    if (!["pro", "business", "enterprise"].includes(plan)) {
+      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+    }
+    const priceId = getPriceId(plan);
+    if (!priceId) {
+      console.error(`[CheckoutAPI] Price ID not found for plan: ${plan}`);
+      return NextResponse.json({ error: "Plan not configured. Check STRIPE_PRICE environment variables." }, { status: 400 });
+    }
+    const origin = req.nextUrl.origin;
+    const url = await createCheckoutSession(
+      user.id,
+      user.email ?? null,
+      plan,
+      `${origin}/settings?billing=success`,
+      `${origin}/settings?billing=cancel`,
+    );
+    if (!url) {
+      return NextResponse.json({ error: "Could not create checkout session" }, { status: 500 });
+    }
+    return NextResponse.json({ url });
+  } catch (err: any) {
+    console.error(`[CheckoutAPI] Uncaught error:`, err);
+    return NextResponse.json(
+      { error: err.message || "Internal Server Error", details: err.toString() },
+      { status: 500 }
+    );
   }
-  const plan = (body.plan ?? "pro") as PlanId;
-  if (!["pro", "business", "enterprise"].includes(plan)) {
-    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
-  }
-  if (!getPriceId(plan)) {
-    return NextResponse.json({ error: "Plan not configured" }, { status: 400 });
-  }
-  const origin = req.nextUrl.origin;
-  const url = await createCheckoutSession(
-    user.id,
-    user.email ?? null,
-    plan,
-    `${origin}/settings?billing=success`,
-    `${origin}/settings?billing=cancel`,
-  );
-  if (!url) {
-    return NextResponse.json({ error: "Could not create checkout session" }, { status: 500 });
-  }
-  return NextResponse.json({ url });
 }
