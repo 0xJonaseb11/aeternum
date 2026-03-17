@@ -22,6 +22,7 @@ export const menuLinks: HeaderMenuLink[] = [
   { label: "Vault", href: "/vault" },
   { label: "Team", href: "/team" },
   { label: "Verify", href: "/verification" },
+  { label: "Pricing", href: "/plans" },
   { label: "Settings", href: "/settings" },
 ];
 
