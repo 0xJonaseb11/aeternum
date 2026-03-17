@@ -67,9 +67,7 @@ const PlanBadge = () => {
   return (
     <div
       className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-        isPaid
-          ? "bg-primary/10 border-primary/30 text-primary"
-          : "bg-base-200 border-base-300 text-base-content/40"
+        isPaid ? "bg-primary/10 border-primary/30 text-primary" : "bg-base-200 border-base-300 text-base-content/40"
       }`}
     >
       {subscription.plan}

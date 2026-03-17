@@ -308,11 +308,15 @@ function BillingSection() {
 
   return (
     <div className="card bg-base-100 border border-base-300 shadow-sm relative overflow-hidden">
-      {isPaid && <div className="absolute top-0 right-0 px-3 py-1 bg-primary text-[10px] font-bold text-primary-content uppercase tracking-widest rounded-bl-lg">Premium</div>}
+      {isPaid && (
+        <div className="absolute top-0 right-0 px-3 py-1 bg-primary text-[10px] font-bold text-primary-content uppercase tracking-widest rounded-bl-lg">
+          Premium
+        </div>
+      )}
       <div className="card-body gap-4">
         <div className="flex items-center gap-4">
-          <div className={`rounded-lg p-3 ${isPaid ? 'bg-primary/10' : 'bg-base-300/50'}`}>
-            <CreditCardIcon className={`h-6 w-6 ${isPaid ? 'text-primary' : 'text-base-content/60'}`} />
+          <div className={`rounded-lg p-3 ${isPaid ? "bg-primary/10" : "bg-base-300/50"}`}>
+            <CreditCardIcon className={`h-6 w-6 ${isPaid ? "text-primary" : "text-base-content/60"}`} />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="font-bold text-base-content">Billing</h2>
@@ -325,7 +329,7 @@ function BillingSection() {
         ) : sub ? (
           <>
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`badge badge-lg capitalize ${isPaid ? 'badge-primary' : ''}`}>{sub.plan}</span>
+              <span className={`badge badge-lg capitalize ${isPaid ? "badge-primary" : ""}`}>{sub.plan}</span>
               <span className="text-sm text-base-content/70">{sub.status}</span>
               {sub.currentPeriodEnd && (
                 <span className="text-xs text-base-content/50">
@@ -355,7 +359,7 @@ function BillingSection() {
                 onClick={() => startCheckout("pro")}
               >
                 <span className="text-xs capitalize">{sub.plan === "pro" ? "Current Plan" : "Upgrade to Pro"}</span>
-                <span className="text-[10px] opacity-70 font-normal">$29 / month</span>
+                <span className="text-[10px] opacity-70 font-normal">$20 / month</span>
               </button>
 
               <button
@@ -364,8 +368,10 @@ function BillingSection() {
                 disabled={sub.plan === "business" || checkoutPlan !== null}
                 onClick={() => startCheckout("business")}
               >
-                <span className="text-xs capitalize">{sub.plan === "business" ? "Current Plan" : "Upgrade to Business"}</span>
-                <span className="text-[10px] opacity-70 font-normal">$99 / month</span>
+                <span className="text-xs capitalize">
+                  {sub.plan === "business" ? "Current Plan" : "Upgrade to Business"}
+                </span>
+                <span className="text-[10px] opacity-70 font-normal">$100 / month</span>
               </button>
 
               <button
@@ -374,7 +380,9 @@ function BillingSection() {
                 disabled={sub.plan === "enterprise" || checkoutPlan !== null}
                 onClick={() => startCheckout("enterprise")}
               >
-                <span className="text-xs capitalize">{sub.plan === "enterprise" ? "Current Plan" : "Enterprise Monthly"}</span>
+                <span className="text-xs capitalize">
+                  {sub.plan === "enterprise" ? "Current Plan" : "Enterprise Monthly"}
+                </span>
                 <span className="text-[10px] opacity-70 font-normal">$150 / month</span>
               </button>
 
@@ -389,7 +397,12 @@ function BillingSection() {
               </button>
             </div>
             {canManage && (
-              <button type="button" className="btn btn-ghost btn-sm w-full mt-2" disabled={portalLoading} onClick={openPortal}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm w-full mt-2"
+                disabled={portalLoading}
+                onClick={openPortal}
+              >
                 {portalLoading ? "Opening…" : "Manage subscription in Stripe Dashboard"}
               </button>
             )}

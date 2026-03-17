@@ -19,8 +19,8 @@ export function getPriceId(plan: PlanId, type?: "standard" | "discounted"): stri
       return process.env.STRIPE_PRICE_BUSINESS ?? null;
     case "enterprise":
       return type === "discounted"
-        ? process.env.STRIPE_PRICE_ENTERPRISE_DISCOUNTED ?? null
-        : process.env.STRIPE_PRICE_ENTERPRISE ?? null;
+        ? (process.env.STRIPE_PRICE_ENTERPRISE_DISCOUNTED ?? null)
+        : (process.env.STRIPE_PRICE_ENTERPRISE ?? null);
     default:
       return null;
   }
@@ -89,13 +89,26 @@ export async function createCheckoutSession(
   plan: PlanId,
   successUrl: string,
   cancelUrl: string,
-  explicitPriceId?: string,
+  priceOption?: string,
 ): Promise<string | null> {
   try {
     const s = getStripe();
-    const priceId = explicitPriceId || getPriceId(plan);
+
+    // Resolve price ID:
+    // 1. If priceOption is a known type, use getPriceId
+    // 2. If priceOption looks like a Stripe ID (price_), use it directly
+    // 3. Otherwise fallback to the plan's default price
+    let priceId: string | null = null;
+    if (priceOption === "standard" || priceOption === "discounted") {
+      priceId = getPriceId(plan, priceOption);
+    } else if (priceOption?.startsWith("price_")) {
+      priceId = priceOption;
+    } else {
+      priceId = getPriceId(plan);
+    }
+
     if (!s || !priceId) {
-      console.error(`[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan}`);
+      console.error(`[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan} (option: ${priceOption})`);
       return null;
     }
 
