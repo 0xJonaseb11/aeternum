@@ -21,10 +21,13 @@ export async function POST(req: NextRequest) {
     if (!["pro", "business", "enterprise"].includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
-    const priceId = getPriceId(plan);
+    const priceId = getPriceId(plan, body.priceId as "discounted" | "standard" | undefined);
     if (!priceId) {
-      console.error(`[CheckoutAPI] Price ID not found for plan: ${plan}`);
-      return NextResponse.json({ error: "Plan not configured. Check STRIPE_PRICE environment variables." }, { status: 400 });
+      console.error(`[CheckoutAPI] Price ID not found for plan: ${plan} (option: ${body.priceId})`);
+      return NextResponse.json(
+        { error: "Plan option not configured. Check STRIPE_PRICE environment variables." },
+        { status: 400 },
+      );
     }
     const origin = req.nextUrl.origin;
     const url = await createCheckoutSession(
@@ -43,7 +46,7 @@ export async function POST(req: NextRequest) {
     console.error(`[CheckoutAPI] Uncaught error:`, err);
     return NextResponse.json(
       { error: err.message || "Internal Server Error", details: err.toString() },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
