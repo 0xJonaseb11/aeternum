@@ -1,19 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Uploader } from "@irys/upload";
 import { BaseEth } from "@irys/upload-ethereum";
+import { logger } from "~~/lib/logger";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
+import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
-  const clientId = getClientIdentifier(req);
+  // --- Auth: require authenticated session (uploads cost real money) ---
+  const user = await getCurrentUserFromRequest(req);
+  if (!user) {
+    return NextResponse.json(
+      { error: "Authentication required. Include Authorization: Bearer <session_token>." },
+      { status: 401 },
+    );
+  }
+
+  // --- Rate limit: 10 uploads/min per user ---
+  const clientId = user.id ?? getClientIdentifier(req);
   if (!rateLimit(clientId, "upload")) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
+
   try {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
     if (!privateKey) {
-      console.error("IRYS_PRIVATE_KEY is not set");
+      logger.error("IRYS_PRIVATE_KEY is not set");
       return NextResponse.json({ error: "Arweave upload misconfigured: IRYS_PRIVATE_KEY is not set" }, { status: 500 });
     }
 
@@ -37,14 +50,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (!result?.id) {
-      console.error("Irys upload returned no id", result);
+      logger.error("Irys upload returned no id", { result: String(result) });
       return NextResponse.json({ error: "Arweave upload failed" }, { status: 500 });
     }
 
     const rawId = String(result.id);
     const ARWEAVE_TX_LEN = 43;
     if (rawId.length < ARWEAVE_TX_LEN) {
-      console.error("Irys returned short id", { length: rawId.length, id: rawId });
+      logger.error("Irys returned short id", { length: rawId.length, id: rawId });
       return NextResponse.json(
         { error: `Arweave returned invalid transaction id (length ${rawId.length}, expected ${ARWEAVE_TX_LEN})` },
         { status: 500 },
@@ -52,9 +65,10 @@ export async function POST(req: NextRequest) {
     }
     const txId = rawId.length > ARWEAVE_TX_LEN ? rawId.slice(0, ARWEAVE_TX_LEN) : rawId;
 
+    logger.info("Arweave upload success", { txId, userId: user.id, bytes: body.byteLength });
     return NextResponse.json({ txId });
   } catch (error) {
-    console.error("Arweave upload error:", error);
+    logger.error("Arweave upload error", { error: String(error), userId: user.id });
     return NextResponse.json({ error: `Arweave upload failed: ${String(error)}` }, { status: 500 });
   }
 }

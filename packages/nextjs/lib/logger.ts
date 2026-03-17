@@ -1,7 +1,12 @@
 /**
- * Structured logger foundation for observability.
- * Replace with Pino/Winston or send to Sentry/Vercel in production.
- * Sentry: add @sentry/nextjs, sentry.client.config.ts, sentry.server.config.ts, instrumentation.ts when ready.
+ * Structured logging foundation for Aeternum.
+ *
+ * Outputs JSON-structured logs that are compatible with Vercel Logs,
+ * Datadog, Logtail, Axiom, and any JSON log drain.
+ *
+ * Usage:
+ *   logger.info("Proof created", { userId: "...", fileHash: "..." });
+ *   logger.error("Upload failed", { route: "/api/arweave-upload", error: "timeout" });
  */
 
 type LogLevel = "debug" | "info" | "warn" | "error";
@@ -10,14 +15,18 @@ interface LogPayload {
   level: LogLevel;
   message: string;
   timestamp: string;
+  service: string;
   [key: string]: unknown;
 }
+
+const SERVICE_NAME = "aeternum";
 
 function formatPayload(level: LogLevel, message: string, meta?: Record<string, unknown>): LogPayload {
   return {
     level,
     message,
     timestamp: new Date().toISOString(),
+    service: SERVICE_NAME,
     ...meta,
   };
 }

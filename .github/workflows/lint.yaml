@@ -39,6 +39,9 @@ jobs:
       - name: Run nextjs lint
         run: yarn next:lint --max-warnings=0
 
+      - name: Check types
+        run: yarn next:check-types
+
       - name: Build nextjs (type-check + build)
         run: yarn next:build
 

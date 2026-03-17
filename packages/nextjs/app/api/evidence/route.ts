@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "~~/lib/logger";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { canEditEvidence } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
   const { data, error } = await query.maybeSingle();
 
   if (error && error.code !== "PGRST116") {
-    console.error("Supabase GET /api/evidence error:", error);
+    logger.error("Supabase evidence GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch evidence" }, { status: 500 });
   }
 
@@ -140,7 +141,7 @@ export async function POST(req: NextRequest) {
       .select("*")
       .maybeSingle();
     if (error) {
-      console.error("Supabase POST /api/evidence update error:", error);
+      logger.error("Supabase POST /api/evidence update error", { error: error.message });
       return NextResponse.json({ error: "Failed to save evidence" }, { status: 500 });
     }
     return NextResponse.json({ item: updated });
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (error) {
-    console.error("Supabase POST /api/evidence insert error:", error);
+    logger.error("Supabase POST /api/evidence insert error", { error: error.message });
     return NextResponse.json({ error: "Failed to save evidence" }, { status: 500 });
   }
 

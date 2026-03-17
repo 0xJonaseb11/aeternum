@@ -639,33 +639,31 @@ function SettingsContent() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-base-100">
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-2xl font-bold text-base-content mb-2">Settings</h1>
-        <p className="text-sm text-base-content/60 mb-8">Manage your account, API keys, and billing.</p>
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <h1 className="text-2xl font-bold text-base-content mb-2">Settings</h1>
+      <p className="text-sm text-base-content/60 mb-8">Manage your account, API keys, and billing.</p>
 
-        <div className="flex flex-col gap-4">
-          <AccountSection />
-          <ApiKeysSection />
-          <BillingSection />
-          <UsageSection />
-          <Link
-            href="/team"
-            className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-colors"
-          >
-            <div className="card-body flex-row items-center gap-4">
-              <div className="rounded-lg bg-primary/10 p-3">
-                <UserGroupIcon className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-base-content">Team</h2>
-                <p className="text-xs text-base-content/60">Organizations and members</p>
-              </div>
-              <span className="text-base-content/40">→</span>
+      <div className="flex flex-col gap-4">
+        <AccountSection />
+        <ApiKeysSection />
+        <BillingSection />
+        <UsageSection />
+        <Link
+          href="/team"
+          className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-colors"
+        >
+          <div className="card-body flex-row items-center gap-4">
+            <div className="rounded-lg bg-primary/10 p-3">
+              <UserGroupIcon className="h-6 w-6 text-primary" />
             </div>
-          </Link>
-        </div>
-      </main>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-bold text-base-content">Team</h2>
+              <p className="text-xs text-base-content/60">Organizations and members</p>
+            </div>
+            <span className="text-base-content/40">→</span>
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }

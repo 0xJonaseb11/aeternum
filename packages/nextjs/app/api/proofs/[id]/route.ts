@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "~~/lib/logger";
 import { getSupabase } from "~~/lib/supabase";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const { data, error } = await query.maybeSingle();
 
   if (error) {
-    console.error("Supabase proofs GET [id] error:", error);
+    logger.error("Supabase individual proof GET error", { error: error.message, proofId: id });
     return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
   }
 
