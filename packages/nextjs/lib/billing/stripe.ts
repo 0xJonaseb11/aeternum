@@ -11,14 +11,16 @@ export function getStripe(): Stripe | null {
   return stripe;
 }
 
-export function getPriceId(plan: PlanId): string | null {
+export function getPriceId(plan: PlanId, type?: "standard" | "discounted"): string | null {
   switch (plan) {
     case "pro":
       return process.env.STRIPE_PRICE_PRO ?? null;
     case "business":
       return process.env.STRIPE_PRICE_BUSINESS ?? null;
     case "enterprise":
-      return process.env.STRIPE_PRICE_ENTERPRISE ?? null;
+      return type === "discounted"
+        ? process.env.STRIPE_PRICE_ENTERPRISE_DISCOUNTED ?? null
+        : process.env.STRIPE_PRICE_ENTERPRISE ?? null;
     default:
       return null;
   }
@@ -87,10 +89,11 @@ export async function createCheckoutSession(
   plan: PlanId,
   successUrl: string,
   cancelUrl: string,
+  explicitPriceId?: string,
 ): Promise<string | null> {
   try {
     const s = getStripe();
-    const priceId = getPriceId(plan);
+    const priceId = explicitPriceId || getPriceId(plan);
     if (!s || !priceId) {
       console.error(`[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan}`);
       return null;

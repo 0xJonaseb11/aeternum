@@ -231,7 +231,7 @@ function BillingSection() {
   }, [user, session?.access_token, fetchSubscription]);
 
   const startCheckout = useCallback(
-    async (plan: PlanId) => {
+    async (plan: PlanId, priceId?: string) => {
       if (!session?.access_token || plan === "free") return;
       setCheckoutPlan(plan);
       setError(null);
@@ -242,6 +242,7 @@ function BillingSection() {
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
           body: JSON.stringify({
             plan,
+            priceId,
             successUrl: `${base}/settings?billing=success`,
             cancelUrl: `${base}/settings?billing=cancel`,
           }),
@@ -303,13 +304,15 @@ function BillingSection() {
 
   const limits = sub ? getPlanLimits(sub.plan) : null;
   const canManage = Boolean(sub?.stripeCustomerId);
+  const isPaid = sub && sub.plan !== "free";
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm">
+    <div className="card bg-base-100 border border-base-300 shadow-sm relative overflow-hidden">
+      {isPaid && <div className="absolute top-0 right-0 px-3 py-1 bg-primary text-[10px] font-bold text-primary-content uppercase tracking-widest rounded-bl-lg">Premium</div>}
       <div className="card-body gap-4">
         <div className="flex items-center gap-4">
-          <div className="rounded-lg bg-base-300/50 p-3">
-            <CreditCardIcon className="h-6 w-6 text-base-content/60" />
+          <div className={`rounded-lg p-3 ${isPaid ? 'bg-primary/10' : 'bg-base-300/50'}`}>
+            <CreditCardIcon className={`h-6 w-6 ${isPaid ? 'text-primary' : 'text-base-content/60'}`} />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="font-bold text-base-content">Billing</h2>
@@ -322,7 +325,7 @@ function BillingSection() {
         ) : sub ? (
           <>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="badge badge-lg capitalize">{sub.plan}</span>
+              <span className={`badge badge-lg capitalize ${isPaid ? 'badge-primary' : ''}`}>{sub.plan}</span>
               <span className="text-sm text-base-content/70">{sub.status}</span>
               {sub.currentPeriodEnd && (
                 <span className="text-xs text-base-content/50">
@@ -344,27 +347,52 @@ function BillingSection() {
                   ` · ${limits.apiRequestsPerMonth.toLocaleString()} API requests/month`}
               </p>
             )}
-            <div className="flex flex-wrap gap-2">
-              {(["pro", "business", "enterprise"] as const).map(
-                plan =>
-                  plan !== "enterprise" && (
-                    <button
-                      key={plan}
-                      type="button"
-                      className="btn btn-primary btn-sm capitalize"
-                      disabled={sub.plan === plan || checkoutPlan !== null}
-                      onClick={() => startCheckout(plan)}
-                    >
-                      {checkoutPlan === plan ? "Redirecting…" : sub.plan === plan ? "Current" : `Upgrade to ${plan}`}
-                    </button>
-                  ),
-              )}
-              {canManage && (
-                <button type="button" className="btn btn-ghost btn-sm" disabled={portalLoading} onClick={openPortal}>
-                  {portalLoading ? "Opening…" : "Manage subscription"}
-                </button>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+              <button
+                type="button"
+                className="btn btn-primary btn-sm h-12 flex flex-col items-center justify-center gap-0.5"
+                disabled={sub.plan === "pro" || checkoutPlan !== null}
+                onClick={() => startCheckout("pro")}
+              >
+                <span className="text-xs capitalize">{sub.plan === "pro" ? "Current Plan" : "Upgrade to Pro"}</span>
+                <span className="text-[10px] opacity-70 font-normal">$29 / month</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-primary btn-sm h-12 flex flex-col items-center justify-center gap-0.5"
+                disabled={sub.plan === "business" || checkoutPlan !== null}
+                onClick={() => startCheckout("business")}
+              >
+                <span className="text-xs capitalize">{sub.plan === "business" ? "Current Plan" : "Upgrade to Business"}</span>
+                <span className="text-[10px] opacity-70 font-normal">$99 / month</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm h-12 flex flex-col items-center justify-center gap-0.5"
+                disabled={sub.plan === "enterprise" || checkoutPlan !== null}
+                onClick={() => startCheckout("enterprise")}
+              >
+                <span className="text-xs capitalize">{sub.plan === "enterprise" ? "Current Plan" : "Enterprise Monthly"}</span>
+                <span className="text-[10px] opacity-70 font-normal">$150 / month</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-accent btn-sm h-12 flex flex-col items-center justify-center gap-0.5"
+                disabled={sub.plan === "enterprise" || checkoutPlan !== null}
+                onClick={() => startCheckout("enterprise", "discounted")}
+              >
+                <span className="text-xs capitalize">Enterprise Quarter</span>
+                <span className="text-[10px] opacity-70 font-normal">$399 / 3 months (Best Value)</span>
+              </button>
             </div>
+            {canManage && (
+              <button type="button" className="btn btn-ghost btn-sm w-full mt-2" disabled={portalLoading} onClick={openPortal}>
+                {portalLoading ? "Opening…" : "Manage subscription in Stripe Dashboard"}
+              </button>
+            )}
           </>
         ) : (
           <p className="text-sm text-base-content/60">Free plan. Upgrade for more proofs and API usage.</p>

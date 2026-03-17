@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    let body: { plan?: string };
+    let body: { plan?: string; priceId?: string };
     try {
       body = await req.json();
     } catch {
@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
       plan,
       `${origin}/settings?billing=success`,
       `${origin}/settings?billing=cancel`,
+      body.priceId,
     );
     if (!url) {
       return NextResponse.json({ error: "Could not create checkout session" }, { status: 500 });
