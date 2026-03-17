@@ -70,11 +70,13 @@ export const EvidenceCard = ({
   initialSecret,
   isMatching,
   organizationId,
+  onTagClick,
 }: {
   proof: EvidenceItem;
   initialSecret?: string;
   isMatching?: boolean;
   organizationId?: string | null;
+  onTagClick?: (tag: string) => void;
 }) => {
   const [showRecover, setShowRecover] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
@@ -86,6 +88,7 @@ export const EvidenceCard = ({
   const [draftTitle, setDraftTitle] = useState("");
   const [draftDescription, setDraftDescription] = useState("");
   const [draftFolderId, setDraftFolderId] = useState("");
+  const [draftTags, setDraftTags] = useState("");
   const { recoverFile, isRecovering } = useRecover();
   const { data: foldersForCard } = useFolders(organizationId);
   const { verify, isVerifying } = useVerifyOwnership(organizationId);
@@ -109,6 +112,7 @@ export const EvidenceCard = ({
     setDraftTitle(metadata.title ?? "");
     setDraftDescription(metadata.description ?? "");
     setDraftFolderId(metadata.folder_id ?? "");
+    setDraftTags(metadata.tags?.join(", ") ?? "");
   }, [metadata]);
 
   const handleRecover = async () => {
@@ -220,6 +224,13 @@ export const EvidenceCard = ({
                   </option>
                 ))}
               </select>
+              <input
+                type="text"
+                className="input input-xs input-bordered w-full text-xs font-mono"
+                placeholder="Tags (comma-separated)"
+                value={draftTags}
+                onChange={e => setDraftTags(e.target.value)}
+              />
               <div className="flex justify-end gap-2 pt-1">
                 <button
                   type="button"
@@ -229,6 +240,7 @@ export const EvidenceCard = ({
                       setDraftTitle(metadata.title ?? "");
                       setDraftDescription(metadata.description ?? "");
                       setDraftFolderId(metadata.folder_id ?? "");
+                      setDraftTags(metadata.tags?.join(", ") ?? "");
                     }
                     setIsEditingMeta(false);
                   }}
@@ -245,6 +257,12 @@ export const EvidenceCard = ({
                         title: draftTitle || undefined,
                         description: draftDescription || undefined,
                         folderId: draftFolderId || null,
+                        tags: draftTags
+                          ? draftTags
+                              .split(",")
+                              .map(t => t.trim())
+                              .filter(Boolean)
+                          : null,
                       });
                       setIsEditingMeta(false);
                       notification.success("Details saved.");
@@ -318,6 +336,21 @@ export const EvidenceCard = ({
             <span className="font-mono">ZK Proof</span>
           </div>
         </div>
+
+        {metadata?.tags && metadata.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {metadata.tags.map(tag => (
+              <button
+                key={tag}
+                type="button"
+                className="badge badge-ghost badge-sm text-[9px] font-medium hover:bg-base-200"
+                onClick={() => onTagClick?.(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
 
         {showRecover ? (
           <div className="mt-4 sm:mt-6 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top duration-200 min-w-0">
@@ -556,6 +589,10 @@ export const EvidenceList = ({
   const [serverCaseId, setServerCaseId] = useState("");
   const [serverTagsInput, setServerTagsInput] = useState("");
   const [serverFolderId, setServerFolderId] = useState("");
+  const [serverLimit, setServerLimit] = useState(25);
+  const [serverOffset, setServerOffset] = useState(0);
+  const [serverDateFrom, setServerDateFrom] = useState("");
+  const [serverDateTo, setServerDateTo] = useState("");
   const [newFolderName, setNewFolderName] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
   const queryClient = useQueryClient();
@@ -571,7 +608,7 @@ export const EvidenceList = ({
   } = useIndexedProofs(connectedAddress as `0x${string}` | undefined, selectedNetwork.id, INDEXER_URL);
 
   const serverSearchParams: ProofsSearchParams | undefined =
-    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim() || serverFolderId.trim()
+    serverSearch.trim() || serverCaseId.trim() || serverTagsInput.trim() || serverFolderId.trim() || serverDateFrom || serverDateTo
       ? {
           search: serverSearch.trim() || undefined,
           caseId: serverCaseId.trim() || undefined,
@@ -580,6 +617,10 @@ export const EvidenceList = ({
             .map(t => t.trim())
             .filter(Boolean),
           folderId: serverFolderId.trim() || undefined,
+          limit: serverLimit,
+          offset: serverOffset,
+          dateFrom: serverDateFrom ? Math.floor(new Date(serverDateFrom).getTime() / 1000) : undefined,
+          dateTo: serverDateTo ? Math.floor(new Date(serverDateTo).getTime() / 1000) : undefined,
         }
       : undefined;
   const {
@@ -815,6 +856,10 @@ export const EvidenceList = ({
               initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(p.fileHash)}
               organizationId={organizationId}
+              onTagClick={tag => {
+                setServerTagsInput(tag);
+                setServerOffset(0);
+              }}
             />
           ))}
         </div>
@@ -849,26 +894,38 @@ export const EvidenceList = ({
               placeholder="Title or description…"
               className="input input-bordered input-sm w-40 max-w-[180px]"
               value={serverSearch}
-              onChange={e => setServerSearch(e.target.value)}
+              onChange={e => {
+                setServerSearch(e.target.value);
+                setServerOffset(0);
+              }}
             />
             <input
               type="text"
               placeholder="Case ID"
               className="input input-bordered input-sm w-28 max-w-[120px]"
               value={serverCaseId}
-              onChange={e => setServerCaseId(e.target.value)}
+              onChange={e => {
+                setServerCaseId(e.target.value);
+                setServerOffset(0);
+              }}
             />
             <input
               type="text"
               placeholder="Tags (comma-separated)"
               className="input input-bordered input-sm w-40 max-w-[180px]"
               value={serverTagsInput}
-              onChange={e => setServerTagsInput(e.target.value)}
+              onChange={e => {
+                setServerTagsInput(e.target.value);
+                setServerOffset(0);
+              }}
             />
             <select
               className="select select-bordered select-sm w-36 max-w-[140px]"
               value={serverFolderId}
-              onChange={e => setServerFolderId(e.target.value)}
+              onChange={e => {
+                setServerFolderId(e.target.value);
+                setServerOffset(0);
+              }}
               title="Filter by folder"
             >
               <option value="">All folders</option>
@@ -895,6 +952,81 @@ export const EvidenceList = ({
               >
                 {creatingFolder ? "…" : "Add"}
               </button>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-bold uppercase text-base-content/50">Date range</span>
+              <input
+                type="date"
+                className="input input-bordered input-sm py-0 h-8 text-[10px]"
+                value={serverDateFrom}
+                onChange={e => {
+                  setServerDateFrom(e.target.value);
+                  setServerOffset(0);
+                }}
+                title="From date"
+              />
+              <span className="text-base-content/30">to</span>
+              <input
+                type="date"
+                className="input input-bordered input-sm py-0 h-8 text-[10px]"
+                value={serverDateTo}
+                onChange={e => {
+                  setServerDateTo(e.target.value);
+                  setServerOffset(0);
+                }}
+                title="To date"
+              />
+              {(serverDateFrom || serverDateTo) && (
+                <button
+                  onClick={() => {
+                    setServerDateFrom("");
+                    setServerDateTo("");
+                    setServerOffset(0);
+                  }}
+                  className="btn btn-ghost btn-xs text-base-content/40 h-8 min-h-0"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="divider divider-horizontal mx-1 h-6"></div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold uppercase text-base-content/50">Page</span>
+              <div className="join h-8">
+                <button
+                  className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0"
+                  disabled={serverOffset === 0}
+                  onClick={() => setServerOffset(Math.max(0, serverOffset - serverLimit))}
+                >
+                  «
+                </button>
+                <div className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0 no-animation pointer-events-none">
+                  {Math.floor(serverOffset / serverLimit) + 1}
+                </div>
+                <button
+                  className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0"
+                  disabled={supabaseProofs && supabaseProofs.length < serverLimit}
+                  onClick={() => setServerOffset(serverOffset + serverLimit)}
+                >
+                  »
+                </button>
+              </div>
+              <select
+                className="select select-bordered select-sm h-8 min-h-0 py-0 text-[10px]"
+                value={serverLimit}
+                onChange={e => {
+                  setServerLimit(parseInt(e.target.value, 10));
+                  setServerOffset(0);
+                }}
+                title="Results per page"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
             </div>
           </div>
         </div>
@@ -924,6 +1056,10 @@ export const EvidenceList = ({
               initialSecret={matchingFileHashes.has(p.fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(p.fileHash)}
               organizationId={organizationId}
+              onTagClick={tag => {
+                setServerTagsInput(tag);
+                setServerOffset(0);
+              }}
             />
           ))}
         </div>
@@ -974,6 +1110,10 @@ export const EvidenceList = ({
               initialSecret={matchingFileHashes.has(fileHash) ? pastedSecret : undefined}
               isMatching={matchingFileHashes.has(fileHash)}
               organizationId={organizationId}
+              onTagClick={tag => {
+                setServerTagsInput(tag);
+                setServerOffset(0);
+              }}
             />
           );
         })}
@@ -988,12 +1128,14 @@ const EvidenceListItem = ({
   initialSecret,
   isMatching,
   organizationId,
+  onTagClick,
 }: {
   fileHash: string;
   timestamp: number;
   initialSecret?: string;
   isMatching?: boolean;
   organizationId?: string | null;
+  onTagClick?: (tag: string) => void;
 }) => {
   const { data: proof, isLoading } = useScaffoldReadContract({
     contractName: "EvidenceVault",
@@ -1022,6 +1164,7 @@ const EvidenceListItem = ({
       initialSecret={initialSecret}
       isMatching={isMatching}
       organizationId={organizationId}
+      onTagClick={onTagClick}
     />
   );
 };
