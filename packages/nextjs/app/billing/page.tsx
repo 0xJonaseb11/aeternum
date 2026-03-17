@@ -19,7 +19,6 @@ export default function BillingPage() {
   const { session, user } = useSupabaseAuth();
   const [data, setData] = useState<BillingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
   const fetchBilling = useCallback(async () => {
@@ -33,7 +32,7 @@ export default function BillingPage() {
       const d = await res.json();
       setData(d);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      console.error("Billing error:", err);
     } finally {
       setLoading(false);
     }
@@ -165,7 +164,7 @@ export default function BillingPage() {
 
           {!data?.stripeCustomerId && (
             <p className="text-[10px] text-center text-base-content/40 mt-4">
-              You don't have a Stripe customer history yet. Upgrade to a paid plan to enable the portal.
+              You don&apos;t have a Stripe customer history yet. Upgrade to a paid plan to enable the portal.
             </p>
           )}
         </div>
