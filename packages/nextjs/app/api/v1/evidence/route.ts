@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiKeyAuth } from "~~/lib/api/withApiKey";
 import { checkAndIncrementApiUsage } from "~~/lib/billing/apiUsage";
+import { logger } from "~~/lib/logger";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 import { evidencePostSchema } from "~~/lib/validation/schemas";
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle();
     if (error) {
-      console.error("v1 evidence GET error:", error);
+      logger.error("v1 evidence GET error", { error: error.message });
       return NextResponse.json({ error: "Failed to fetch evidence" }, { status: 500 });
     }
     return NextResponse.json({ item: data ?? null });
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
       .select("*")
       .maybeSingle();
     if (error) {
-      console.error("v1 evidence POST update error:", error);
+      logger.error("v1 evidence POST update error", { error: error.message });
       return NextResponse.json({ error: "Failed to save evidence" }, { status: 500 });
     }
     return NextResponse.json({ item: updated });
@@ -121,7 +122,7 @@ export async function POST(req: NextRequest) {
     .select("*")
     .maybeSingle();
   if (error) {
-    console.error("v1 evidence POST insert error:", error);
+    logger.error("v1 evidence POST insert error", { error: error.message });
     return NextResponse.json({ error: "Failed to save evidence" }, { status: 500 });
   }
   return NextResponse.json({ item: inserted });

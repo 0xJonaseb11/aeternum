@@ -108,7 +108,9 @@ export async function createCheckoutSession(
     }
 
     if (!s || !priceId) {
-      console.error(`[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan} (option: ${priceOption})`);
+      console.error(
+        `[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan} (option: ${priceOption})`,
+      );
       return null;
     }
 

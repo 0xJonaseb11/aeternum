@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkProofLimit } from "~~/lib/billing/checkLimits";
+import { logger } from "~~/lib/logger";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { hasRoleAtLeast } from "~~/lib/rbac/roles";
@@ -28,6 +29,8 @@ export async function GET(req: NextRequest) {
   const folderIdParam = searchParams.get("folderId");
   const dateFromParam = searchParams.get("dateFrom");
   const dateToParam = searchParams.get("dateTo");
+  const limitParam = searchParams.get("limit");
+  const offsetParam = searchParams.get("offset");
 
   // Lookup by commitment (file) hash: return first matching proof for public verify flow
   if (fileHash) {
@@ -43,7 +46,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle();
     if (error) {
-      console.error("Supabase proofs GET by fileHash error:", error);
+      logger.error("Supabase proofs GET by fileHash error", { error: error.message });
       return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
     }
     if (!row) {
@@ -132,7 +135,7 @@ export async function GET(req: NextRequest) {
     }
     const { data: evidenceRows, error: evidenceError } = await evidenceQuery.limit(500);
     if (evidenceError) {
-      console.error("Supabase evidence filter error:", evidenceError);
+      logger.error("Supabase evidence filter error", { error: evidenceError.message });
       return NextResponse.json({ error: "Failed to apply filters" }, { status: 500 });
     }
     evidenceFileHashes = (evidenceRows ?? []).map(r => r.file_hash);
@@ -151,8 +154,21 @@ export async function GET(req: NextRequest) {
       "id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked",
     )
     .eq("revoked", false)
-    .order("timestamp", { ascending: false })
-    .limit(100);
+    .order("timestamp", { ascending: false });
+
+  const limit = limitParam ? parseInt(limitParam, 10) : 50;
+  const offset = offsetParam ? parseInt(offsetParam, 10) : 0;
+  if (!Number.isNaN(limit) && limit > 0) query = query.limit(Math.min(limit, 1000));
+  if (!Number.isNaN(offset) && offset > 0) query = query.range(offset, offset + limit - 1);
+
+  if (dateFromParam) {
+    const from = parseInt(dateFromParam, 10);
+    if (!Number.isNaN(from)) query = query.gte("timestamp", from);
+  }
+  if (dateToParam) {
+    const to = parseInt(dateToParam, 10);
+    if (!Number.isNaN(to)) query = query.lte("timestamp", to);
+  }
 
   if (userId) {
     query = query.eq("user_id", userId);
@@ -171,25 +187,15 @@ export async function GET(req: NextRequest) {
 
   const { data: queryData, error } = await query;
   if (error) {
-    console.error("Supabase proofs GET error:", error);
+    logger.error("Supabase proofs GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
   let data = queryData ?? null;
 
-  // Apply evidence file_hash filter (and optional date filter) in memory
-  if (data != null && data.length > 0 && evidenceFileHashes != null && evidenceFileHashes.length > 0) {
+  // Apply evidence file_hash filter in memory (only if evidence filters were used)
+  if (data != null && data.length > 0 && evidenceFileHashes != null) {
     const set = new Set(evidenceFileHashes);
     data = data.filter(row => set.has(row.file_hash));
-  }
-  if (data != null && (dateFromParam != null || dateToParam != null)) {
-    const from = dateFromParam != null ? parseInt(dateFromParam, 10) : null;
-    const to = dateToParam != null ? parseInt(dateToParam, 10) : null;
-    if (from != null && !Number.isNaN(from)) {
-      data = data.filter(row => row.timestamp >= from);
-    }
-    if (to != null && !Number.isNaN(to)) {
-      data = data.filter(row => row.timestamp <= to);
-    }
   }
 
   const items = (data ?? []).map(row => ({
@@ -274,7 +280,7 @@ export async function POST(req: NextRequest) {
   );
 
   if (error) {
-    console.error("Supabase proofs POST error:", error);
+    logger.error("Supabase proofs POST error", { error: error.message });
     return NextResponse.json({ error: "Failed to save proof" }, { status: 500 });
   }
   return NextResponse.json({ ok: true });

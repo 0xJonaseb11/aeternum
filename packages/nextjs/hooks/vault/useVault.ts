@@ -54,11 +54,11 @@ export const useVault = (organizationId?: string | null) => {
       const commitment = await computeCommitment(fileHash, secret);
 
       setStep("uploading_arweave");
-      const rawArweaveId = await uploadToArweave(encryptedData);
+      const rawArweaveId = await uploadToArweave(encryptedData, session?.access_token ?? undefined);
       const arweaveTxId = normalizeToArweaveTxId(rawArweaveId);
 
       setStep("uploading_ipfs");
-      const ipfsCid = await uploadToIPFS(encryptedData);
+      const ipfsCid = await uploadToIPFS(encryptedData, session?.access_token ?? undefined);
       if (!ipfsCid || ipfsCid.length === 0 || ipfsCid.length > 128) {
         throw new Error("IPFS returned an invalid CID.");
       }
