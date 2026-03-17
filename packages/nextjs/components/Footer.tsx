@@ -7,17 +7,26 @@ const FOOTER_LINKS = {
   product: [
     { href: "/", label: "Home" },
     { href: "/vault", label: "Vault" },
+    { href: "/plans", label: "Pricing" },
     { href: "/verify", label: "Verify" },
   ],
-  account: [
-    { href: "/settings", label: "Settings" },
-    { href: "/team", label: "Team" },
+  resources: [
+    { href: "/billing", label: "Billing" },
+    { href: "/settings/api-keys", label: "API Tools" },
+    { href: "/docs", label: "Documentation" },
+    { href: "/help", label: "Help Center" },
   ],
-  legal: [
-    { href: "/privacy-policy", label: "Privacy Policy" },
-    { href: "/tos", label: "Terms of Service" },
+  company: [
+    { href: "/about", label: "About Us" },
+    { href: "/privacy-policy", label: "Privacy" },
+    { href: "/tos", label: "Terms" },
+    { href: "/admin", label: "Admin" },
   ],
-  dev: [{ href: "https://github.com/0xJonaseb11/aeternum", label: "Source Code", external: true }],
+  community: [
+    { href: "#", label: "Twitter / X", external: true },
+    { href: "#", label: "Discord", external: true },
+    { href: "https://github.com/0xJonaseb11/aeternum", label: "GitHub", external: true },
+  ],
 } as const;
 
 export const Footer = () => {
@@ -31,8 +40,7 @@ export const Footer = () => {
               <span className="font-bold text-lg sm:text-xl tracking-tight text-base-content">Aeternum</span>
             </div>
             <p className="max-w-xs text-xs sm:text-sm text-base-content/60 leading-relaxed">
-              Secure, permanent, and private evidence vault. Leveraging zero-knowledge proofs and decentralized storage
-              for ultimate data integrity.
+              Secure, permanent, and private evidence vault. Leveraging zero-knowledge proofs and decentralized storage.
             </p>
           </div>
 
@@ -50,9 +58,9 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Account</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
-              {FOOTER_LINKS.account.map(({ href, label }) => (
+              {FOOTER_LINKS.resources.map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
@@ -63,11 +71,11 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm text-base-content/70">
-              {FOOTER_LINKS.legal.map(({ href, label }) => (
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Company</h3>
+            <ul className="space-y-2 text-sm">
+              {FOOTER_LINKS.company.map(({ href, label }) => (
                 <li key={href}>
-                  <Link href={href} className="link link-hover">
+                  <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
                 </li>
@@ -76,9 +84,9 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Dev</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Connect</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
-              {FOOTER_LINKS.dev.map(({ href, label, external }) => (
+              {FOOTER_LINKS.community.map(({ href, label, external }) => (
                 <li key={href}>
                   {external ? (
                     <a href={href} target="_blank" rel="noreferrer" className="link link-hover">
