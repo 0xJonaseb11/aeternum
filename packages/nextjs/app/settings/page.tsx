@@ -2,10 +2,9 @@
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { CreditCardIcon, KeyIcon, TrashIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
-import { AppLogo } from "~~/components/AppLogo";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { type PlanId, getPlanLimits } from "~~/lib/billing/plans";
