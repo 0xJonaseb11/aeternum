@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 import {
   ArrowPathIcon,
@@ -34,7 +35,11 @@ export default function AdminDashboard() {
 
   const { address } = useAccount();
 
-  const fetchStats = useCallback(async () => {
+  const [healthData, setHealthData] = useState<any>(null);
+  const [checkingHealth, setCheckingHealth] = useState(false);
+  const [showHealthModal, setShowHealthModal] = useState(false);
+
+  const fetchData = useCallback(async () => {
     if (!session?.access_token) return;
     setLoading(true);
     try {
@@ -58,8 +63,27 @@ export default function AdminDashboard() {
   }, [session?.access_token, address]);
 
   useEffect(() => {
-    if (user) void fetchStats();
-  }, [user, fetchStats]);
+    if (user) void fetchData();
+  }, [user, fetchData]);
+
+  const handleHealthCheck = async () => {
+    setCheckingHealth(true);
+    try {
+      const res = await fetch("/api/health");
+      const data = await res.json();
+      setHealthData(data);
+      setShowHealthModal(true);
+      if (data.status === "healthy") {
+        toast.success("System is healthy");
+      } else {
+        toast.error("System health degraded");
+      }
+    } catch {
+      console.error("Health check failed");
+    } finally {
+      setCheckingHealth(false);
+    }
+  };
 
   if (!user) return <div className="p-8 text-center mt-20">Sign in to access admin tools.</div>;
   if (error)
@@ -83,7 +107,7 @@ export default function AdminDashboard() {
             System-wide activity, usage metrics, and resource allocation.
           </p>
         </div>
-        <button onClick={fetchStats} className="btn btn-ghost btn-sm">
+        <button onClick={fetchData} className="btn btn-ghost btn-sm">
           Refresh Data
         </button>
       </div>
@@ -190,10 +214,18 @@ export default function AdminDashboard() {
           <div className="card-body">
             <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
             <div className="flex flex-col gap-2">
-              <Link href="/api/health" target="_blank" className="btn btn-sm btn-outline justify-start gap-2">
-                <ShieldCheckIcon className="h-4 w-4" />
+              <button
+                onClick={handleHealthCheck}
+                disabled={checkingHealth}
+                className="btn btn-sm btn-outline justify-start gap-2"
+              >
+                {checkingHealth ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  <ShieldCheckIcon className="h-4 w-4" />
+                )}
                 System Health Check
-              </Link>
+              </button>
               <Link href="/admin/audit-logs" className="btn btn-sm btn-outline justify-start gap-2">
                 <EyeIcon className="h-4 w-4" />
                 View Global Audit Logs
@@ -210,6 +242,55 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Health Check Modal */}
+      {showHealthModal && healthData && (
+        <div className="modal modal-open">
+          <div className="modal-box border border-base-300">
+            <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
+              <ShieldCheckIcon
+                className={`h-6 w-6 ${healthData.status === "healthy" ? "text-success" : "text-error"}`}
+              />
+              Detailed System Diagnostics
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span className="text-sm font-medium">Supabase (DB)</span>
+                <span className={`badge ${healthData.details.supabase === "ok" ? "badge-success" : "badge-error"}`}>
+                  {healthData.details.supabase}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span className="text-sm font-medium">Stripe (API)</span>
+                <span className={`badge ${healthData.details.stripe === "ok" ? "badge-success" : "badge-error"}`}>
+                  {healthData.details.stripe}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-base-200 rounded-lg">
+                <span className="text-sm font-medium">Arweave (Env)</span>
+                <span className={`badge ${healthData.details.arweave === "ok" ? "badge-success" : "badge-error"}`}>
+                  {healthData.details.arweave}
+                </span>
+              </div>
+              {healthData.details.userCount !== undefined && (
+                <div className="p-3 border border-base-200 rounded-lg mt-4 bg-base-300/20">
+                  <div className="text-[10px] uppercase font-bold opacity-40 mb-1">Additional Metrics</div>
+                  <div className="flex justify-between text-xs font-mono">
+                    <span>Registered Profiles</span>
+                    <span>{healthData.details.userCount}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="modal-action">
+              <button className="btn" onClick={() => setShowHealthModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="modal-backdrop bg-black/60 backdrop-blur-sm" onClick={() => setShowHealthModal(false)}></div>
+        </div>
+      )}
     </div>
   );
 }

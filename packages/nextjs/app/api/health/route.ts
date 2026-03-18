@@ -6,35 +6,53 @@ import { getSupabase } from "~~/lib/supabase";
  * Returns service status and basic connectivity checks.
  */
 export async function GET() {
-  const checks: Record<string, "ok" | "error" | "unconfigured"> = {};
+  const details: any = {
+    supabase: "unconfigured",
+    stripe: "unconfigured",
+    arweave: "unconfigured",
+    ipfs: "unconfigured",
+  };
 
-  // Supabase connectivity
   const supabase = getSupabase();
-  if (!supabase) {
-    checks.supabase = "unconfigured";
-  } else {
+  if (supabase) {
     try {
-      const { error } = await supabase.from("profiles").select("id").limit(1);
-      checks.supabase = error ? "error" : "ok";
+      const { count, error } = await supabase.from("profiles").select("*", { count: 'exact', head: true });
+      details.supabase = error ? "error" : "ok";
+      if (!error) details.userCount = count;
     } catch {
-      checks.supabase = "error";
+      details.supabase = "error";
     }
   }
 
-  // Env vars presence (not values)
-  checks.stripe = process.env.STRIPE_SECRET_KEY ? "ok" : "unconfigured";
-  checks.arweave = process.env.IRYS_PRIVATE_KEY ? "ok" : "unconfigured";
-  checks.ipfs = process.env.PINATA_JWT ? "ok" : "unconfigured";
+  // Stripe connectivity
+  if (process.env.STRIPE_SECRET_KEY) {
+    try {
+      const res = await fetch("https://api.stripe.com/v1/plans?limit=1", {
+        headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
+      });
+      details.stripe = res.ok ? "ok" : "error";
+    } catch {
+      details.stripe = "error";
+    }
+  }
 
-  const allOk = Object.values(checks).every(v => v === "ok");
+  // Arweave (Irys) check
+  if (process.env.IRYS_PRIVATE_KEY) {
+    // We already do this in stats, but here we just check presence + basic ping if possible
+    details.arweave = "ok"; 
+  }
+
+  details.ipfs = process.env.PINATA_JWT ? "ok" : "unconfigured";
+
+  const allOk = ["supabase", "stripe", "arweave"].every(k => details[k] === "ok");
 
   return NextResponse.json(
     {
       status: allOk ? "healthy" : "degraded",
       timestamp: new Date().toISOString(),
       service: "aeternum",
-      checks,
+      details,
     },
-    { status: allOk ? 200 : 503 },
+    { status: 200 }, // Always 200 for internal dashboard consumption
   );
 }
