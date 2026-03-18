@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
-import { useAccount } from "wagmi";
 
 const FOOTER_LINKS = {
   product: [

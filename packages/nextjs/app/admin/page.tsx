@@ -2,10 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 import {
+  ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
+  Cog6ToothIcon,
   DocumentCheckIcon,
+  EyeIcon,
+  NoSymbolIcon,
   ShieldCheckIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
@@ -24,12 +29,17 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { address } = useAccount();
+
   const fetchStats = useCallback(async () => {
     if (!session?.access_token) return;
     setLoading(true);
     try {
       const res = await fetch("/api/admin/stats", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "x-wallet-address": address || "",
+        },
       });
       if (!res.ok) {
         if (res.status === 403) throw new Error("Access Denied: Platform Admin only.");
@@ -136,18 +146,22 @@ export default function AdminDashboard() {
           <div className="card-body">
             <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
             <div className="flex flex-col gap-2">
-              <Link href="/api/health" target="_blank" className="btn btn-sm btn-outline justify-start">
+              <Link href="/api/health" target="_blank" className="btn btn-sm btn-outline justify-start gap-2">
+                <ShieldCheckIcon className="h-4 w-4" />
                 System Health Check
               </Link>
-              <button disabled className="btn btn-sm btn-outline justify-start">
+              <Link href="/admin/audit-logs" className="btn btn-sm btn-outline justify-start gap-2">
+                <EyeIcon className="h-4 w-4" />
                 View Global Audit Logs
-              </button>
-              <button disabled className="btn btn-sm btn-outline justify-start">
+              </Link>
+              <Link href="/admin/blocked" className="btn btn-sm btn-outline justify-start gap-2">
+                <NoSymbolIcon className="h-4 w-4" />
                 Manage Blocked Addresses
-              </button>
-              <button disabled className="btn btn-sm btn-outline justify-start">
+              </Link>
+              <Link href="/admin/broadcast" className="btn btn-sm btn-outline justify-start gap-2">
+                <ArrowPathIcon className="h-4 w-4" />
                 Broadcast System Update
-              </button>
+              </Link>
             </div>
           </div>
         </div>
