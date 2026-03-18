@@ -39,12 +39,12 @@ export const BroadcastBanner = () => {
 
   const bgClass =
     broadcast.type === "warning"
-      ? "bg-[#b45309] text-white" // Deep Amber/Orange from screenshot
+      ? "bg-[#b45309] text-white" // Deep Amber/Orange
       : broadcast.type === "error"
-        ? "bg-error text-error-content"
+        ? "bg-[#991b1b] text-white" // Red 800
         : broadcast.type === "success"
-          ? "bg-success text-success-content"
-          : "bg-[#d81b60] text-white"; // Vibrant Magenta from screenshot
+          ? "bg-[#059669] text-white" // Emerald 600
+          : "bg-[#d81b60] text-white"; // Vibrant Magenta
 
   return (
     <div

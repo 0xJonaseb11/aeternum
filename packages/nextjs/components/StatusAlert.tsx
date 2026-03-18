@@ -75,7 +75,7 @@ export const StatusAlert = () => {
 
   return (
     <div className="fixed bottom-6 left-6 z-[100] animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="w-[340px] bg-[#9a3412] text-white rounded-xl shadow-2xl border border-white/10 overflow-hidden">
+      <div className="w-[340px] bg-[#9a3412] text-white shadow-2xl border border-white/10 overflow-hidden">
         <div className="p-5">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export const StatusAlert = () => {
                 <p className="text-[10px] uppercase tracking-wider font-bold opacity-70">Last updated {timeString}</p>
               </div>
             </div>
-            <button onClick={handleDismiss} className="text-white/40 hover:text-white transition-colors">
+            <button onClick={handleDismiss} className="text-white/40 hover:text-white transition-colors cursor-pointer">
               <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
