@@ -7,7 +7,6 @@ import {
   ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
-  Cog6ToothIcon,
   DocumentCheckIcon,
   EyeIcon,
   NoSymbolIcon,
@@ -52,7 +51,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [session?.access_token]);
+  }, [session?.access_token, address]);
 
   useEffect(() => {
     if (user) void fetchStats();
