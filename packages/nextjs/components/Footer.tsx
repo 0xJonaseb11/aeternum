@@ -16,6 +16,7 @@ const FOOTER_LINKS = {
     { href: "/settings/api-keys", label: "API Tools" },
     { href: "/docs", label: "Documentation" },
     { href: "/help", label: "Help Center" },
+    { href: "/status", label: "Status" },
   ],
   company: [
     { href: "/about", label: "About Us" },
@@ -59,7 +60,7 @@ export const Footer = () => {
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               {FOOTER_LINKS.product.map(({ href, label }) => (
-                <li key={href}>
+                <li key={href + label}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
@@ -72,7 +73,7 @@ export const Footer = () => {
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               {FOOTER_LINKS.resources.map(({ href, label }) => (
-                <li key={href}>
+                <li key={href + label}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
@@ -85,7 +86,7 @@ export const Footer = () => {
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
               {companyLinks.map(({ href, label }) => (
-                <li key={href}>
+                <li key={href + label}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
@@ -98,7 +99,7 @@ export const Footer = () => {
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Connect</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
               {FOOTER_LINKS.community.map(({ href, label, external }) => (
-                <li key={href}>
+                <li key={href + label}>
                   {external ? (
                     <a href={href} target="_blank" rel="noreferrer" className="link link-hover">
                       {label}

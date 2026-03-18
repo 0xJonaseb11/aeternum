@@ -252,7 +252,7 @@ export default function AdminBroadcast() {
               <tbody>
                 {broadcasts.map(b => (
                   <tr key={b.id} className="hover:bg-base-200/30 transition-colors">
-                    <td>
+                    <td className="bg-base-200/50">
                       <span
                         className={`badge badge-sm uppercase font-bold ${b.status === "sent" ? "badge-success" : "badge-ghost opacity-60"}`}
                       >
