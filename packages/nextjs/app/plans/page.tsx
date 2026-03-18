@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import ContactForm from "~~/components/ContactForm";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 
 const PLAN_FEATURES: Record<string, string[]> = {
@@ -171,12 +172,13 @@ export default function PlansPage() {
         })}
       </div>
 
-      <div className="mt-20 rounded-3xl bg-base-200/50 border border-base-300 p-8 md:p-12 text-center">
-        <h3 className="text-2xl font-bold mb-4">Need something custom?</h3>
-        <p className="text-base-content/60 max-w-xl mx-auto mb-8">
-          We offer specialized solutions for law firms, government agencies, and clinical research teams.
-        </p>
-        <button className="btn btn-primary px-8">Contact Sales</button>
+      <div className="mt-20">
+        <ContactForm
+          type="sales"
+          title="Need something custom?"
+          subtitle="We offer specialized solutions for law firms, government agencies, and clinical research teams. Let's build your enterprise vault."
+          formId={process.env.NEXT_PUBLIC_FORMSPREE_SALES_ID}
+        />
       </div>
     </div>
   );

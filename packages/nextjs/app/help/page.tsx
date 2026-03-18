@@ -52,9 +52,9 @@ export default function HelpPage() {
           <h1 className="text-4xl md:text-5xl font-black mb-8 tracking-tight">How can we help you?</h1>
           <div className="relative group max-w-2xl mx-auto">
             <MagnifyingGlassIcon className="h-6 w-6 absolute left-5 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity" />
-            <input 
-              type="text" 
-              placeholder="Search for articles, guides, and more..." 
+            <input
+              type="text"
+              placeholder="Search for articles, guides, and more..."
               className="w-full bg-base-100 hover:bg-base-100 focus:bg-base-100 text-base-content border border-base-300 rounded-2xl py-5 pl-14 pr-6 focus:ring-4 focus:ring-primary/10 transition-all outline-none text-lg shadow-sm"
             />
           </div>
@@ -127,8 +127,8 @@ export default function HelpPage() {
                 </div>
                 <h3 className="text-2xl font-black mb-4">Still need help?</h3>
                 <p className="text-base-content/60 mb-8 text-sm leading-relaxed">
-                  Can&apos;t find what you&apos;re looking for? Our dedicated support team is here to assist you with any
-                  technical or billing inquiries.
+                  Can&apos;t find what you&apos;re looking for? Our dedicated support team is here to assist you with
+                  any technical or billing inquiries.
                 </p>
                 <div className="space-y-4">
                   <Link href="/contact" className="btn btn-primary btn-block rounded-2xl">

@@ -82,8 +82,8 @@ export default function AboutPage() {
                     removes these human vulnerabilities by using mathematics and decentralized protocols.
                   </p>
                   <p className="font-bold text-primary italic">
-                  &quot;Your evidence, protected by code, anchored in eternity.&quot;
-                </p>
+                    &quot;Your evidence, protected by code, anchored in eternity.&quot;
+                  </p>
                 </div>
               </div>
               <div className="bg-base-100 p-8 rounded-3xl shadow-xl border border-base-300 relative overflow-hidden group">
