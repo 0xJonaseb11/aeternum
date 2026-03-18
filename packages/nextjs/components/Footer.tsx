@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
+import { useAccount } from "wagmi";
 
 const FOOTER_LINKS = {
   product: [
@@ -20,7 +21,6 @@ const FOOTER_LINKS = {
     { href: "/about", label: "About Us" },
     { href: "/privacy-policy", label: "Privacy" },
     { href: "/tos", label: "Terms" },
-    { href: "/admin", label: "Admin" },
   ],
   community: [
     { href: "#", label: "Twitter / X", external: true },
@@ -30,6 +30,17 @@ const FOOTER_LINKS = {
 } as const;
 
 export const Footer = () => {
+  const { address } = useAccount();
+
+  // Admin wallets from env (comma-separated, lowercase)
+  const adminWallets = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || "").toLowerCase().split(",").filter(Boolean);
+  const isAdmin = address && adminWallets.includes(address.toLowerCase());
+
+  const companyLinks = [...FOOTER_LINKS.company];
+  if (isAdmin) {
+    companyLinks.push({ href: "/admin", label: "Admin" } as any);
+  }
+
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 w-full min-w-0">
       <div className="mx-auto max-w-7xl w-full">
@@ -73,7 +84,7 @@ export const Footer = () => {
           <div>
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
-              {FOOTER_LINKS.company.map(({ href, label }) => (
+              {companyLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
