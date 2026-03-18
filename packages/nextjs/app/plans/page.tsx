@@ -4,7 +4,6 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
-import { PLAN_IDS } from "~~/lib/billing/plans";
 
 const PLAN_FEATURES: Record<string, string[]> = {
   free: [
