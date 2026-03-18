@@ -46,15 +46,16 @@ export default function HelpPage() {
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
       {/* Header / Search Area */}
-      <section className="bg-primary py-20 text-primary-content">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h1 className="text-4xl font-black mb-6">How can we help you?</h1>
+      <section className="bg-base-200 py-24 text-base-content relative overflow-hidden border-b border-base-300">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
+        <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
+          <h1 className="text-4xl md:text-5xl font-black mb-8 tracking-tight">How can we help you?</h1>
           <div className="relative group max-w-2xl mx-auto">
-            <MagnifyingGlassIcon className="h-6 w-6 absolute left-4 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity" />
-            <input
-              type="text"
-              placeholder="Search for articles, guides, and more..."
-              className="w-full bg-white/10 hover:bg-white/20 focus:bg-white text-base-content border-0 rounded-2xl py-5 pl-14 pr-6 focus:ring-4 focus:ring-white/20 transition-all outline-none"
+            <MagnifyingGlassIcon className="h-6 w-6 absolute left-5 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity" />
+            <input 
+              type="text" 
+              placeholder="Search for articles, guides, and more..." 
+              className="w-full bg-base-100 hover:bg-base-100 focus:bg-base-100 text-base-content border border-base-300 rounded-2xl py-5 pl-14 pr-6 focus:ring-4 focus:ring-primary/10 transition-all outline-none text-lg shadow-sm"
             />
           </div>
         </div>
