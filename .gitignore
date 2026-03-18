@@ -53,7 +53,7 @@ dist/
 .vscode/
 CLAUDE.md
 AGENTS.md
-docs/
+/docs/
 SAAS-ROADMAP.md
 SYSTEM-ARCHITECTURE.md
 FOUNDATION-FIXES-BACKLOG.md
