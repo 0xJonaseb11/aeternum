@@ -7,6 +7,7 @@ import {
   ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
+  Cog6ToothIcon,
   DocumentCheckIcon,
   EyeIcon,
   NoSymbolIcon,
