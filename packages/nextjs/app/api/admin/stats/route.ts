@@ -37,6 +37,22 @@ export async function GET(req: NextRequest) {
   // Active subscriptions are those that are not 'canceled' or 'incomplete_expired'
   const activeSubs = allSubs?.filter(s => !["canceled", "incomplete_expired"].includes(s.status)) || [];
 
+  // Initialize distribution with all valid plans so they show up even with 0 count
+  const planDistribution: Record<string, number> = {
+    free: 0,
+    pro: 0,
+    business: 0,
+    enterprise: 0,
+  };
+
+  activeSubs.forEach(sub => {
+    if (sub.plan in planDistribution) {
+      planDistribution[sub.plan]++;
+    } else {
+      planDistribution[sub.plan] = 1;
+    }
+  });
+
   // Calculate MRR (estimated based on plan prices)
   const MRR_VALUES: Record<string, number> = {
     pro: 20,
@@ -68,11 +84,7 @@ export async function GET(req: NextRequest) {
     mrr,
     irysBalance,
     pendingInvites: activeInvites?.length || 0,
-    planDistribution:
-      activeSubs.reduce((acc: any, curr) => {
-        acc[curr.plan] = (acc[curr.plan] || 0) + 1;
-        return acc;
-      }, {}) || {},
+    planDistribution,
     recentActivity: recentEvents || [],
   };
 

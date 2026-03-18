@@ -133,7 +133,15 @@ export default function AdminDashboard() {
                         <span className="font-bold">{count} accounts</span>
                       </div>
                       <progress
-                        className={`progress w-full ${plan === "pro" ? "progress-primary" : plan === "business" ? "progress-secondary" : "progress-accent"}`}
+                        className={`progress w-full ${
+                          plan === "pro"
+                            ? "progress-primary"
+                            : plan === "business"
+                              ? "progress-secondary"
+                              : plan === "enterprise"
+                                ? "progress-accent"
+                                : "progress-success"
+                        }`}
                         value={count}
                         max={Math.max(...Object.values(stats.planDistribution), 1)}
                       />
