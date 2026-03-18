@@ -6,7 +6,6 @@ import { Header } from "~~/components/Header";
 export default function StatusPage() {
   return (
     <div className="flex flex-col min-h-screen bg-base-200">
-      <Header />
       <main className="flex-grow flex flex-col">
         <div className="bg-base-100 border-b border-base-300 py-6 px-4">
           <div className="container mx-auto max-w-6xl">
@@ -24,7 +23,6 @@ export default function StatusPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
