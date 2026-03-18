@@ -75,11 +75,11 @@ export const StatusAlert = () => {
 
   return (
     <div className="fixed bottom-6 left-6 z-[100] animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="w-[340px] bg-[#9a3412] text-white shadow-2xl border border-white/10 overflow-hidden">
+      <div className="w-[340px] bg-[#9a3412] text-white rounded-md shadow-2xl border border-white/10 overflow-hidden">
         <div className="p-5">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 p-2 rounded-lg">
+              <div className="bg-white/20 p-2 rounded-md">
                 <ExclamationTriangleIcon className="h-6 w-6 text-white" />
               </div>
               <div>
