@@ -7,7 +7,6 @@ import {
   ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
-  DocumentCheckIcon,
   EyeIcon,
   NoSymbolIcon,
   ShieldCheckIcon,
@@ -18,8 +17,13 @@ import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 type AdminStats = {
   totalProofs: number;
   totalOrgs: number;
+  totalUsers: number;
   activeSubscriptions: number;
+  mrr: number;
+  irysBalance: string;
+  pendingInvites: number;
   planDistribution: Record<string, number>;
+  recentActivity: any[];
 };
 
 export default function AdminDashboard() {
@@ -86,57 +90,90 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <StatCard
-          icon={<DocumentCheckIcon className="h-6 w-6" />}
-          label="Total Proofs"
-          value={stats?.totalProofs || 0}
+          icon={<BanknotesIcon className="h-6 w-6" />}
+          label="Estimated MRR"
+          value={`$${stats?.mrr || 0}`}
           loading={loading}
           color="primary"
         />
         <StatCard
           icon={<UsersIcon className="h-6 w-6" />}
-          label="Organizations"
-          value={stats?.totalOrgs || 0}
+          label="Total Users"
+          value={stats?.totalUsers || 0}
           loading={loading}
           color="secondary"
         />
         <StatCard
-          icon={<BanknotesIcon className="h-6 w-6" />}
-          label="Active Subs"
-          value={stats?.activeSubscriptions || 0}
+          icon={<ArrowPathIcon className="h-6 w-6" />}
+          label="Arweave Balance"
+          value={`${stats?.irysBalance || "0"} ETH`}
           loading={loading}
           color="accent"
         />
         <StatCard
           icon={<ChartBarIcon className="h-6 w-6" />}
-          label="Health Status"
-          value="Healthy"
+          label="Active Subs"
+          value={stats?.activeSubscriptions || 0}
           loading={loading}
           color="success"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 card bg-base-100 border border-base-300 shadow-sm">
-          <div className="card-body">
-            <h2 className="text-lg font-bold mb-6">Plan Distribution</h2>
-            <div className="space-y-6">
-              {stats?.planDistribution &&
-                Object.entries(stats.planDistribution).map(([plan, count]) => (
-                  <div key={plan}>
-                    <div className="flex justify-between items-center text-sm mb-2">
-                      <span className="capitalize font-medium">{plan}</span>
-                      <span className="font-bold">{count} accounts</span>
+        <div className="lg:col-span-2 space-y-8">
+          <div className="card bg-base-100 border border-base-300 shadow-sm">
+            <div className="card-body">
+              <h2 className="text-lg font-bold mb-6">Plan Distribution</h2>
+              <div className="space-y-6">
+                {stats?.planDistribution &&
+                  Object.entries(stats.planDistribution).map(([plan, count]) => (
+                    <div key={plan}>
+                      <div className="flex justify-between items-center text-sm mb-2">
+                        <span className="capitalize font-medium">{plan}</span>
+                        <span className="font-bold">{count} accounts</span>
+                      </div>
+                      <progress
+                        className={`progress w-full ${plan === "pro" ? "progress-primary" : plan === "business" ? "progress-secondary" : "progress-accent"}`}
+                        value={count}
+                        max={Math.max(...Object.values(stats.planDistribution), 1)}
+                      />
                     </div>
-                    <progress
-                      className={`progress w-full ${plan === "pro" ? "progress-primary" : plan === "business" ? "progress-secondary" : "progress-accent"}`}
-                      value={count}
-                      max={Math.max(...Object.values(stats.planDistribution), 1)}
-                    />
-                  </div>
-                ))}
-              {!stats?.planDistribution && (
-                <p className="text-base-content/40 italic">No subscription data available.</p>
-              )}
+                  ))}
+                {!stats?.planDistribution && (
+                  <p className="text-base-content/40 italic">No subscription data available.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="card bg-base-100 border border-base-300 shadow-sm">
+            <div className="card-body">
+              <h2 className="text-lg font-bold mb-4">Recent System Activity</h2>
+              <div className="overflow-x-auto">
+                <table className="table table-sm w-full">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>At</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats?.recentActivity?.map((event: any) => (
+                      <tr key={event.id}>
+                        <td className="font-medium text-xs">{event.event_type}</td>
+                        <td className="text-[10px] opacity-50">{new Date(event.at).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                    {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
+                      <tr>
+                        <td colSpan={2} className="text-center py-4 text-base-content/40 italic">
+                          No recent activity recorded.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
