@@ -39,16 +39,16 @@ export const BroadcastBanner = () => {
 
   const bgClass =
     broadcast.type === "warning"
-      ? "bg-warning text-warning-content"
+      ? "bg-[#b45309] text-white" // Deep Amber/Orange from screenshot
       : broadcast.type === "error"
         ? "bg-error text-error-content"
         : broadcast.type === "success"
           ? "bg-success text-success-content"
-          : "bg-primary text-primary-content";
+          : "bg-[#d81b60] text-white"; // Vibrant Magenta from screenshot
 
   return (
     <div
-      className={`w-full py-2 px-4 shadow-lg border-b border-black/10 flex items-center justify-center gap-4 relative z-50 animate-in fade-in slide-in-from-top-4 duration-500 ${bgClass}`}
+      className={`w-full py-1.5 px-4 shadow-lg border-b border-black/20 flex items-center justify-center gap-4 relative z-[100] animate-in fade-in slide-in-from-top-4 duration-500 ${bgClass}`}
     >
       <div className="flex items-center gap-2 max-w-5xl overflow-hidden truncate">
         <MegaphoneIcon className="h-4 w-4 shrink-0" />
