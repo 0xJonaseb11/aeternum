@@ -38,7 +38,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
       } else {
         throw new Error("Failed to submit form");
       }
-    } catch (err) {
+    } catch {
       setStatus("error");
       setErrorMessage("Something went wrong. Please try again later.");
     }

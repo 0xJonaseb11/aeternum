@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { CheckCircleIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
-import { AppLogo } from "~~/components/AppLogo";
 
 export default function ComingSoon({ title = "Documentation" }: { title?: string }) {
   return (
