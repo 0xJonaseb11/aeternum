@@ -40,17 +40,20 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
-const PLAN_PRICES: Record<
-  string,
-  { monthly: string; monthlyPriceId?: string; quarterly?: string; quarterlyPriceId?: string }
-> = {
-  pro: { monthly: "$20" },
-  business: { monthly: "$100" },
-  enterprise: {
-    monthly: "$150",
-    quarterly: "$399",
-    quarterlyPriceId: "discounted",
-  },
+const DISPLAY_PLANS = [
+  { id: "free", name: "Free" },
+  { id: "pro", name: "Pro" },
+  { id: "business", name: "Business" },
+  { id: "enterprise_monthly", name: "Enterprise Monthly", basePlan: "enterprise" },
+  { id: "enterprise_quarterly", name: "Enterprise Quarterly", basePlan: "enterprise" },
+];
+
+const PLAN_PRICES: Record<string, { displayPrice: string; unit: string; priceId?: string }> = {
+  free: { displayPrice: "$0", unit: "/month" },
+  pro: { displayPrice: "$20", unit: "/month" },
+  business: { displayPrice: "$100", unit: "/month" },
+  enterprise_monthly: { displayPrice: "$150", unit: "/month" },
+  enterprise_quarterly: { displayPrice: "$399", unit: "/3 months", priceId: "discounted" },
 };
 
 export default function PlansPage() {
@@ -100,84 +103,70 @@ export default function PlansPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {PLAN_IDS.map(plan => {
-          const features = PLAN_FEATURES[plan] || [];
-          const price = PLAN_PRICES[plan];
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        {DISPLAY_PLANS.map(({ id, name, basePlan }) => {
+          const features = PLAN_FEATURES[basePlan || id] || [];
+          const price = PLAN_PRICES[id];
 
           return (
             <div
-              key={plan}
-              className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 ${
-                plan === "business"
+              key={id}
+              className={`relative flex flex-col p-6 rounded-3xl border transition-all duration-300 ${
+                id === "business"
                   ? "border-primary bg-primary/5 shadow-2xl scale-105 z-10"
-                  : "border-base-300 bg-base-100 hover:border-primary/30"
+                  : "border-base-300 bg-base-100 hover:border-primary/30 shadow-sm"
               }`}
             >
-              {plan === "business" && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full">
+              {id === "business" && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
                   Recommended
                 </div>
               )}
-              {plan === "pro" && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary text-secondary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full">
+              {id === "pro" && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary text-secondary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
                   Most Popular
                 </div>
               )}
+              {id === "enterprise_quarterly" && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent text-accent-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
+                  Best Deal
+                </div>
+              )}
 
-              <div className="mb-8">
-                <h2 className="text-xl font-bold capitalize text-base-content mb-2">{plan}</h2>
+              <div className="mb-6">
+                <h2 className="text-lg font-bold text-base-content mb-2 leading-tight h-12 flex items-center">
+                  {name}
+                </h2>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black">{price?.monthly || "$0"}</span>
-                  <span className="text-sm text-base-content/50">/month</span>
+                  <span className="text-3xl font-black">{price?.displayPrice || "$0"}</span>
+                  <span className="text-[10px] text-base-content/50 font-medium uppercase tracking-tighter">
+                    {price?.unit || "/month"}
+                  </span>
                 </div>
               </div>
 
               <div className="flex-1">
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-3 mb-8">
                   {features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm text-base-content/70">
-                      <CheckIcon className="h-5 w-5 text-primary shrink-0" />
+                    <li key={idx} className="flex items-start gap-2 text-xs text-base-content/70">
+                      <CheckIcon className="h-4 w-4 text-primary shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
-                  {plan === "enterprise" && (
-                    <li className="flex items-start gap-3 text-sm font-medium text-primary bg-primary/5 p-2 rounded-lg border border-primary/10">
-                      <CheckIcon className="h-5 w-5 shrink-0" />
-                      <span>Best Deal: Save with quarterly billing</span>
-                    </li>
-                  )}
                 </ul>
               </div>
 
-              {plan === "enterprise" ? (
-                <div className="space-y-3">
-                  <button
-                    onClick={() => startCheckout(plan)}
-                    disabled={loadingPlan !== null}
-                    className={`btn btn-block btn-outline ${loadingPlan === "enterprise" ? "loading" : ""}`}
-                  >
-                    Monthly ($150/mo)
-                  </button>
-                  <button
-                    onClick={() => startCheckout(plan, "discounted")}
-                    disabled={loadingPlan !== null}
-                    className={`btn btn-block btn-primary ${loadingPlan === "enterprise-discounted" ? "loading" : ""}`}
-                  >
-                    Quarterly ($399/3mo)
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => startCheckout(plan)}
-                  disabled={loadingPlan !== null || plan === "free"}
-                  className={`btn btn-block ${plan === "business" ? "btn-primary" : "btn-outline"} ${
-                    loadingPlan === plan ? "loading" : ""
-                  }`}
-                >
-                  {plan === "free" ? "Default Plan" : `Upgrade to ${plan}`}
-                </button>
-              )}
+              <button
+                onClick={() => startCheckout(basePlan || id, price?.priceId)}
+                disabled={loadingPlan !== null || id === "free"}
+                className={`btn btn-sm btn-block ${id === "business" ? "btn-primary" : "btn-outline"} ${
+                  loadingPlan === (price?.priceId ? `${basePlan || id}-${price.priceId}` : basePlan || id)
+                    ? "loading"
+                    : ""
+                }`}
+              >
+                {id === "free" ? "Default Plan" : `Upgrade`}
+              </button>
             </div>
           );
         })}

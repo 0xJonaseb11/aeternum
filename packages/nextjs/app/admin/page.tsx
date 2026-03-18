@@ -2,19 +2,19 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 import {
+  ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
-  DocumentCheckIcon,
-  ShieldCheckIcon,
-  UsersIcon,
   Cog6ToothIcon,
+  DocumentCheckIcon,
   EyeIcon,
   NoSymbolIcon,
-  ArrowPathIcon,
+  ShieldCheckIcon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
-import { useAccount } from "wagmi";
 
 type AdminStats = {
   totalProofs: number;
