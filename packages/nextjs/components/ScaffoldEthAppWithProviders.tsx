@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
+import { BroadcastBanner } from "~~/components/BroadcastBanner";
 import { SupabaseAuthProvider } from "~~/components/auth/SupabaseAuthProvider";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
@@ -17,6 +18,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <div className="flex flex-col min-h-screen w-full min-w-0">
+        <BroadcastBanner />
         <Header />
         <main className="relative flex flex-col flex-1 w-full min-w-0 overflow-x-hidden">{children}</main>
         <Footer />
