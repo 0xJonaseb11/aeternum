@@ -40,10 +40,17 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
-const PLAN_PRICES: Record<string, { monthly: string; priceId?: string }> = {
+const PLAN_PRICES: Record<
+  string,
+  { monthly: string; monthlyPriceId?: string; quarterly?: string; quarterlyPriceId?: string }
+> = {
   pro: { monthly: "$20" },
   business: { monthly: "$100" },
-  enterprise: { monthly: "$150" },
+  enterprise: {
+    monthly: "$150",
+    quarterly: "$399",
+    quarterlyPriceId: "discounted",
+  },
 };
 
 export default function PlansPage() {
@@ -56,7 +63,7 @@ export default function PlansPage() {
         toast.error("Please sign in to upgrade");
         return;
       }
-      setLoadingPlan(plan);
+      setLoadingPlan(priceId ? `${plan}-${priceId}` : plan);
       try {
         const base = typeof window !== "undefined" ? window.location.origin : "";
         const res = await fetch("/api/billing/checkout", {
@@ -112,6 +119,11 @@ export default function PlansPage() {
                   Recommended
                 </div>
               )}
+              {plan === "pro" && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary text-secondary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full">
+                  Most Popular
+                </div>
+              )}
 
               <div className="mb-8">
                 <h2 className="text-xl font-bold capitalize text-base-content mb-2">{plan}</h2>
@@ -121,24 +133,51 @@ export default function PlansPage() {
                 </div>
               </div>
 
-              <ul className="flex-1 space-y-4 mb-8">
-                {features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-base-content/70">
-                    <CheckIcon className="h-5 w-5 text-primary shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="flex-1">
+                <ul className="space-y-4 mb-8">
+                  {features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm text-base-content/70">
+                      <CheckIcon className="h-5 w-5 text-primary shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                  {plan === "enterprise" && (
+                    <li className="flex items-start gap-3 text-sm font-medium text-primary bg-primary/5 p-2 rounded-lg border border-primary/10">
+                      <CheckIcon className="h-5 w-5 shrink-0" />
+                      <span>Best Deal: Save with quarterly billing</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
 
-              <button
-                onClick={() => startCheckout(plan)}
-                disabled={loadingPlan !== null || plan === "free"}
-                className={`btn btn-block ${
-                  plan === "business" ? "btn-primary" : "btn-outline"
-                } ${loadingPlan === plan ? "loading" : ""}`}
-              >
-                {plan === "free" ? "Default Plan" : `Upgrade to ${plan}`}
-              </button>
+              {plan === "enterprise" ? (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => startCheckout(plan)}
+                    disabled={loadingPlan !== null}
+                    className={`btn btn-block btn-outline ${loadingPlan === "enterprise" ? "loading" : ""}`}
+                  >
+                    Monthly ($150/mo)
+                  </button>
+                  <button
+                    onClick={() => startCheckout(plan, "discounted")}
+                    disabled={loadingPlan !== null}
+                    className={`btn btn-block btn-primary ${loadingPlan === "enterprise-discounted" ? "loading" : ""}`}
+                  >
+                    Quarterly ($399/3mo)
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => startCheckout(plan)}
+                  disabled={loadingPlan !== null || plan === "free"}
+                  className={`btn btn-block ${plan === "business" ? "btn-primary" : "btn-outline"} ${
+                    loadingPlan === plan ? "loading" : ""
+                  }`}
+                >
+                  {plan === "free" ? "Default Plan" : `Upgrade to ${plan}`}
+                </button>
+              )}
             </div>
           );
         })}
