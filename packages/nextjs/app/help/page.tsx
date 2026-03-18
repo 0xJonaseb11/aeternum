@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   BookOpenIcon,
@@ -43,6 +43,15 @@ const faqs = [
 
 export default function HelpPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredFaqs = useMemo(() => {
+    return faqs.filter(
+      faq =>
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [searchQuery]);
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
@@ -56,6 +65,8 @@ export default function HelpPage() {
             <input
               type="text"
               placeholder="Search for articles, guides, and more..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
               className="w-full bg-base-100 hover:bg-base-100 focus:bg-base-100 text-base-content border border-base-300 rounded-2xl py-5 pl-14 pr-6 focus:ring-4 focus:ring-primary/10 transition-all outline-none text-lg shadow-sm"
             />
           </div>
@@ -97,7 +108,7 @@ export default function HelpPage() {
               </h2>
 
               <div className="space-y-4">
-                {faqs.map((faq, idx) => (
+                {filteredFaqs.map((faq, idx) => (
                   <div key={idx} className="border border-base-200 rounded-2xl overflow-hidden bg-base-200/30">
                     <button
                       onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -117,6 +128,16 @@ export default function HelpPage() {
                     )}
                   </div>
                 ))}
+
+                {filteredFaqs.length === 0 && (
+                  <div className="text-center py-20 bg-base-200/20 rounded-3xl border border-dashed border-base-300">
+                    <MagnifyingGlassIcon className="h-12 w-12 mx-auto mb-4 opacity-10" />
+                    <p className="text-xl font-bold opacity-30 italic">No matching questions found.</p>
+                    <button onClick={() => setSearchQuery("")} className="btn btn-ghost btn-sm mt-4">
+                      Clear Search
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
