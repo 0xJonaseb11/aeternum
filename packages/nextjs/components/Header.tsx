@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -18,12 +18,10 @@ type HeaderMenuLink = {
 };
 
 export const menuLinks: HeaderMenuLink[] = [
-  { label: "Home", href: "/" },
   { label: "Vault", href: "/vault" },
   { label: "Team", href: "/team" },
   { label: "Verify", href: "/verification" },
   { label: "Pricing", href: "/plans" },
-  { label: "Settings", href: "/settings" },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -158,6 +156,13 @@ export const Header = () => {
           </ul>
         </div>
         <div className="navbar-end hidden md:flex items-center justify-end gap-2 lg:gap-3 min-w-0 flex-shrink-0">
+          <Link
+            href="/settings"
+            className="btn btn-ghost btn-sm p-2 hover:bg-primary/10 hover:text-primary transition-colors"
+            aria-label="Settings"
+          >
+            <Cog6ToothIcon className="h-5 w-5" />
+          </Link>
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
