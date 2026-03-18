@@ -7,9 +7,10 @@ import {
   ChatBubbleLeftRightIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  LifebuoyIcon,
+  CreditCardIcon,
   MagnifyingGlassIcon,
-  QuestionMarkCircleIcon,
+  ShieldCheckIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
 const faqs = [
@@ -68,9 +69,9 @@ export default function HelpPage() {
           <div className="grid md:grid-cols-4 gap-6 mb-20 -mt-32 relative z-10">
             {[
               { name: "Getting Started", icon: BookOpenIcon, desc: "New to Aeternum? Start here." },
-              { name: "Security", icon: LifebuoyIcon, desc: "Encryption and privacy details." },
-              { name: "Billing", icon: ChatBubbleLeftRightIcon, desc: "Invoices and subscription help." },
-              { name: "Troubleshooting", icon: QuestionMarkCircleIcon, desc: "Common issues and fixes." },
+              { name: "Security", icon: ShieldCheckIcon, desc: "Encryption and privacy details." },
+              { name: "Billing", icon: CreditCardIcon, desc: "Invoices and subscription help." },
+              { name: "Troubleshooting", icon: WrenchScrewdriverIcon, desc: "Common issues and fixes." },
             ].map(box => (
               <div
                 key={box.name}
