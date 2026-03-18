@@ -16,7 +16,7 @@ export async function GET() {
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { count, error } = await supabase.from("profiles").select("*", { count: 'exact', head: true });
+      const { count, error } = await supabase.from("profiles").select("*", { count: "exact", head: true });
       details.supabase = error ? "error" : "ok";
       if (!error) details.userCount = count;
     } catch {
@@ -39,7 +39,7 @@ export async function GET() {
   // Arweave (Irys) check
   if (process.env.IRYS_PRIVATE_KEY) {
     // We already do this in stats, but here we just check presence + basic ping if possible
-    details.arweave = "ok"; 
+    details.arweave = "ok";
   }
 
   details.ipfs = process.env.PINATA_JWT ? "ok" : "unconfigured";
@@ -53,6 +53,6 @@ export async function GET() {
       service: "aeternum",
       details,
     },
-    { status: 200 }, // Always 200 for internal dashboard consumption
+    { status: 200 },
   );
 }
