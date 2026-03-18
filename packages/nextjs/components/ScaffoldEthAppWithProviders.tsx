@@ -14,6 +14,9 @@ import { SupabaseAuthProvider } from "~~/components/auth/SupabaseAuthProvider";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
+/**
+ * Main application wrapper with global providers (Wagmi, RainbowKit, Supabase, etc.)
+ */
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
