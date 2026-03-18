@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from("blocked_addresses").insert({
       address: targetAddress.toLowerCase(),
       reason,
-      blocked_by: user.id,
+      blocked_by: user?.id,
     });
 
     if (error) throw error;
