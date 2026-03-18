@@ -7,8 +7,28 @@ export function getSupabaseBrowserClient(): SupabaseClient {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
   if (!url || !anonKey) {
-    throw new Error("Supabase is not configured: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    if (typeof window !== "undefined") {
+      console.warn("Supabase is not configured. Some features may not work correctly.");
+    }
+    // Return a dummy client to prevent build errors during prerendering
+    return {
+      auth: {
+        getSession: async () => ({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signOut: async () => {},
+      },
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            limit: () => ({
+              single: async () => ({ data: null, error: null }),
+            }),
+          }),
+        }),
+      }),
+    } as any;
   }
 
   browserClient = createClient(url, anonKey, {

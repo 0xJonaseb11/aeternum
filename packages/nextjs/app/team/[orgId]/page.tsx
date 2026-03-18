@@ -34,9 +34,6 @@ export default function TeamOrgPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [addUserId, setAddUserId] = useState("");
-  const [addRole, setAddRole] = useState<OrgRole>("viewer");
-  const [adding, setAdding] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrgRole>("viewer");
   const [inviting, setInviting] = useState(false);
@@ -109,36 +106,6 @@ export default function TeamOrgPage() {
       }
     },
     [session?.access_token, orgId, inviteEmail, inviteRole, fetchMembers],
-  );
-
-  const handleAddMember = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!session?.access_token || !orgId || !addUserId.trim()) return;
-      setAdding(true);
-      setError(null);
-      try {
-        const res = await fetch(`/api/organizations/${orgId}/members`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ user_id: addUserId.trim(), role: addRole }),
-        });
-        if (!res.ok) {
-          const d = await res.json().catch(() => ({}));
-          setError((d as { error?: string }).error ?? "Failed to add");
-          return;
-        }
-        setAddUserId("");
-        setAddRole("viewer");
-        void fetchMembers();
-      } finally {
-        setAdding(false);
-      }
-    },
-    [session?.access_token, orgId, addUserId, addRole, fetchMembers],
   );
 
   const handleUpdateRole = useCallback(
@@ -285,66 +252,35 @@ export default function TeamOrgPage() {
           </section>
 
           {canManage && (
-            <>
-              <section className="mb-8">
-                <h2 className="text-lg font-semibold text-base-content mb-3">Invite by email</h2>
-                <p className="text-xs text-base-content/60 mb-2">
-                  They must have signed in at least once (have an account).
-                </p>
-                <form onSubmit={handleInviteByEmail} className="flex flex-wrap items-end gap-2">
-                  <input
-                    type="email"
-                    className="input input-bordered flex-1 min-w-[200px]"
-                    placeholder="colleague@example.com"
-                    value={inviteEmail}
-                    onChange={e => setInviteEmail(e.target.value)}
-                  />
-                  <select
-                    className="select select-bordered"
-                    value={inviteRole}
-                    onChange={e => setInviteRole(e.target.value as OrgRole)}
-                  >
-                    {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
-                    {inviting ? "Inviting…" : "Invite"}
-                  </button>
-                </form>
-              </section>
-              <section>
-                <h2 className="text-lg font-semibold text-base-content mb-3">Add by user ID</h2>
-                <p className="text-xs text-base-content/60 mb-2">
-                  Add by user ID (UUID) if you know it. Prefer inviting by email above.
-                </p>
-                <form onSubmit={handleAddMember} className="flex flex-wrap items-end gap-2">
-                  <input
-                    type="text"
-                    className="input input-bordered flex-1 min-w-[200px]"
-                    placeholder="User ID (UUID)"
-                    value={addUserId}
-                    onChange={e => setAddUserId(e.target.value)}
-                  />
-                  <select
-                    className="select select-bordered"
-                    value={addRole}
-                    onChange={e => setAddRole(e.target.value as OrgRole)}
-                  >
-                    {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                  <button type="submit" className="btn btn-primary btn-sm" disabled={adding || !addUserId.trim()}>
-                    {adding ? "Adding…" : "Add"}
-                  </button>
-                </form>
-              </section>
-            </>
+            <section className="mb-8">
+              <h2 className="text-lg font-semibold text-base-content mb-3">Invite by email</h2>
+              <p className="text-xs text-base-content/60 mb-2">
+                They must have signed in at least once (have an account).
+              </p>
+              <form onSubmit={handleInviteByEmail} className="flex flex-wrap items-end gap-2">
+                <input
+                  type="email"
+                  className="input input-bordered flex-1 min-w-[200px]"
+                  placeholder="jonas@aeternum.io"
+                  value={inviteEmail}
+                  onChange={e => setInviteEmail(e.target.value)}
+                />
+                <select
+                  className="select select-bordered"
+                  value={inviteRole}
+                  onChange={e => setInviteRole(e.target.value as OrgRole)}
+                >
+                  {ROLE_OPTIONS.filter(r => r !== "owner").map(r => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={inviting || !inviteEmail.trim()}>
+                  {inviting ? "Inviting…" : "Invite"}
+                </button>
+              </form>
+            </section>
           )}
         </>
       )}

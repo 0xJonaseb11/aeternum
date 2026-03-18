@@ -76,7 +76,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
             <input
               name="name"
               type="text"
-              placeholder="John Doe"
+              placeholder="Jonas Sebera"
               required
               className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
             />
@@ -88,7 +88,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
             <input
               name="email"
               type="email"
-              placeholder="john@example.com"
+              placeholder="jonas@aeternum.io"
               required
               className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
             />
