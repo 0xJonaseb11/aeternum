@@ -108,7 +108,7 @@ export default function HelpPage() {
               </h2>
 
               <div className="space-y-4">
-                {filteredFaqs.map((faq) => (
+                {filteredFaqs.map(faq => (
                   <div key={faq.question} className="border border-base-200 rounded-2xl overflow-hidden bg-base-200/30">
                     <button
                       onClick={() => setOpenFaq(openFaq === faq.question ? null : faq.question)}
