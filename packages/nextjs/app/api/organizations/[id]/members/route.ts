@@ -6,7 +6,6 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** GET: list members of the organization. Requires membership. */
 export async function GET(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -37,7 +36,6 @@ export async function GET(req: NextRequest, { params }: Params) {
   return NextResponse.json({ members });
 }
 
-/** POST: add a member. Body: { user_id: string, role: OrgRole }. Requires admin or owner. */
 export async function POST(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

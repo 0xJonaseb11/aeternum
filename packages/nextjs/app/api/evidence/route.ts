@@ -126,7 +126,6 @@ export async function POST(req: NextRequest) {
     updated_at: new Date().toISOString(),
   };
 
-  // Select-then-update-or-insert: evidence table has no UNIQUE(file_hash), so we can't use upsert.
   let existingQuery = supabase.from("evidence").select("id").eq("file_hash", fileHash).limit(1);
   if (userId != null) existingQuery = existingQuery.eq("user_id", userId);
   if (organizationId != null) existingQuery = existingQuery.eq("organization_id", organizationId);

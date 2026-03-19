@@ -5,9 +5,6 @@ import { logger } from "~~/lib/logger";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * Developer API v1 — Verification. Get verification result by proof ID or fileHash.
- */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {

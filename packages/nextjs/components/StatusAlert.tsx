@@ -31,15 +31,13 @@ export const StatusAlert = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        // Statuspage.io public summary API
         const res = await fetch("https://aeternum.statuspage.io/api/v2/summary.json");
         if (!res.ok) return;
         const data: StatusSummary = await res.json();
 
         if (data.incidents && data.incidents.length > 0) {
-          const activeIncident = data.incidents[0]; // Get the most recent one
+          const activeIncident = data.incidents[0];
 
-          // Check if this incident ID has been dismissed
           const dismissedId = localStorage.getItem("aeternum_dismissed_incident");
           if (dismissedId !== activeIncident.id) {
             setSummary(data);
@@ -52,7 +50,7 @@ export const StatusAlert = () => {
     };
 
     fetchStatus();
-    // Poll every 5 minutes
+
     const interval = setInterval(fetchStatus, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -68,7 +66,6 @@ export const StatusAlert = () => {
 
   const incident = summary.incidents[0];
 
-  // Format the time since last update
   const lastUpdated = new Date(incident.updated_at);
   const timeDiff = Math.floor((new Date().getTime() - lastUpdated.getTime()) / (1000 * 60));
   const timeString = timeDiff < 60 ? `${timeDiff} minutes ago` : `${Math.floor(timeDiff / 60)} hours ago`;

@@ -46,7 +46,7 @@ export default function AboutPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
-      {/* Hero Section */}
+      {}
       <section className="relative py-24 lg:py-40 overflow-hidden border-b border-base-300 bg-base-100">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-70" />
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
@@ -81,7 +81,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Section */}
+      {}
       <section className="py-32 relative overflow-hidden bg-base-200/30">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -142,7 +142,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Core Principles */}
+      {}
       <section className="py-32">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mb-20">
@@ -166,7 +166,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Modern CTA */}
+      {}
       <section className="py-32 bg-base-100">
         <div className="container mx-auto px-4">
           <div className="relative group p-12 lg:p-24 rounded-[3.5rem] bg-base-content text-base-100 overflow-hidden text-center">

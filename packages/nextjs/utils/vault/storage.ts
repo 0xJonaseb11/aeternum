@@ -1,9 +1,5 @@
 import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 
-/**
- * Upload encrypted data to IPFS via the server-side Pinata proxy.
- * Requires a Supabase session token for authentication (uploads cost storage credits).
- */
 export const uploadToIPFS = async (data: ArrayBuffer, accessToken?: string): Promise<string> => {
   const headers: HeadersInit = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
@@ -26,10 +22,6 @@ export const uploadToIPFS = async (data: ArrayBuffer, accessToken?: string): Pro
   return json.cid;
 };
 
-/**
- * Upload encrypted data to Arweave via the server-side Irys proxy.
- * Requires a Supabase session token for authentication (uploads cost real ETH).
- */
 export const uploadToArweave = async (data: ArrayBuffer, accessToken?: string): Promise<string> => {
   const headers: HeadersInit = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;

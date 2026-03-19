@@ -1,14 +1,3 @@
-/**
- * Structured logging foundation for Aeternum.
- *
- * Outputs JSON-structured logs that are compatible with Vercel Logs,
- * Datadog, Logtail, Axiom, and any JSON log drain.
- *
- * Usage:
- *   logger.info("Proof created", { userId: "...", fileHash: "..." });
- *   logger.error("Upload failed", { route: "/api/arweave-upload", error: "timeout" });
- */
-
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogPayload {

@@ -1,10 +1,3 @@
-/**
- * Reusable org-scoped auth middleware.
- *
- * Validates the current request has a valid Supabase session and the user
- * holds at least the required role within the specified organization.
- * Returns the authenticated user and their membership, or an error response.
- */
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { type MembershipRow, getMembership } from "~~/lib/rbac/getMembership";
@@ -16,10 +9,6 @@ export type OrgAuthResult = {
   membership: { role: OrgRole; row: MembershipRow };
 };
 
-/**
- * Check org-scoped authorization.
- * Returns either an `OrgAuthResult` or a `NextResponse` (error).
- */
 export async function withOrgAuth(
   req: NextRequest,
   organizationId: string,
@@ -45,7 +34,6 @@ export async function withOrgAuth(
   return { user, membership };
 }
 
-/** Type guard to check if result is an error response. */
 export function isOrgAuthError(result: OrgAuthResult | NextResponse): result is NextResponse {
   return result instanceof NextResponse;
 }

@@ -31,7 +31,6 @@ function planFromPriceId(priceId: string): PlanId {
   return "pro";
 }
 
-/** POST: Stripe webhook. Syncs subscription created/updated/deleted to our DB. */
 export async function POST(req: NextRequest) {
   if (!webhookSecret || !getStripe()) {
     return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
@@ -110,7 +109,6 @@ export async function POST(req: NextRequest) {
       break;
     }
     default:
-      // ignore other events
       break;
   }
 

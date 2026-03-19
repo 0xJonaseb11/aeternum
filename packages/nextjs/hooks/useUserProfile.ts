@@ -40,7 +40,6 @@ export function useUserProfile() {
       if (cancelled) return;
 
       if (fetchError && fetchError.code !== "PGRST116") {
-        // PGRST116 = no rows found
         setError(fetchError.message);
         setLoading(false);
         return;
