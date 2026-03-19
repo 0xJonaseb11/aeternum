@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -205,9 +206,9 @@ export default function TeamOrgPage() {
         <>
           <div className="flex items-start gap-4 mb-6">
             <div className="avatar">
-              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center border border-base-300">
+              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center border border-base-300 relative overflow-hidden">
                 {org.logo_url ? (
-                  <img src={org.logo_url} alt="Org Logo" className="object-cover" />
+                  <Image src={org.logo_url} alt="Org Logo" className="object-cover" fill unoptimized />
                 ) : (
                   <UserGroupIcon className="h-8 w-8 text-primary" />
                 )}
@@ -232,9 +233,9 @@ export default function TeamOrgPage() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="avatar">
-                      <div className="w-8 h-8 rounded-full bg-base-300 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-base-300 flex items-center justify-center relative overflow-hidden">
                         {m.avatar_url ? (
-                          <img src={m.avatar_url} alt="Avatar" className="object-cover" />
+                          <Image src={m.avatar_url} alt="Avatar" className="object-cover" fill unoptimized />
                         ) : (
                           <span className="text-xs font-bold text-base-content/50 uppercase">
                             {m.full_name?.[0] || m.email?.[0] || "?"}
@@ -317,7 +318,7 @@ export default function TeamOrgPage() {
   );
 }
 
-function OrgSettingsEditor({ session, org, fetchOrg }: { session: any; org: Org; fetchOrg: () => void }) {
+function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; org: Org; fetchOrg: () => void }>) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -383,10 +384,11 @@ function OrgSettingsEditor({ session, org, fetchOrg }: { session: any; org: Org;
       <div className="card bg-base-100 border border-base-300 shadow-sm p-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="org-name">
               <span className="label-text font-bold">Organization Name</span>
             </label>
             <input
+              id="org-name"
               type="text"
               className="input input-bordered"
               value={formData.name}
@@ -394,10 +396,11 @@ function OrgSettingsEditor({ session, org, fetchOrg }: { session: any; org: Org;
             />
           </div>
           <div className="form-control">
-            <label className="label">
+            <label className="label" htmlFor="org-slug">
               <span className="label-text font-bold">URL Slug</span>
             </label>
             <input
+              id="org-slug"
               type="text"
               className="input input-bordered"
               placeholder="my-company"
@@ -407,10 +410,11 @@ function OrgSettingsEditor({ session, org, fetchOrg }: { session: any; org: Org;
           </div>
         </div>
         <div className="form-control">
-          <label className="label">
+          <label className="label" htmlFor="org-logo">
             <span className="label-text font-bold">Logo URL</span>
           </label>
           <input
+            id="org-logo"
             type="url"
             className="input input-bordered"
             placeholder="https://..."
@@ -419,10 +423,11 @@ function OrgSettingsEditor({ session, org, fetchOrg }: { session: any; org: Org;
           />
         </div>
         <div className="form-control">
-          <label className="label">
+          <label className="label" htmlFor="org-desc">
             <span className="label-text font-bold">Description</span>
           </label>
           <textarea
+            id="org-desc"
             className="textarea textarea-bordered h-24"
             placeholder="Tell us about the organization..."
             value={formData.description}

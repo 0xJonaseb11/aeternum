@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -276,10 +277,11 @@ function ProfileEditor() {
         {editing ? (
           <div className="space-y-4 pt-4">
             <div className="form-control">
-              <label className="label">
+              <label className="label" htmlFor="full_name">
                 <span className="label-text font-bold">Full Name</span>
               </label>
               <input
+                id="full_name"
                 type="text"
                 placeholder="Jane Doe"
                 className="input input-bordered"
@@ -288,10 +290,11 @@ function ProfileEditor() {
               />
             </div>
             <div className="form-control">
-              <label className="label">
+              <label className="label" htmlFor="avatar_url">
                 <span className="label-text font-bold">Avatar URL</span>
               </label>
               <input
+                id="avatar_url"
                 type="url"
                 placeholder="https://..."
                 className="input input-bordered"
@@ -300,10 +303,11 @@ function ProfileEditor() {
               />
             </div>
             <div className="form-control">
-              <label className="label">
+              <label className="label" htmlFor="bio">
                 <span className="label-text font-bold">Bio</span>
               </label>
               <textarea
+                id="bio"
                 className="textarea textarea-bordered h-24"
                 placeholder="Tell us a little about yourself..."
                 value={formData.bio}
@@ -333,9 +337,9 @@ function ProfileEditor() {
         ) : (
           <div className="mt-4 flex gap-6 items-start rounded-xl border border-base-300 bg-base-200/20 p-6">
             <div className="avatar">
-              <div className="w-16 h-16 rounded-full bg-base-300 ring ring-primary ring-offset-base-100 ring-offset-2">
+              <div className="w-16 h-16 rounded-full bg-base-300 ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden relative">
                 {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" />
+                  <Image src={profile.avatar_url} alt="Avatar" fill className="object-cover" unoptimized />
                 ) : (
                   <span className="text-2xl font-bold flex items-center justify-center h-full w-full opacity-30">
                     {(profile.full_name?.[0] || profile.email?.[0] || "?").toUpperCase()}
