@@ -17,14 +17,7 @@ export async function GET(req: NextRequest) {
   const supabase = getSupabase();
   if (!supabase) return NextResponse.json({ error: "DB error" }, { status: 500 });
 
-  const [
-    { count: totalProofs },
-    { count: totalOrgs },
-    { count: totalProfiles },
-    { data: allSubs },
-    { data: recentEvents },
-    { data: activeInvites },
-  ] = await Promise.all([
+  const results = await Promise.all([
     supabase.from("proofs").select("*", { count: "exact", head: true }),
     supabase.from("organizations").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
@@ -32,6 +25,21 @@ export async function GET(req: NextRequest) {
     supabase.from("events").select("*").order("at", { ascending: false }).limit(5),
     supabase.from("team_invites").select("*", { count: "exact", head: true }).is("accepted_at", null),
   ]);
+
+  const [
+    { count: totalProofs, error: proofsErr },
+    { count: totalOrgs, error: orgsErr },
+    { count: totalProfiles, error: profilesErr },
+    { data: allSubs, error: subsErr },
+    { data: recentEvents, error: eventsErr },
+    { data: activeInvites, error: invitesErr },
+  ] = results;
+
+  if (proofsErr || orgsErr || profilesErr || subsErr || eventsErr || invitesErr) {
+    logger.error("Database error in admin stats", {
+      errors: { proofsErr, orgsErr, profilesErr, subsErr, eventsErr, invitesErr },
+    });
+  }
 
   const activeSubs = allSubs?.filter(s => !["canceled", "incomplete_expired"].includes(s.status)) || [];
 
