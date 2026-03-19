@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     supabase.from("proofs").select("*", { count: "exact", head: true }),
     supabase.from("organizations").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
-    supabase.from("subscriptions").select("plan, status"),
+    supabase.from("subscriptions").select("plan, status, amount"),
     supabase.from("events").select("*").order("at", { ascending: false }).limit(5),
     supabase.from("team_invites").select("*", { count: "exact", head: true }).is("accepted_at", null),
   ]);
@@ -56,7 +56,14 @@ export async function GET(req: NextRequest) {
     enterprise: 150,
   };
 
-  const mrr = activeSubs.reduce((acc, sub) => acc + (MRR_VALUES[sub.plan] || 0), 0);
+  const mrr = activeSubs.reduce((acc, sub) => {
+    // If we have an exact tracked amount from Stripe (in cents), convert to dollars
+    if (sub.amount !== undefined && sub.amount !== null && sub.amount > 0) {
+      return acc + sub.amount / 100;
+    }
+    // Fallback securely for legacy subscriptions using hardcoded averages
+    return acc + (MRR_VALUES[sub.plan] || 0);
+  }, 0);
 
   let irysBalance = "0";
   try {

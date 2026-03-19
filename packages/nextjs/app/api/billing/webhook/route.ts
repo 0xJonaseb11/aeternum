@@ -59,9 +59,12 @@ export async function POST(req: NextRequest) {
       const sub = event.data.object as Stripe.Subscription;
       const userId = sub.metadata?.user_id;
       if (!userId) break;
-      const plan = sub.items?.data?.[0]?.price?.id ? planFromPriceId(sub.items.data[0].price.id) : ("pro" as PlanId);
+      const plan =
+        (sub.metadata?.plan as PlanId) ||
+        (sub.items?.data?.[0]?.price?.id ? planFromPriceId(sub.items.data[0].price.id) : ("pro" as PlanId));
       const status = stripeStatusToOur(sub.status);
       const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null;
+      const amount = sub.items?.data?.[0]?.price?.unit_amount || 0;
 
       const { data: existing } = await supabase
         .from("subscriptions")
@@ -78,6 +81,7 @@ export async function POST(req: NextRequest) {
             status,
             stripe_subscription_id: sub.id,
             current_period_end: periodEnd,
+            amount,
             updated_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
@@ -88,6 +92,7 @@ export async function POST(req: NextRequest) {
           status,
           stripe_subscription_id: sub.id,
           current_period_end: periodEnd,
+          amount,
         });
       }
       break;
@@ -103,6 +108,7 @@ export async function POST(req: NextRequest) {
           status: "canceled",
           stripe_subscription_id: null,
           current_period_end: null,
+          amount: 0,
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", userId);
