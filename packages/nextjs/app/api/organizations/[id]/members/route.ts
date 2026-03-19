@@ -21,9 +21,18 @@ export async function GET(req: NextRequest, { params }: Params) {
     .order("created_at", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   const userIds = [...new Set((rows ?? []).map(r => r.user_id))];
-  const { data: profiles } = await supabase.from("profiles").select("id, email").in("id", userIds);
-  const profileBy = (profiles ?? []).reduce<Record<string, { email: string | null }>>((acc, p) => {
-    acc[p.id] = { email: p.email ?? null };
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, email, full_name, avatar_url")
+    .in("id", userIds);
+  const profileBy = (profiles ?? []).reduce<
+    Record<string, { email: string | null; full_name: string | null; avatar_url: string | null }>
+  >((acc, p) => {
+    acc[p.id] = {
+      email: p.email ?? null,
+      full_name: p.full_name ?? null,
+      avatar_url: p.avatar_url ?? null,
+    };
     return acc;
   }, {});
   const members = (rows ?? []).map(r => ({
@@ -32,6 +41,8 @@ export async function GET(req: NextRequest, { params }: Params) {
     role: r.role as OrgRole,
     created_at: r.created_at,
     email: profileBy[r.user_id]?.email ?? null,
+    full_name: profileBy[r.user_id]?.full_name ?? null,
+    avatar_url: profileBy[r.user_id]?.avatar_url ?? null,
   }));
   return NextResponse.json({ members });
 }
@@ -70,7 +81,11 @@ export async function POST(req: NextRequest, { params }: Params) {
     .eq("organization_id", orgId)
     .eq("user_id", userId)
     .single();
-  const { data: profile } = await supabase.from("profiles").select("id, email").eq("id", userId).maybeSingle();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, email, full_name, avatar_url")
+    .eq("id", userId)
+    .maybeSingle();
   return NextResponse.json({
     member: {
       id: row?.id,
@@ -78,6 +93,8 @@ export async function POST(req: NextRequest, { params }: Params) {
       role: row?.role ?? role,
       created_at: row?.created_at,
       email: profile?.email ?? null,
+      full_name: profile?.full_name ?? null,
+      avatar_url: profile?.avatar_url ?? null,
     },
   });
 }
