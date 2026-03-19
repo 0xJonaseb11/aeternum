@@ -21,7 +21,6 @@ export default function AdminBroadcast() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Form state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [type, setType] = useState<"info" | "warning" | "error" | "success">("info");
@@ -79,7 +78,6 @@ export default function AdminBroadcast() {
 
       toast.success(status === "sent" ? "Broadcast sent live!" : "Draft saved successfully");
 
-      // Reset form
       setTitle("");
       setContent("");
       setEditingId(null);

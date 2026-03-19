@@ -458,9 +458,7 @@ export const EvidenceCard = ({
                         organizationId: organizationId ?? undefined,
                       }),
                     });
-                  } catch {
-                    // non-fatal
-                  }
+                  } catch {}
                 }}
                 className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-secondary-content"
               >
@@ -512,8 +510,8 @@ export const EvidenceCard = ({
   );
 };
 
-const RECENT_BLOCKS = 10_000; // ~2 days on Base Sepolia; keeps RPC requests bounded
-const LOAD_TIMEOUT_MS = 18_000; // Stop showing skeleton after 18s; show error + Retry
+const RECENT_BLOCKS = 10_000;
+const LOAD_TIMEOUT_MS = 18_000;
 
 const INDEXER_URL = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_INDEXER_URL : undefined;
 

@@ -114,7 +114,6 @@ export const useVault = (organizationId?: string | null) => {
 
       notification.success("Evidence secured successfully!");
 
-      // Fire-and-forget event log (ignore failures)
       try {
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
@@ -135,9 +134,7 @@ export const useVault = (organizationId?: string | null) => {
             },
           }),
         });
-      } catch {
-        // non-fatal
-      }
+      } catch {}
 
       return {
         fileHash,

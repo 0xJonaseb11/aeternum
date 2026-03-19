@@ -16,7 +16,6 @@ function sha256Hex(input: string): string {
   return createHash("sha256").update(input, "utf8").digest("hex");
 }
 
-/** GET: list API keys for the current user (requires Supabase session token in Authorization). */
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
@@ -38,7 +37,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ keys: data ?? [] });
 }
 
-/** POST: create a new API key (requires Supabase session token). Returns full key only once. */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {

@@ -6,7 +6,6 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** GET: get one organization. Requires membership. */
 export async function GET(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest, { params }: Params) {
   return NextResponse.json({ organization: { ...org, myRole: membership.role } });
 }
 
-/** PATCH: update organization (name, slug). Requires admin or owner. */
 export async function PATCH(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

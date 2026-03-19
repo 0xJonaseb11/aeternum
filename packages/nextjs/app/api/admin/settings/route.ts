@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Transform to key-value object
   const settings = data.reduce((acc: any, curr) => {
     acc[curr.key] = curr.value;
     return acc;

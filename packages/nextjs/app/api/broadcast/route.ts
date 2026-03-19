@@ -5,7 +5,6 @@ export async function GET() {
   const supabase = getSupabase();
   if (!supabase) return NextResponse.json({ error: "DB error" }, { status: 500 });
 
-  // Fetch the most recent 'sent' broadcast
   const { data, error } = await supabase
     .from("broadcasts")
     .select("title, content, type")

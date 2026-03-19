@@ -26,7 +26,6 @@ export function getPriceId(plan: PlanId, type?: "standard" | "discounted"): stri
   }
 }
 
-/** Get or create Stripe customer for user; persist stripe_customer_id in subscriptions. */
 export async function getOrCreateStripeCustomer(userId: string, email: string | null): Promise<string | null> {
   try {
     const s = getStripe();
@@ -82,7 +81,6 @@ export async function getOrCreateStripeCustomer(userId: string, email: string | 
   }
 }
 
-/** Create Checkout session for upgrading to a plan. Returns session URL. */
 export async function createCheckoutSession(
   userId: string,
   email: string | null,
@@ -94,10 +92,6 @@ export async function createCheckoutSession(
   try {
     const s = getStripe();
 
-    // Resolve price ID:
-    // 1. If priceOption is a known type, use getPriceId
-    // 2. If priceOption looks like a Stripe ID (price_), use it directly
-    // 3. Otherwise fallback to the plan's default price
     let priceId: string | null = null;
     if (priceOption === "standard" || priceOption === "discounted") {
       priceId = getPriceId(plan, priceOption);
@@ -137,7 +131,6 @@ export async function createCheckoutSession(
   }
 }
 
-/** Create Customer Portal session for managing subscription. Returns URL. */
 export async function createPortalSession(customerId: string, returnUrl: string): Promise<string | null> {
   const s = getStripe();
   if (!s) return null;

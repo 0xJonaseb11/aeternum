@@ -13,7 +13,6 @@ export const BroadcastBanner = () => {
         const res = await fetch("/api/broadcast");
         const data = await res.json();
         if (data.broadcast) {
-          // Check if this broadcast ID has been dismissed
           const dismissedId = localStorage.getItem("aeternum_dismissed_broadcast");
           if (dismissedId !== data.broadcast.title + data.broadcast.sent_at) {
             setBroadcast(data.broadcast);
@@ -39,12 +38,12 @@ export const BroadcastBanner = () => {
 
   const bgClass =
     broadcast.type === "warning"
-      ? "bg-[#b45309] text-white" // Deep Amber/Orange
+      ? "bg-[#b45309] text-white"
       : broadcast.type === "error"
-        ? "bg-[#991b1b] text-white" // Red 800
+        ? "bg-[#991b1b] text-white"
         : broadcast.type === "success"
-          ? "bg-[#059669] text-white" // Emerald 600
-          : "bg-[#d81b60] text-white"; // Vibrant Magenta
+          ? "bg-[#059669] text-white"
+          : "bg-[#d81b60] text-white";
 
   return (
     <div

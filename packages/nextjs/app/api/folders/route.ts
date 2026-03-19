@@ -5,7 +5,6 @@ import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 import { folderPostSchema } from "~~/lib/validation/schemas";
 
-/** GET: list folders for the current user (personal or org). Query: organizationId (optional). */
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,7 +27,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ folders: data ?? [] });
 }
 
-/** POST: create folder. Body: { name, organizationId? }. */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

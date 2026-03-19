@@ -1,9 +1,5 @@
 import type { CertificateData } from "~~/utils/vault/certificatePdf";
 
-/**
- * Certificate data as JSON for export (legal-friendly, machine-readable).
- * Matches the structure used in PDF; verificationUrl should point to the live page.
- */
 export function certificateToJson(data: CertificateData): string {
   const payload = {
     issuer: "Aeternum",

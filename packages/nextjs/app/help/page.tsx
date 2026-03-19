@@ -42,7 +42,7 @@ const faqs = [
 ];
 
 export default function HelpPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<string | null>(faqs[0].question);
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredFaqs = useMemo(() => {
@@ -55,7 +55,7 @@ export default function HelpPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
-      {/* Header / Search Area */}
+      {}
       <section className="bg-base-200 py-24 text-base-content relative overflow-hidden border-b border-base-300">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
         <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
@@ -73,10 +73,10 @@ export default function HelpPage() {
         </div>
       </section>
 
-      {/* Main Content */}
+      {}
       <section className="py-20">
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Quick Links */}
+          {}
           <div className="grid md:grid-cols-4 gap-6 mb-20 -mt-32 relative z-10">
             {[
               { name: "Getting Started", icon: BookOpenIcon, desc: "New to Aeternum? Start here." },
@@ -98,7 +98,7 @@ export default function HelpPage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-16">
-            {/* FAQs */}
+            {}
             <div className="lg:col-span-2">
               <h2 className="text-3xl font-black mb-10 flex items-center gap-4">
                 <span className="bg-primary text-primary-content w-10 h-10 rounded-full flex items-center justify-center text-xl">
@@ -108,20 +108,20 @@ export default function HelpPage() {
               </h2>
 
               <div className="space-y-4">
-                {filteredFaqs.map((faq, idx) => (
-                  <div key={idx} className="border border-base-200 rounded-2xl overflow-hidden bg-base-200/30">
+                {filteredFaqs.map((faq) => (
+                  <div key={faq.question} className="border border-base-200 rounded-2xl overflow-hidden bg-base-200/30">
                     <button
-                      onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                      onClick={() => setOpenFaq(openFaq === faq.question ? null : faq.question)}
                       className="w-full p-6 text-left flex justify-between items-center hover:bg-base-200 transition-colors"
                     >
                       <span className="font-bold text-lg">{faq.question}</span>
-                      {openFaq === idx ? (
+                      {openFaq === faq.question ? (
                         <ChevronUpIcon className="h-5 w-5 opacity-50" />
                       ) : (
                         <ChevronDownIcon className="h-5 w-5 opacity-50" />
                       )}
                     </button>
-                    {openFaq === idx && (
+                    {openFaq === faq.question && (
                       <div className="p-6 pt-0 text-base-content/70 leading-relaxed border-t border-base-200">
                         {faq.answer}
                       </div>
@@ -141,7 +141,7 @@ export default function HelpPage() {
               </div>
             </div>
 
-            {/* Sidebar / Contact */}
+            {}
             <div className="space-y-8">
               <div className="bg-base-200 p-10 rounded-[2.5rem] border border-base-300 relative overflow-hidden">
                 <div className="absolute -top-10 -right-10 opacity-5">

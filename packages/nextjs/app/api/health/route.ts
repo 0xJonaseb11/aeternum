@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * Health check endpoint for monitoring and deployment verification.
- * Returns service status and basic connectivity checks.
- */
 export async function GET() {
   const details: any = {
     supabase: "unconfigured",
@@ -24,7 +20,6 @@ export async function GET() {
     }
   }
 
-  // Stripe connectivity
   if (process.env.STRIPE_SECRET_KEY) {
     try {
       const res = await fetch("https://api.stripe.com/v1/plans?limit=1", {
@@ -36,9 +31,7 @@ export async function GET() {
     }
   }
 
-  // Arweave (Irys) check
   if (process.env.IRYS_PRIVATE_KEY) {
-    // We already do this in stats, but here we just check presence + basic ping if possible
     details.arweave = "ok";
   }
 
