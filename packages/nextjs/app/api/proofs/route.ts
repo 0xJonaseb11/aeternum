@@ -139,9 +139,6 @@ export async function GET(req: NextRequest) {
     if (evidenceFileHashes.length === 0) {
       return NextResponse.json({ items: [] });
     }
-
-    if (dateFromParam != null || dateToParam != null) {
-    }
   }
 
   let query = supabase
