@@ -113,7 +113,7 @@ export function useUserProfile() {
 
     if (updateError) {
       setError(updateError.message);
-      return;
+      throw updateError;
     }
     setProfile(data);
   };
