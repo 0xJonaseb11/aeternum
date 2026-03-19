@@ -19,21 +19,29 @@ export async function getCurrentUserFromRequest(req: NextRequest): Promise<User 
   } = await client.auth.getUser(token);
   if (error || !user) return null;
 
-  const { data: isBlocked } = await client
+  const { data: isBlocked, error: blockErr } = await client
     .from("blocked_addresses")
     .select("address")
     .eq("address", user.id)
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  if (blockErr) {
+    console.error("Error checking blocked addresses:", blockErr.message);
+  }
 
   if (isBlocked) return null;
 
-  const { data: maintSettings } = await client
+  const { data: maintSettings, error: maintErr } = await client
     .from("platform_settings")
     .select("value")
     .eq("key", "maintenance_mode")
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  if (maintErr) {
+    console.error("Error checking platform settings:", maintErr.message);
+  }
 
   if (maintSettings?.value === true) {
     const walletAddress = req.headers.get("x-wallet-address") || undefined;

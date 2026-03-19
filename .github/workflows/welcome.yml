@@ -1,2 +1,11 @@
-- name: First interaction
-  uses: actions/first-interaction@v3.1.0
+name: Welcome
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First interaction
+        uses: actions/first-interaction@v3
