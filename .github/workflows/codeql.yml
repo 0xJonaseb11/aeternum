@@ -19,11 +19,12 @@ on:
   schedule:
     - cron: '24 8 * * 6'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
