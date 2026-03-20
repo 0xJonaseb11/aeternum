@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 /**
- * @author @0xJonaseb11
  * @title IEvidenceVault
+ * @author @0xJonaseb11
  * @notice Public API of the evidence vault; implemented by EvidenceVault.sol.
  */
 interface IEvidenceVault {

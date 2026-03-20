@@ -4,8 +4,8 @@ pragma solidity ^0.8.24;
 import { IZKVerifier } from "../interface/IZKVerifier.sol";
 
 /**
- * @author @0xJonaseb11
  * @title Groth16VerifierWrapper
+ * @author @0xJonaseb11
  * @notice Adapts SnarkJS-generated Groth16 verifier (CommitmentVerifier) to IZKVerifier for EvidenceVault.
  * @dev    Deploy CommitmentVerifier then this with its address; register via vault.setZKVerifier(wrapper).
  */

@@ -11,8 +11,8 @@ import { IZKVerifier } from "../interface/IZKVerifier.sol";
 import { EvidenceVaultStorage } from "./EvidenceVaultStorage.sol";
 
 /**
- * @author @0xJonaseb11
  * @title EvidenceVault
+ * @author @0xJonaseb11
  * @notice Stores cryptographic proofs of encrypted files (metadata on-chain; content on Arweave/IPFS).
  * @dev ZK flow: client computes commitment = Poseidon(fileHash, secret) and proves knowledge of secret
  *      off-chain; on-chain we store commitment and verify via IZKVerifier. Secret never on-chain.

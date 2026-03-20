@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 /**
- * @author @0xJonaseb11
  * @title IZKVerifier
+ * @author @0xJonaseb11
  * @notice Verifier interface for Groth16/PLONK (e.g. SnarkJS-generated). proofData = abi.encode(pA, pB, pC).
  */
 interface IZKVerifier {
