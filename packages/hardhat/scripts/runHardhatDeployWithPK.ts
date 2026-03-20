@@ -1,5 +1,4 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 import { Wallet } from "ethers";
 import password from "@inquirer/password";
 import { spawn } from "child_process";
