@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** DELETE: revoke an API key (requires Supabase session; must own the key). */
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {

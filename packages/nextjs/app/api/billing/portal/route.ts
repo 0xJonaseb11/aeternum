@@ -3,7 +3,6 @@ import { getSubscriptionForUser } from "~~/lib/billing/getSubscription";
 import { createPortalSession } from "~~/lib/billing/stripe";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** POST: create Stripe Customer Portal session, return redirect URL. */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {

@@ -9,6 +9,9 @@ export type UserProfile = {
   id: string;
   email: string | null;
   primary_wallet_address: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
   created_at: string;
 };
 
@@ -40,7 +43,6 @@ export function useUserProfile() {
       if (cancelled) return;
 
       if (fetchError && fetchError.code !== "PGRST116") {
-        // PGRST116 = no rows found
         setError(fetchError.message);
         setLoading(false);
         return;
@@ -96,10 +98,31 @@ export function useUserProfile() {
     setProfile(data);
   };
 
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!user) {
+      setError("You must be signed in to update profile.");
+      return;
+    }
+    setError(null);
+    const { data, error: updateError } = await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", user.id)
+      .select("*")
+      .single<UserProfile>();
+
+    if (updateError) {
+      setError(updateError.message);
+      throw updateError;
+    }
+    setProfile(data);
+  };
+
   return {
     profile,
     loading: authLoading || loading,
     error,
     linkWallet,
+    updateProfile,
   };
 }
