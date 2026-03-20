@@ -6,9 +6,11 @@ import {
   DocumentIcon,
   KeyIcon,
   ShieldCheckIcon,
+  UserGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useVault } from "~~/hooks/vault/useVault";
+import type { VaultScope } from "~~/hooks/vault/useVaultScope";
 
 interface UploadResult {
   fileHash: string;
@@ -17,7 +19,7 @@ interface UploadResult {
   ipfsCid: string;
 }
 
-export const UploadEvidence = () => {
+export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -34,7 +36,8 @@ export const UploadEvidence = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [result, secretSavedConfirmed]);
 
-  const { uploadEvidence, isProcessing, step } = useVault();
+  const organizationId = scope?.type === "org" ? scope.orgId : undefined;
+  const { uploadEvidence, isProcessing, step } = useVault(organizationId);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -212,6 +215,18 @@ export const UploadEvidence = () => {
               <span>Secure Local Encryption</span>
               <span className="badge badge-primary badge-xs py-2 px-2 text-[8px] font-bold">ZK-READY</span>
             </p>
+            {scope?.type === "org" ? (
+              <p className="text-[11px] text-base-content/60 mt-1 flex items-center gap-1.5">
+                <UserGroupIcon className="h-3.5 w-3.5 text-primary" />
+                <span>
+                  Evidence will be owned by team <span className="font-semibold">{scope.name}</span>.
+                </span>
+              </p>
+            ) : (
+              <p className="text-[11px] text-base-content/60 mt-1">
+                Evidence will be owned by your personal vault only.
+              </p>
+            )}
           </div>
         </div>
 

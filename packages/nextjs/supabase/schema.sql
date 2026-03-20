@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS proofs (
   chain_id INTEGER NOT NULL,
   owner_address TEXT NOT NULL,
   user_id UUID,
+  organization_id UUID, -- nullable: org-owned proofs; null = personal
   file_hash TEXT NOT NULL,
   "timestamp" BIGINT NOT NULL,
   block_number BIGINT NOT NULL,
@@ -17,11 +18,16 @@ CREATE TABLE IF NOT EXISTS proofs (
   UNIQUE(chain_id, file_hash)
 );
 
+-- Migration: add organization_id if table already existed without it
+ALTER TABLE proofs ADD COLUMN IF NOT EXISTS organization_id UUID;
 CREATE INDEX IF NOT EXISTS idx_proofs_owner_chain ON proofs(owner_address, chain_id);
 CREATE INDEX IF NOT EXISTS idx_proofs_user_id ON proofs(user_id);
+CREATE INDEX IF NOT EXISTS idx_proofs_organization_id ON proofs(organization_id);
 
 -- Optional RLS: enable if you use anon key and auth.
 ALTER TABLE proofs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can read own proofs" ON proofs;
+DROP POLICY IF EXISTS "Users can insert own proofs" ON proofs;
 CREATE POLICY "Users can read own proofs" ON proofs FOR SELECT USING (owner_address = current_setting('request.jwt.claim.wallet', true));
 CREATE POLICY "Users can insert own proofs" ON proofs FOR INSERT WITH CHECK (owner_address = current_setting('request.jwt.claim.wallet', true));
 
@@ -32,6 +38,7 @@ CREATE POLICY "Users can insert own proofs" ON proofs FOR INSERT WITH CHECK (own
 CREATE TABLE IF NOT EXISTS public.evidence (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID,
+  organization_id UUID, -- nullable: org-owned evidence; null = personal
   file_hash TEXT NOT NULL,
   title TEXT,
   description TEXT,
@@ -42,8 +49,27 @@ CREATE TABLE IF NOT EXISTS public.evidence (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Migration: add organization_id if table already existed without it
+ALTER TABLE public.evidence ADD COLUMN IF NOT EXISTS organization_id UUID;
 CREATE INDEX IF NOT EXISTS idx_evidence_user_id ON public.evidence(user_id);
+CREATE INDEX IF NOT EXISTS idx_evidence_organization_id ON public.evidence(organization_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_file_hash ON public.evidence(file_hash);
+
+-- Folders: user/org-scoped groupings for evidence
+CREATE TABLE IF NOT EXISTS public.folders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID,
+  organization_id UUID,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, organization_id, name)
+);
+CREATE INDEX IF NOT EXISTS idx_folders_user_id ON public.folders(user_id);
+CREATE INDEX IF NOT EXISTS idx_folders_organization_id ON public.folders(organization_id);
+
+-- Evidence can belong to a folder (nullable)
+ALTER TABLE public.evidence ADD COLUMN IF NOT EXISTS folder_id UUID REFERENCES public.folders(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_evidence_folder_id ON public.evidence(folder_id);
 
 -- -----------------------------------------------------------------------------
 -- Events: evidence lifecycle timeline
@@ -52,13 +78,17 @@ CREATE INDEX IF NOT EXISTS idx_evidence_file_hash ON public.evidence(file_hash);
 CREATE TABLE IF NOT EXISTS public.events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID,
+  organization_id UUID, -- nullable: org-owned events; null = personal
   file_hash TEXT NOT NULL,
   event_type TEXT NOT NULL,
   at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   data JSONB
 );
 
+-- Migration: add organization_id if table already existed without it
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS organization_id UUID;
 CREATE INDEX IF NOT EXISTS idx_events_user_id ON public.events(user_id);
+CREATE INDEX IF NOT EXISTS idx_events_organization_id ON public.events(organization_id);
 CREATE INDEX IF NOT EXISTS idx_events_file_hash ON public.events(file_hash);
 
 -- -----------------------------------------------------------------------------
@@ -79,7 +109,9 @@ CREATE INDEX IF NOT EXISTS idx_profiles_primary_wallet ON public.profiles (prima
 
 -- RLS: each user can only see and modify their own profile row
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
+DROP POLICY IF EXISTS "User can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "User can upsert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "User can update own profile" ON public.profiles;
 CREATE POLICY "User can view own profile"
 ON public.profiles FOR SELECT
 USING (auth.uid() = id);
@@ -153,3 +185,34 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON public.subscriptions(user_id);
+
+-- -----------------------------------------------------------------------------
+-- API usage (per user per month for plan limits)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.api_usage (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  period_start DATE NOT NULL,
+  requests_count INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(user_id, period_start)
+);
+CREATE INDEX IF NOT EXISTS idx_api_usage_user_period ON public.api_usage(user_id, period_start);
+
+-- -----------------------------------------------------------------------------
+-- Team invites (email-based member invitations)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.team_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'viewer' CHECK (role IN ('admin', 'contributor', 'viewer')),
+  token TEXT NOT NULL,
+  invited_by UUID NOT NULL, -- user_id of inviter
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+  accepted_at TIMESTAMPTZ, -- null until accepted
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(organization_id, email, token)
+);
+
+CREATE INDEX IF NOT EXISTS idx_team_invites_org_email ON public.team_invites(organization_id, email);
+CREATE INDEX IF NOT EXISTS idx_team_invites_token ON public.team_invites(token);
