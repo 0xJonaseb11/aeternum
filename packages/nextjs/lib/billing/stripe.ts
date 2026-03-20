@@ -11,96 +11,126 @@ export function getStripe(): Stripe | null {
   return stripe;
 }
 
-export function getPriceId(plan: PlanId): string | null {
+export function getPriceId(plan: PlanId, type?: "standard" | "discounted"): string | null {
   switch (plan) {
     case "pro":
       return process.env.STRIPE_PRICE_PRO ?? null;
     case "business":
       return process.env.STRIPE_PRICE_BUSINESS ?? null;
     case "enterprise":
-      return process.env.STRIPE_PRICE_ENTERPRISE ?? null;
+      return type === "discounted"
+        ? (process.env.STRIPE_PRICE_ENTERPRISE_DISCOUNTED ?? null)
+        : (process.env.STRIPE_PRICE_ENTERPRISE ?? null);
     default:
       return null;
   }
 }
 
-/** Get or create Stripe customer for user; persist stripe_customer_id in subscriptions. */
 export async function getOrCreateStripeCustomer(userId: string, email: string | null): Promise<string | null> {
-  const s = getStripe();
-  const supabase = getSupabase();
-  if (!s || !supabase) return null;
+  try {
+    const s = getStripe();
+    const supabase = getSupabase();
+    if (!s || !supabase) {
+      console.error("[Stripe] Stripe secret key or Supabase credentials missing");
+      return null;
+    }
 
-  const { data: sub } = await supabase
-    .from("subscriptions")
-    .select("stripe_customer_id")
-    .eq("user_id", userId)
-    .not("stripe_customer_id", "is", null)
-    .limit(1)
-    .maybeSingle();
-
-  if (sub?.stripe_customer_id) return sub.stripe_customer_id;
-
-  const customer = await s.customers.create({
-    email: email ?? undefined,
-    metadata: { user_id: userId },
-  });
-
-  const { data: existingRow } = await supabase
-    .from("subscriptions")
-    .select("id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
-
-  if (existingRow) {
-    await supabase
+    const { data: sub } = await supabase
       .from("subscriptions")
-      .update({
-        stripe_customer_id: customer.id,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", existingRow.id);
-  } else {
-    await supabase.from("subscriptions").insert({
-      user_id: userId,
-      plan: "free",
-      status: "active",
-      stripe_customer_id: customer.id,
-    });
-  }
+      .select("stripe_customer_id")
+      .eq("user_id", userId)
+      .not("stripe_customer_id", "is", null)
+      .limit(1)
+      .maybeSingle();
 
-  return customer.id;
+    if (sub?.stripe_customer_id) return sub.stripe_customer_id;
+
+    const customer = await s.customers.create({
+      email: email ?? undefined,
+      metadata: { user_id: userId },
+    });
+
+    const { data: existingRow } = await supabase
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (existingRow) {
+      await supabase
+        .from("subscriptions")
+        .update({
+          stripe_customer_id: customer.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existingRow.id);
+    } else {
+      await supabase.from("subscriptions").insert({
+        user_id: userId,
+        plan: "free",
+        status: "active",
+        stripe_customer_id: customer.id,
+      });
+    }
+
+    return customer.id;
+  } catch (err) {
+    console.error("[Stripe] Error in getOrCreateStripeCustomer:", err);
+    throw err;
+  }
 }
 
-/** Create Checkout session for upgrading to a plan. Returns session URL. */
 export async function createCheckoutSession(
   userId: string,
   email: string | null,
   plan: PlanId,
   successUrl: string,
   cancelUrl: string,
+  priceOption?: string,
 ): Promise<string | null> {
-  const s = getStripe();
-  const priceId = getPriceId(plan);
-  if (!s || !priceId) return null;
+  try {
+    const s = getStripe();
 
-  const customerId = await getOrCreateStripeCustomer(userId, email);
-  if (!customerId) return null;
+    let priceId: string | null = null;
+    if (priceOption === "standard" || priceOption === "discounted") {
+      priceId = getPriceId(plan, priceOption);
+    } else if (priceOption?.startsWith("price_")) {
+      priceId = priceOption;
+    } else {
+      priceId = getPriceId(plan);
+    }
 
-  const session = await s.checkout.sessions.create({
-    customer: customerId,
-    mode: "subscription",
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    subscription_data: { metadata: { user_id: userId, plan } },
-    allow_promotion_codes: true,
-  });
+    if (!s || !priceId) {
+      console.error(
+        `[Stripe] stripe client (${!!s}) or priceId (${priceId}) missing for plan ${plan} (option: ${priceOption})`,
+      );
+      return null;
+    }
 
-  return session.url;
+    const customerId = await getOrCreateStripeCustomer(userId, email);
+    if (!customerId) {
+      console.error("[Stripe] Failed to get or create customerId");
+      return null;
+    }
+
+    const session = await s.checkout.sessions.create({
+      customer: customerId,
+      mode: "subscription",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      subscription_data: { metadata: { user_id: userId, plan } },
+      allow_promotion_codes: true,
+    });
+
+    return session.url;
+  } catch (err) {
+    console.error("[Stripe] Error in createCheckoutSession:", err);
+    throw err;
+  }
 }
 
-/** Create Customer Portal session for managing subscription. Returns URL. */
 export async function createPortalSession(customerId: string, returnUrl: string): Promise<string | null> {
   const s = getStripe();
   if (!s) return null;

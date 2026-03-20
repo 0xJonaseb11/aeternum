@@ -8,21 +8,21 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ci:
-    runs-on: ${{ matrix.os }}
-
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ubuntu-latest]
         node: [lts/*]
-
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
 
       - name: Setup node env
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: yarn
@@ -38,6 +38,9 @@ jobs:
 
       - name: Run nextjs lint
         run: yarn next:lint --max-warnings=0
+
+      - name: Check types
+        run: yarn next:check-types
 
       - name: Build nextjs (type-check + build)
         run: yarn next:build

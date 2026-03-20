@@ -9,7 +9,6 @@ export type MembershipRow = {
   created_at: string;
 };
 
-/** Get the current user's membership in an org, if any. */
 export async function getMembership(
   userId: string,
   organizationId: string,
@@ -31,7 +30,6 @@ export async function getMembership(
   return { role, row: data as MembershipRow };
 }
 
-/** List all org IDs the user is a member of (for list-my-orgs). */
 export async function getOrganizationIdsForUser(userId: string): Promise<string[]> {
   const supabase = getSupabase();
   if (!supabase) return [];

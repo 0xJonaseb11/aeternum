@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "~~/lib/logger";
 import { getMembership } from "~~/lib/rbac/getMembership";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await query;
   if (error) {
-    console.error("Supabase GET /api/events error:", error);
+    logger.error("Supabase events GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
   }
 
