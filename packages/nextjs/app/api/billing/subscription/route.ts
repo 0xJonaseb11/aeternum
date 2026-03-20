@@ -4,7 +4,6 @@ import { getSubscriptionForUser } from "~~/lib/billing/getSubscription";
 import { getPlanLimits } from "~~/lib/billing/plans";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** GET: current user's subscription (plan, status, period end, proof usage). Requires Supabase session. */
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
@@ -13,7 +12,7 @@ export async function GET(req: NextRequest) {
   const sub = await getSubscriptionForUser(user.id);
   const proofsThisMonth = await countProofsThisMonthForUser(user.id);
   const limits = getPlanLimits(sub.plan);
-  const proofsLimit = limits.proofsPerMonth; // -1 means unlimited
+  const proofsLimit = limits.proofsPerMonth;
   return NextResponse.json({
     plan: sub.plan,
     status: sub.status,
