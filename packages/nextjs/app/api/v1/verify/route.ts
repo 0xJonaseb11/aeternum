@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiKeyAuth } from "~~/lib/api/withApiKey";
+import { checkAndIncrementApiUsage } from "~~/lib/billing/apiUsage";
+import { logger } from "~~/lib/logger";
+import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * Developer API v1 — Verification. Get verification result by proof ID or fileHash.
- */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {
     return NextResponse.json({ error: "API key required" }, { status: 401 });
+  }
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "v1")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+  const usage = await checkAndIncrementApiUsage(auth.userId);
+  if (!usage.allowed) {
+    return NextResponse.json({ error: usage.reason ?? "API limit exceeded" }, { status: 429 });
   }
   const { searchParams } = new URL(req.url);
   const proofId = searchParams.get("proofId");
@@ -40,7 +48,7 @@ export async function GET(req: NextRequest) {
   }
   const { data, error } = await query.limit(1).maybeSingle();
   if (error) {
-    console.error("v1 verify GET error:", error);
+    logger.error("v1 verify GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
   }
   if (!data) {

@@ -2,9 +2,6 @@ import { getSubscriptionForUser } from "~~/lib/billing/getSubscription";
 import { type PlanId, getPlanLimits, isWithinLimit } from "~~/lib/billing/plans";
 import { getSupabase } from "~~/lib/supabase";
 
-/** LATER: API requests-per-month — see SAAS-FOUNDATION.md §10. Add api_usage (or counter) per user/month, increment in v1 routes, enforce isWithinLimit(plan, 'apiRequestsPerMonth', count). */
-
-/** Start of current month (UTC) for proofs-per-month window. */
 function startOfCurrentMonth(): string {
   const d = new Date();
   d.setUTCDate(1);
@@ -12,7 +9,6 @@ function startOfCurrentMonth(): string {
   return d.toISOString();
 }
 
-/** Count proofs created this month for user (by user_id). */
 export async function countProofsThisMonthForUser(userId: string): Promise<number> {
   const supabase = getSupabase();
   if (!supabase) return 0;
@@ -26,7 +22,6 @@ export async function countProofsThisMonthForUser(userId: string): Promise<numbe
   return count ?? 0;
 }
 
-/** Check if user can create one more proof. Returns { allowed, reason }. */
 export async function checkProofLimit(userId: string | null): Promise<{
   allowed: boolean;
   reason?: string;

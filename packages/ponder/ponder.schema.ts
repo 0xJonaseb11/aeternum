@@ -3,7 +3,7 @@ import { index, onchainTable } from "ponder";
 export const proof = onchainTable(
   "proof",
   (t) => ({
-    id: t.text().primaryKey(), // `${chainId}-${fileHash}` for uniqueness across chains
+    id: t.text().primaryKey(), 
     chainId: t.integer().notNull(),
     owner: t.hex().notNull(),
     fileHash: t.hex().notNull(),
