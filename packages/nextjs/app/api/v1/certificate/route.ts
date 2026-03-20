@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiKeyAuth } from "~~/lib/api/withApiKey";
 import { checkAndIncrementApiUsage } from "~~/lib/billing/apiUsage";
+import { logger } from "~~/lib/logger";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * Developer API v1 — Certificate. Returns certificate data (JSON) for a proof.
- */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {
@@ -45,7 +43,7 @@ export async function GET(req: NextRequest) {
   }
   const { data, error } = await query.limit(1).maybeSingle();
   if (error) {
-    console.error("v1 certificate GET error:", error);
+    logger.error("v1 certificate GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
   }
   if (!data) {

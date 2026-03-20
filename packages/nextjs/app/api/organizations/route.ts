@@ -4,7 +4,6 @@ import { type OrgRole } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** GET: list organizations the current user is a member of. */
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -31,7 +30,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ organizations: list });
 }
 
-/** POST: create organization and add current user as owner. Body: { name: string, slug?: string }. */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
