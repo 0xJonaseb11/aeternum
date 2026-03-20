@@ -24,6 +24,7 @@ __metadata:
   resolution: "@aeternum/ponder@workspace:packages/ponder"
   dependencies:
     "@types/node": ^20.10.0
+    hono: ^3.12.0
     ponder: ^0.8.9
     typescript: ^5.9.3
   languageName: unknown
@@ -15292,6 +15293,13 @@ __metadata:
     minimalistic-assert: ^1.0.0
     minimalistic-crypto-utils: ^1.0.1
   checksum: bd30b6a68d7f22d63f10e1888aee497d7c2c5c0bb469e66bbdac99f143904d1dfe95f8131f95b3e86c86dd239963c9d972fcbe147e7cffa00e55d18585c43fe0
+  languageName: node
+  linkType: hard
+
+"hono@npm:^3.12.0":
+  version: 3.12.12
+  resolution: "hono@npm:3.12.12"
+  checksum: 132b40b4b2ccc7aa2052b87f52e31fd76e24c68f5c70e2d3f9b01919b5dc9f213f7b42edb74ecf4a265e1ac6ffc2c7cf7114cb03b376d72caf7e8f01fa8a2a4c
   languageName: node
   linkType: hard
 
