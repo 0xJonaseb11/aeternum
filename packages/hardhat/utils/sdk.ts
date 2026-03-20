@@ -5,29 +5,29 @@ import * as fs from "fs";
 import * as crypto from "crypto";
 
 export interface ProofInput {
-  fileHash: string; // bytes32 hex
-  secret: string; // bytes32 hex — KEEP PRIVATE
-  commitment: string; // bytes32 hex — store on-chain
+  fileHash: string;
+  secret: string;
+  commitment: string;
 }
 
 export interface ZKProofBundle {
-  zkProof: string; // ABI-encoded Groth16 proof (pA, pB, pC)
-  publicInputs: bigint[]; // [fileHash_felt, commitment_felt]
-  commitment: string; // bytes32 hex commitment
+  zkProof: string;
+  publicInputs: bigint[];
+  commitment: string;
 }
 
 export interface CreateProofTxArgs {
-  fileHash: string; // bytes32
-  commitment: string; // bytes32
-  arweaveTxId: string; // 43-char Arweave TxID
-  ipfsCid: string; // IPFS CID or "" to omit
+  fileHash: string;
+  commitment: string;
+  arweaveTxId: string;
+  ipfsCid: string;
 }
 
 const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
 export function hashFile(fileBuffer: Buffer): string {
   const hash = ethers.keccak256(fileBuffer);
-  return hash; // 0x-prefixed bytes32
+  return hash;
 }
 
 export function hashFileFromPath(filePath: string): string {
@@ -73,9 +73,9 @@ export async function generateZKProof(wasmPath: string, zkeyPath: string, input:
   const commitment_felt: bigint = poseidon.F.toObject(hash);
 
   const circuitInput = {
-    fileHash: fileHash_felt.toString(), // public
-    secret: secret_felt.toString(), // PRIVATE — stays in witness
-    commitment: commitment_felt.toString(), // public
+    fileHash: fileHash_felt.toString(),
+    secret: secret_felt.toString(),
+    commitment: commitment_felt.toString(),
   };
 
   console.log("⏳ Generating Groth16 proof (this takes ~2-10 seconds)...");
@@ -84,7 +84,7 @@ export async function generateZKProof(wasmPath: string, zkeyPath: string, input:
 
   const pA: [bigint, bigint] = [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])];
   const pB: [[bigint, bigint], [bigint, bigint]] = [
-    [BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0])], // Note: SnarkJS uses reversed x-coords for G2
+    [BigInt(proof.pi_b[0][1]), BigInt(proof.pi_b[0][0])],
     [BigInt(proof.pi_b[1][1]), BigInt(proof.pi_b[1][0])],
   ];
   const pC: [bigint, bigint] = [BigInt(proof.pi_c[0]), BigInt(proof.pi_c[1])];

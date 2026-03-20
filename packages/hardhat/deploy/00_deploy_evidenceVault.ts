@@ -48,7 +48,7 @@ const deployEvidenceVaultFull: DeployFunction = async function (hre: HardhatRunt
     {
       initializer: "initialize",
       kind: "uups",
-      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
+      unsafeAllow: ["constructor"],
     },
     { gasLimit: 5000000 },
   );
