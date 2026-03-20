@@ -8,7 +8,6 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
-  // --- Auth: require authenticated session (uploads cost real money) ---
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
     return NextResponse.json(
@@ -17,7 +16,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // --- Rate limit: 10 uploads/min per user ---
   const clientId = user.id ?? getClientIdentifier(req);
   if (!rateLimit(clientId, "upload")) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });

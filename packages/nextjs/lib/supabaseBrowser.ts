@@ -12,7 +12,7 @@ export function getSupabaseBrowserClient(): SupabaseClient {
     if (typeof window !== "undefined") {
       console.warn("Supabase is not configured. Some features may not work correctly.");
     }
-    // Return a dummy client to prevent build errors during prerendering
+
     return {
       auth: {
         getSession: async () => ({ data: { session: null }, error: null }),

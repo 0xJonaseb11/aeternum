@@ -34,7 +34,6 @@ const FOOTER_LINKS = {
 export const Footer = () => {
   const { address } = useAccount();
 
-  // Admin wallets from env (comma-separated, lowercase)
   const adminWallets = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || "").toLowerCase().split(",").filter(Boolean);
   const isAdmin = address && adminWallets.includes(address.toLowerCase());
 

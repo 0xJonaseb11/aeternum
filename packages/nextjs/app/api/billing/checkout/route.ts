@@ -5,7 +5,6 @@ import { createCheckoutSession } from "~~/lib/billing/stripe";
 import { logger } from "~~/lib/logger";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** POST: create Stripe Checkout session for a plan, return redirect URL. Body: { plan: "pro" | "business" }. */
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUserFromRequest(req);

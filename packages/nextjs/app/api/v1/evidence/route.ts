@@ -6,9 +6,6 @@ import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 import { evidencePostSchema } from "~~/lib/validation/schemas";
 
-/**
- * Developer API v1 — Evidence. List or create evidence metadata for the API key owner.
- */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {

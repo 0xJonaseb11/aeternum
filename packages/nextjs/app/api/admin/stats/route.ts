@@ -17,27 +17,32 @@ export async function GET(req: NextRequest) {
   const supabase = getSupabase();
   if (!supabase) return NextResponse.json({ error: "DB error" }, { status: 500 });
 
-  // Parallel counts for efficiency
-  const [
-    { count: totalProofs },
-    { count: totalOrgs },
-    { count: totalProfiles },
-    { data: allSubs },
-    { data: recentEvents },
-    { data: activeInvites },
-  ] = await Promise.all([
+  const results = await Promise.all([
     supabase.from("proofs").select("*", { count: "exact", head: true }),
     supabase.from("organizations").select("*", { count: "exact", head: true }),
     supabase.from("profiles").select("*", { count: "exact", head: true }),
-    supabase.from("subscriptions").select("plan, status"),
+    supabase.from("subscriptions").select("plan, status, amount"),
     supabase.from("events").select("*").order("at", { ascending: false }).limit(5),
     supabase.from("team_invites").select("*", { count: "exact", head: true }).is("accepted_at", null),
   ]);
 
-  // Active subscriptions are those that are not 'canceled' or 'incomplete_expired'
+  const [
+    { count: totalProofs, error: proofsErr },
+    { count: totalOrgs, error: orgsErr },
+    { count: totalProfiles, error: profilesErr },
+    { data: allSubs, error: subsErr },
+    { data: recentEvents, error: eventsErr },
+    { data: activeInvites, error: invitesErr },
+  ] = results;
+
+  if (proofsErr || orgsErr || profilesErr || subsErr || eventsErr || invitesErr) {
+    logger.error("Database error in admin stats", {
+      errors: { proofsErr, orgsErr, profilesErr, subsErr, eventsErr, invitesErr },
+    });
+  }
+
   const activeSubs = allSubs?.filter(s => !["canceled", "incomplete_expired"].includes(s.status)) || [];
 
-  // Initialize distribution with all valid plans so they show up even with 0 count
   const planDistribution: Record<string, number> = {
     free: 0,
     pro: 0,
@@ -53,16 +58,21 @@ export async function GET(req: NextRequest) {
     }
   });
 
-  // Calculate MRR (estimated based on plan prices)
   const MRR_VALUES: Record<string, number> = {
     pro: 20,
     business: 100,
-    enterprise: 150, // Standard monthly
+    enterprise: 150,
   };
 
-  const mrr = activeSubs.reduce((acc, sub) => acc + (MRR_VALUES[sub.plan] || 0), 0);
+  const mrr = activeSubs.reduce((acc, sub) => {
+    // If we have an exact tracked amount from Stripe (in cents), convert to dollars
+    if (sub.amount !== undefined && sub.amount !== null && sub.amount > 0) {
+      return acc + sub.amount / 100;
+    }
+    // Fallback securely for legacy subscriptions using hardcoded averages
+    return acc + (MRR_VALUES[sub.plan] || 0);
+  }, 0);
 
-  // Check Irys balance (optional/cached-style)
   let irysBalance = "0";
   try {
     const privateKey = process.env.IRYS_PRIVATE_KEY;
@@ -70,7 +80,7 @@ export async function GET(req: NextRequest) {
       const rpcUrl = process.env.IRYS_RPC_URL ?? "https://sepolia.base.org";
       const uploader = await Uploader(BaseEth).withWallet(privateKey).withRpc(rpcUrl).devnet();
       const balance = await uploader.getBalance(uploader.address);
-      irysBalance = (Number(balance) / 1e18).toFixed(4); // Convert to ETH-like unit
+      irysBalance = (Number(balance) / 1e18).toFixed(4);
     }
   } catch (err) {
     logger.error("Failed to fetch Irys balance in admin stats", { error: String(err) });

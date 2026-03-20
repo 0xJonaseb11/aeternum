@@ -14,7 +14,6 @@ export default function AdminBlocked() {
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
 
-  // Form state
   const [targetAddress, setTargetAddress] = useState("");
   const [reason, setReason] = useState("");
 

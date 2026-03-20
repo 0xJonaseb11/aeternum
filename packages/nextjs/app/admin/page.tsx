@@ -243,7 +243,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Health Check Modal */}
+      {}
       {showHealthModal && healthData && (
         <div className="modal modal-open">
           <div className="modal-box border border-base-300">

@@ -51,10 +51,8 @@ export async function POST(req: NextRequest) {
 
     let result;
     if (id) {
-      // Update existing
       result = await supabase.from("broadcasts").update(payload).eq("id", id).select();
     } else {
-      // Create new
       result = await supabase.from("broadcasts").insert(payload).select();
     }
 

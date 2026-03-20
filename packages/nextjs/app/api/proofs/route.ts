@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
   const limitParam = searchParams.get("limit");
   const offsetParam = searchParams.get("offset");
 
-  // Lookup by commitment (file) hash: return first matching proof for public verify flow
   if (fileHash) {
     if (!/^0x[a-fA-F0-9]{64}$/.test(fileHash)) {
       return NextResponse.json({ error: "Invalid fileHash" }, { status: 400 });
@@ -72,7 +71,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid owner" }, { status: 400 });
   }
 
-  // When listing by userId/org, require session and enforce scope (ignore client-supplied userId).
   let userId: string | null = userIdParam;
   if (userIdParam != null || (organizationId != null && organizationId !== "")) {
     const user = await getCurrentUserFromRequest(req);
@@ -99,7 +97,6 @@ export async function GET(req: NextRequest) {
     chainId = parsed;
   }
 
-  // Optional evidence-based filters: get file_hashes from evidence table then filter proofs.
   let evidenceFileHashes: string[] | null = null;
   const hasEvidenceFilters =
     (search != null && search.trim() !== "") ||
@@ -141,10 +138,6 @@ export async function GET(req: NextRequest) {
     evidenceFileHashes = (evidenceRows ?? []).map(r => r.file_hash);
     if (evidenceFileHashes.length === 0) {
       return NextResponse.json({ items: [] });
-    }
-    // Optional date filter on proofs.timestamp (apply when we have proof rows)
-    if (dateFromParam != null || dateToParam != null) {
-      // will filter proofs by timestamp below after fetch
     }
   }
 
@@ -192,7 +185,6 @@ export async function GET(req: NextRequest) {
   }
   let data = queryData ?? null;
 
-  // Apply evidence file_hash filter in memory (only if evidence filters were used)
   if (data != null && data.length > 0 && evidenceFileHashes != null) {
     const set = new Set(evidenceFileHashes);
     data = data.filter(row => set.has(row.file_hash));
