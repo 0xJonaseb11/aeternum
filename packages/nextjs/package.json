@@ -63,7 +63,7 @@
     "abitype": "1.2.3",
     "autoprefixer": "~10.4.27",
     "bgipfs": "~0.0.12",
-    "eslint": "~10.0.3",
+    "eslint": "^8.57.0",
     "eslint-config-next": "~16.1.6",
     "eslint-config-prettier": "~10.1.1",
     "eslint-plugin-prettier": "~5.5.5",
