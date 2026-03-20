@@ -20,6 +20,8 @@ export type ProofsSearchParams = {
   folderId?: string;
   dateFrom?: number;
   dateTo?: number;
+  limit?: number;
+  offset?: number;
 };
 
 async function fetchProofsFromSupabase({
@@ -47,6 +49,8 @@ async function fetchProofsFromSupabase({
     if (searchParams?.folderId) params.set("folderId", searchParams.folderId);
     if (searchParams?.dateFrom != null) params.set("dateFrom", String(searchParams.dateFrom));
     if (searchParams?.dateTo != null) params.set("dateTo", String(searchParams.dateTo));
+    if (searchParams?.limit != null) params.set("limit", String(searchParams.limit));
+    if (searchParams?.offset != null) params.set("offset", String(searchParams.offset));
   } else if (owner) {
     params.set("owner", owner.toLowerCase());
   }

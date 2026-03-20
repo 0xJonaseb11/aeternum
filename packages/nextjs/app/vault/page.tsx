@@ -47,8 +47,7 @@ const VaultPage: NextPage = () => {
               {scope.type === "org" && currentOrg ? (
                 <p className="text-[11px] sm:text-xs text-primary font-semibold max-w-2xl mx-auto">
                   Team vault for <span className="font-bold">{currentOrg.name}</span>
-                  {currentRoleLabel ? <span className="text-primary/80"> · Your role: {currentRoleLabel}</span> : null}
-                  .
+                  {currentRoleLabel ? <span className="text-primary/80"> · Your role: {currentRoleLabel}</span> : null}.
                 </p>
               ) : (
                 <p className="text-[11px] sm:text-xs text-base-content/60 max-w-2xl mx-auto">

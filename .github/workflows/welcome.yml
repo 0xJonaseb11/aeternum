@@ -1,2 +1,14 @@
-- name: First interaction
-  uses: actions/first-interaction@v3.1.0
+name: Welcome
+on:
+  pull_request:
+    types: [opened]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First interaction
+        uses: actions/first-interaction@v3
