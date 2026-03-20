@@ -8,7 +8,7 @@ function mockCommitment(fileHash: string, secret: string): string {
   return ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(["bytes32", "bytes32"], [fileHash, secret]));
 }
 
-const ARWEAVE_TX_ID = "a".repeat(43); // valid 43-char Arweave TxID
+const ARWEAVE_TX_ID = "a".repeat(43);
 const IPFS_CID = "QmTestCIDxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 describe("EvidenceVault", function () {
@@ -33,7 +33,7 @@ describe("EvidenceVault", function () {
     vault = await upgrades.deployProxy(Factory, [owner.address], {
       initializer: "initialize",
       kind: "uups",
-      unsafeAllow: ["constructor"], // OZ 5.5 ReentrancyGuard has constructor; we init slot in initialize()
+      unsafeAllow: ["constructor"],
     });
     await vault.waitForDeployment();
   });

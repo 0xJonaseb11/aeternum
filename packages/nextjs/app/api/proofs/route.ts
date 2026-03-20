@@ -1,19 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkProofLimit } from "~~/lib/billing/checkLimits";
+import { logger } from "~~/lib/logger";
+import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
+import { getMembership } from "~~/lib/rbac/getMembership";
+import { hasRoleAtLeast } from "~~/lib/rbac/roles";
 import { getSupabase } from "~~/lib/supabase";
+import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 import { proofsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "proofs")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const supabase = getSupabase();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
   }
   const { searchParams } = new URL(req.url);
   const owner = searchParams.get("owner");
-  const userId = searchParams.get("userId");
+  const userIdParam = searchParams.get("userId");
+  const organizationId = searchParams.get("organizationId");
   const fileHash = searchParams.get("fileHash");
   const chainIdParam = searchParams.get("chainId");
+  const search = searchParams.get("search");
+  const caseId = searchParams.get("caseId");
+  const tagsParam = searchParams.get("tags");
+  const folderIdParam = searchParams.get("folderId");
+  const dateFromParam = searchParams.get("dateFrom");
+  const dateToParam = searchParams.get("dateTo");
+  const limitParam = searchParams.get("limit");
+  const offsetParam = searchParams.get("offset");
 
-  // Lookup by commitment (file) hash: return first matching proof for public verify flow
   if (fileHash) {
     if (!/^0x[a-fA-F0-9]{64}$/.test(fileHash)) {
       return NextResponse.json({ error: "Invalid fileHash" }, { status: 400 });
@@ -27,7 +45,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .maybeSingle();
     if (error) {
-      console.error("Supabase proofs GET by fileHash error:", error);
+      logger.error("Supabase proofs GET by fileHash error", { error: error.message });
       return NextResponse.json({ error: "Failed to fetch proof" }, { status: 500 });
     }
     if (!row) {
@@ -46,12 +64,30 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  if (!owner && !userId) {
+  if (!owner && !userIdParam) {
     return NextResponse.json({ error: "Missing owner, userId, or fileHash" }, { status: 400 });
   }
   if (owner && !/^0x[a-fA-F0-9]{40}$/.test(owner)) {
     return NextResponse.json({ error: "Invalid owner" }, { status: 400 });
   }
+
+  let userId: string | null = userIdParam;
+  if (userIdParam != null || (organizationId != null && organizationId !== "")) {
+    const user = await getCurrentUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (organizationId != null && organizationId !== "") {
+      const membership = await getMembership(user.id, organizationId);
+      if (!membership) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+      userId = user.id;
+    } else {
+      userId = user.id;
+    }
+  }
+
   let chainId: number | undefined;
   if (chainIdParam != null) {
     const parsed = parseInt(chainIdParam, 10);
@@ -61,17 +97,79 @@ export async function GET(req: NextRequest) {
     chainId = parsed;
   }
 
+  let evidenceFileHashes: string[] | null = null;
+  const hasEvidenceFilters =
+    (search != null && search.trim() !== "") ||
+    (caseId != null && caseId.trim() !== "") ||
+    (tagsParam != null && tagsParam.trim() !== "") ||
+    (folderIdParam != null && folderIdParam !== "");
+  if (userId != null && hasEvidenceFilters) {
+    let evidenceQuery = supabase.from("evidence").select("file_hash").eq("user_id", userId);
+    if (organizationId != null && organizationId !== "") {
+      evidenceQuery = evidenceQuery.eq("organization_id", organizationId);
+    } else {
+      evidenceQuery = evidenceQuery.is("organization_id", null);
+    }
+    if (folderIdParam != null && folderIdParam !== "") {
+      evidenceQuery = evidenceQuery.eq("folder_id", folderIdParam);
+    }
+    if (search != null && search.trim() !== "") {
+      const raw = search.trim().replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+      const term = `%${raw}%`;
+      evidenceQuery = evidenceQuery.or(`title.ilike.${term},description.ilike.${term}`);
+    }
+    if (caseId != null && caseId.trim() !== "") {
+      evidenceQuery = evidenceQuery.eq("case_id", caseId.trim());
+    }
+    if (tagsParam != null && tagsParam.trim() !== "") {
+      const tags = tagsParam
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
+      if (tags.length > 0) {
+        evidenceQuery = evidenceQuery.overlaps("tags", tags);
+      }
+    }
+    const { data: evidenceRows, error: evidenceError } = await evidenceQuery.limit(500);
+    if (evidenceError) {
+      logger.error("Supabase evidence filter error", { error: evidenceError.message });
+      return NextResponse.json({ error: "Failed to apply filters" }, { status: 500 });
+    }
+    evidenceFileHashes = (evidenceRows ?? []).map(r => r.file_hash);
+    if (evidenceFileHashes.length === 0) {
+      return NextResponse.json({ items: [] });
+    }
+  }
+
   let query = supabase
     .from("proofs")
     .select(
       "id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked",
     )
     .eq("revoked", false)
-    .order("timestamp", { ascending: false })
-    .limit(100);
+    .order("timestamp", { ascending: false });
+
+  const limit = limitParam ? parseInt(limitParam, 10) : 50;
+  const offset = offsetParam ? parseInt(offsetParam, 10) : 0;
+  if (!Number.isNaN(limit) && limit > 0) query = query.limit(Math.min(limit, 1000));
+  if (!Number.isNaN(offset) && offset > 0) query = query.range(offset, offset + limit - 1);
+
+  if (dateFromParam) {
+    const from = parseInt(dateFromParam, 10);
+    if (!Number.isNaN(from)) query = query.gte("timestamp", from);
+  }
+  if (dateToParam) {
+    const to = parseInt(dateToParam, 10);
+    if (!Number.isNaN(to)) query = query.lte("timestamp", to);
+  }
 
   if (userId) {
     query = query.eq("user_id", userId);
+    if (organizationId != null && organizationId !== "") {
+      query = query.eq("organization_id", organizationId);
+    } else {
+      query = query.is("organization_id", null);
+    }
   } else if (owner) {
     query = query.eq("owner_address", owner.toLowerCase());
   }
@@ -80,11 +178,16 @@ export async function GET(req: NextRequest) {
     query = query.eq("chain_id", chainId);
   }
 
-  const { data, error } = await query;
-
+  const { data: queryData, error } = await query;
   if (error) {
-    console.error("Supabase proofs GET error:", error);
+    logger.error("Supabase proofs GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
+  }
+  let data = queryData ?? null;
+
+  if (data != null && data.length > 0 && evidenceFileHashes != null) {
+    const set = new Set(evidenceFileHashes);
+    data = data.filter(row => set.has(row.file_hash));
   }
 
   const items = (data ?? []).map(row => ({
@@ -103,6 +206,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const clientId = getClientIdentifier(req);
+  if (!rateLimit(clientId, "upload")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const supabase = getSupabase();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase not configured" }, { status: 503 });
@@ -121,6 +228,7 @@ export async function POST(req: NextRequest) {
   const {
     owner,
     userId,
+    organizationId,
     fileHash,
     timestamp,
     arweaveTxId,
@@ -129,11 +237,30 @@ export async function POST(req: NextRequest) {
     blockNumber = 0,
   } = parsed.data;
 
+  if (organizationId) {
+    if (!userId) {
+      return NextResponse.json({ error: "userId is required for organization-scoped proofs" }, { status: 400 });
+    }
+    const membership = await getMembership(userId, organizationId);
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this organization" }, { status: 403 });
+    }
+    if (!hasRoleAtLeast(membership.role, "contributor")) {
+      return NextResponse.json({ error: "Insufficient role for organization-scoped proofs" }, { status: 403 });
+    }
+  }
+
+  const limitCheck = await checkProofLimit(userId ?? null);
+  if (!limitCheck.allowed) {
+    return NextResponse.json({ error: limitCheck.reason ?? "Proof limit reached" }, { status: 403 });
+  }
+
   const { error } = await supabase.from("proofs").upsert(
     {
       chain_id: chainId,
       owner_address: owner.toLowerCase(),
       user_id: userId ?? null,
+      organization_id: organizationId ?? null,
       file_hash: fileHash,
       timestamp,
       block_number: blockNumber,
@@ -145,7 +272,7 @@ export async function POST(req: NextRequest) {
   );
 
   if (error) {
-    console.error("Supabase proofs POST error:", error);
+    logger.error("Supabase proofs POST error", { error: error.message });
     return NextResponse.json({ error: "Failed to save proof" }, { status: 500 });
   }
   return NextResponse.json({ ok: true });

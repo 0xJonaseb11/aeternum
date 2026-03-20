@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * API key format: aet_<prefix>_<secret> (e.g. aet_abc123_...).
- * Store only key_hash (e.g. SHA-256) and key_prefix (e.g. aet_abc123) in DB.
- * This helper validates Authorization: Bearer <key> and returns userId or null.
- * Use in API v1 routes when you want to allow either session or API key auth.
- */
 const KEY_PREFIX = "aet_";
+const PREFIX_LENGTH = KEY_PREFIX.length + 8;
+
+function sha256Hex(input: string): string {
+  return createHash("sha256").update(input, "utf8").digest("hex");
+}
 
 export interface ApiKeyAuth {
   userId: string;
@@ -17,12 +17,12 @@ export interface ApiKeyAuth {
 export async function getApiKeyAuth(req: NextRequest): Promise<ApiKeyAuth | null> {
   const authHeader = req.headers.get("authorization");
   const bearer = authHeader?.startsWith("Bearer ") ? authHeader.slice(7).trim() : null;
-  if (!bearer || !bearer.startsWith(KEY_PREFIX)) return null;
+  if (!bearer || !bearer.startsWith(KEY_PREFIX) || bearer.length < PREFIX_LENGTH + 2) return null;
 
   const supabase = getSupabase();
   if (!supabase) return null;
 
-  const prefix = bearer.slice(0, KEY_PREFIX.length + 8); // e.g. aet_abc12345
+  const prefix = bearer.slice(0, PREFIX_LENGTH);
   const { data: row } = await supabase
     .from("api_keys")
     .select("id, user_id, key_hash")
@@ -31,12 +31,14 @@ export async function getApiKeyAuth(req: NextRequest): Promise<ApiKeyAuth | null
 
   if (!row?.key_hash) return null;
 
-  // TODO: hash the incoming key and compare with key_hash (e.g. bcrypt or constant-time compare of hash)
-  // For foundation we only check prefix exists; real implementation must verify full key.
+  const incomingHash = sha256Hex(bearer);
+  const storedBuf = Buffer.from(row.key_hash, "hex");
+  const incomingBuf = Buffer.from(incomingHash, "hex");
+  if (storedBuf.length !== incomingBuf.length || !timingSafeEqual(storedBuf, incomingBuf)) return null;
+
   return { userId: row.user_id, keyId: row.id };
 }
 
-/** Returns 401 JSON if no valid API key; otherwise returns null (caller proceeds). */
 export function requireApiKey(result: ApiKeyAuth | null): NextResponse | null {
   if (result) return null;
   return NextResponse.json({ error: "Invalid or missing API key" }, { status: 401 });
