@@ -18,7 +18,7 @@
     "zk:copy": "node scripts/copyZkArtifacts.mjs"
   },
   "dependencies": {
-    "@heroicons/react": "~2.1.5",
+    "@heroicons/react": "~2.2.0",
     "@irys/upload": "^0.0.15",
     "@irys/upload-ethereum": "^0.0.16",
     "@rainbow-me/rainbowkit": "2.2.10",
