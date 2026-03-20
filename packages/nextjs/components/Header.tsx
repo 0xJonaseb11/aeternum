@@ -4,11 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useSubscription } from "~~/hooks/useSubscription";
 
 type HeaderMenuLink = {
   label: string;
@@ -17,11 +18,10 @@ type HeaderMenuLink = {
 };
 
 export const menuLinks: HeaderMenuLink[] = [
-  { label: "Home", href: "/" },
   { label: "Vault", href: "/vault" },
+  { label: "Team", href: "/team" },
   { label: "Verify", href: "/verification" },
-  { label: "Account", href: "/login" },
-  { label: "Settings", href: "/settings" },
+  { label: "Pricing", href: "/plans" },
 ];
 
 export const HeaderMenuLinks = () => {
@@ -56,6 +56,22 @@ export const HeaderMenuLinks = () => {
         );
       })}
     </>
+  );
+};
+
+const PlanBadge = () => {
+  const { subscription, isPaid, loading } = useSubscription();
+
+  if (loading || !subscription) return null;
+
+  return (
+    <div
+      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+        isPaid ? "bg-primary/10 border-primary/30 text-primary" : "bg-base-200 border-base-300 text-base-content/40"
+      }`}
+    >
+      {subscription.plan}
+    </div>
   );
 };
 
@@ -140,9 +156,17 @@ export const Header = () => {
           </ul>
         </div>
         <div className="navbar-end hidden md:flex items-center justify-end gap-2 lg:gap-3 min-w-0 flex-shrink-0">
+          <Link
+            href="/settings"
+            className="btn btn-ghost btn-sm p-2 hover:bg-primary/10 hover:text-primary transition-colors"
+            aria-label="Settings"
+          >
+            <Cog6ToothIcon className="h-5 w-5" />
+          </Link>
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
           <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+            <PlanBadge />
             <RainbowKitCustomConnectButton />
           </div>
         </div>

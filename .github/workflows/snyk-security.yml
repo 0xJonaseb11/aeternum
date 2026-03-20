@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: ["main"]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
 
@@ -21,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v4
@@ -39,10 +43,10 @@ jobs:
 
       # Snyk Code: produce SARIF for GitHub Code Scanning; do not fail the job on findings
       - name: Snyk Code test
-        run: snyk code test --sarif > snyk-code.sarif || true
+        run: snyk code test --sarif --sarif-file-output=snyk-code.sarif || true
 
       - name: Upload Snyk Code to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: snyk-code.sarif
         continue-on-error: true

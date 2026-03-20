@@ -12,14 +12,23 @@ export type EvidenceMetadata = {
   case_id: string | null;
   tags: string[] | null;
   notes: string | null;
+  folder_id: string | null;
   created_at: string;
   updated_at: string;
 };
 
-async function fetchEvidence(fileHash: string, userId?: string | null): Promise<EvidenceMetadata | null> {
+async function fetchEvidence(
+  fileHash: string,
+  userId?: string | null,
+  organizationId?: string | null,
+  accessToken?: string | null,
+): Promise<EvidenceMetadata | null> {
   const params = new URLSearchParams({ fileHash });
   if (userId) params.set("userId", userId);
-  const res = await fetch(`/api/evidence?${params}`);
+  if (organizationId) params.set("organizationId", organizationId ?? "");
+  const headers: Record<string, string> = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+  const res = await fetch(`/api/evidence?${params}`, { headers });
   if (!res.ok) {
     throw new Error(`Evidence API failed: ${res.status}`);
   }
@@ -27,15 +36,29 @@ async function fetchEvidence(fileHash: string, userId?: string | null): Promise<
   return json.item ?? null;
 }
 
-async function saveEvidence(input: { fileHash: string; userId?: string | null; title?: string; description?: string }) {
+async function saveEvidence(input: {
+  fileHash: string;
+  userId?: string | null;
+  organizationId?: string | null;
+  title?: string;
+  description?: string;
+  folderId?: string | null;
+  tags?: string[] | null;
+  accessToken?: string | null;
+}) {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (input.accessToken) headers.Authorization = `Bearer ${input.accessToken}`;
   const res = await fetch("/api/evidence", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({
       fileHash: input.fileHash,
       userId: input.userId,
+      organizationId: input.organizationId ?? undefined,
       title: input.title,
       description: input.description,
+      folderId: input.folderId ?? undefined,
+      tags: input.tags ?? undefined,
     }),
   });
   if (!res.ok) {
@@ -45,23 +68,32 @@ async function saveEvidence(input: { fileHash: string; userId?: string | null; t
   return json.item;
 }
 
-export function useEvidenceMetadata(fileHash: string | undefined) {
-  const { user } = useSupabaseAuth();
+export function useEvidenceMetadata(fileHash: string | undefined, organizationId?: string | null) {
+  const { user, session } = useSupabaseAuth();
   const userId = user?.id ?? null;
+  const accessToken = session?.access_token;
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["evidenceMetadata", fileHash, userId],
-    queryFn: () => fetchEvidence(fileHash!, userId),
+    queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
+    queryFn: () => fetchEvidence(fileHash!, userId, organizationId, accessToken),
     enabled: Boolean(fileHash),
     staleTime: 30_000,
   });
 
   const mutation = useMutation({
-    mutationFn: (input: { title?: string; description?: string }) =>
-      saveEvidence({ fileHash: fileHash!, userId, ...input }),
+    mutationFn: (input: { title?: string; description?: string; folderId?: string | null; tags?: string[] | null }) =>
+      saveEvidence({
+        fileHash: fileHash!,
+        userId,
+        organizationId,
+        accessToken,
+        ...input,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["evidenceMetadata", fileHash, userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["evidenceMetadata", fileHash, userId, organizationId],
+      });
     },
   });
 
