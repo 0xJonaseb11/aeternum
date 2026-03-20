@@ -6,7 +6,6 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** PATCH: rename folder. Body: { name: string }. */
 export async function PATCH(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -42,7 +41,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   return NextResponse.json({ ok: true });
 }
 
-/** DELETE: delete folder. Evidence in it gets folder_id set to null. */
 export async function DELETE(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
