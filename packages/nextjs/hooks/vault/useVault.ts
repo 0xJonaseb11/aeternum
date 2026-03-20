@@ -23,14 +23,14 @@ function normalizeToArweaveTxId(id: string): string {
 
 export type VaultStep = "idle" | "encrypting" | "uploading_arweave" | "uploading_ipfs" | "confirming";
 
-export const useVault = () => {
+export const useVault = (organizationId?: string | null) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState<VaultStep>("idle");
   const queryClient = useQueryClient();
   const { address } = useAccount();
   const selectedNetwork = useSelectedNetwork();
   const publicClient = usePublicClient({ chainId: selectedNetwork?.id });
-  const { user } = useSupabaseAuth();
+  const { user, session } = useSupabaseAuth();
 
   const { writeContractAsync: createProof } = useScaffoldWriteContract({
     contractName: "EvidenceVault",
@@ -54,11 +54,11 @@ export const useVault = () => {
       const commitment = await computeCommitment(fileHash, secret);
 
       setStep("uploading_arweave");
-      const rawArweaveId = await uploadToArweave(encryptedData);
+      const rawArweaveId = await uploadToArweave(encryptedData, session?.access_token ?? undefined);
       const arweaveTxId = normalizeToArweaveTxId(rawArweaveId);
 
       setStep("uploading_ipfs");
-      const ipfsCid = await uploadToIPFS(encryptedData);
+      const ipfsCid = await uploadToIPFS(encryptedData, session?.access_token ?? undefined);
       if (!ipfsCid || ipfsCid.length === 0 || ipfsCid.length > 128) {
         throw new Error("IPFS returned an invalid CID.");
       }
@@ -92,6 +92,7 @@ export const useVault = () => {
             body: JSON.stringify({
               owner: address,
               userId: user?.id,
+              organizationId: organizationId ?? undefined,
               fileHash,
               timestamp: proofTimestamp,
               blockNumber,
@@ -113,14 +114,17 @@ export const useVault = () => {
 
       notification.success("Evidence secured successfully!");
 
-      // Fire-and-forget event log (ignore failures)
       try {
+        const headers: HeadersInit = { "Content-Type": "application/json" };
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
         void fetch("/api/events", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify({
             fileHash,
             eventType: "created",
+            userId: user?.id,
+            organizationId: organizationId ?? undefined,
             data: {
               arweaveTxId,
               ipfsCid,
@@ -130,9 +134,7 @@ export const useVault = () => {
             },
           }),
         });
-      } catch {
-        // non-fatal
-      }
+      } catch {}
 
       return {
         fileHash,
