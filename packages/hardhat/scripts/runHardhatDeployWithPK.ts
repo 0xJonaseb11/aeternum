@@ -3,11 +3,11 @@ dotenv.config();
 import { Wallet } from "ethers";
 import password from "@inquirer/password";
 import { spawn } from "child_process";
-import { config } from "hardhat";
 
 async function main() {
   const networkIndex = process.argv.indexOf("--network");
-  const networkName = networkIndex !== -1 ? process.argv[networkIndex + 1] : config.defaultNetwork;
+  // config.defaultNetwork was removed from HardhatConfig in Hardhat 3.x; fall back to "localhost"
+  const networkName = networkIndex !== -1 ? process.argv[networkIndex + 1] : "localhost";
 
   if (networkName === "localhost" || networkName === "hardhat") {
     const hardhat = spawn("hardhat", ["deploy", ...process.argv.slice(2)], {
