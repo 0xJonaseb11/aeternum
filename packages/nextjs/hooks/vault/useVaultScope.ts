@@ -46,7 +46,6 @@ export function useVaultScope() {
     else setOrganizations([]);
   }, [user, session?.access_token, fetchOrgs]);
 
-  // Restore last selected org from localStorage when orgs load
   useEffect(() => {
     if (organizations.length === 0) return;
     try {
@@ -55,9 +54,7 @@ export function useVaultScope() {
         const org = organizations.find(o => o.id === saved);
         if (org) setScopeState({ type: "org", orgId: org.id, name: org.name });
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
   }, [organizations]);
 
   const setScope = useCallback((next: VaultScope) => {
@@ -65,15 +62,11 @@ export function useVaultScope() {
     if (next.type === "org") {
       try {
         if (typeof window !== "undefined") localStorage.setItem(STORAGE_KEY, next.orgId);
-      } catch {
-        // ignore
-      }
+      } catch {}
     } else {
       try {
         if (typeof window !== "undefined") localStorage.removeItem(STORAGE_KEY);
-      } catch {
-        // ignore
-      }
+      } catch {}
     }
   }, []);
 

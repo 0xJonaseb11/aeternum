@@ -13,7 +13,6 @@ export type SubscriptionRow = {
   updated_at: string;
 };
 
-/** Get effective plan for user. Returns plan and subscription row; if no row, effective plan is free. */
 export async function getSubscriptionForUser(userId: string): Promise<{
   plan: PlanId;
   status: string;

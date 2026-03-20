@@ -1,8 +1,3 @@
-/**
- * SaaS billing plans foundation.
- * Limits can be enforced in API and UI once Stripe is integrated.
- */
-
 export const PLAN_IDS = ["free", "pro", "business", "enterprise"] as const;
 export type PlanId = (typeof PLAN_IDS)[number];
 
@@ -13,28 +8,27 @@ export interface PlanLimits {
   teamMembers: number;
 }
 
-/** Free plan is the default for users with no subscription; limits apply per month. */
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   free: {
     proofsPerMonth: 10,
-    storageBytes: 100 * 1024 * 1024, // 100 MB
+    storageBytes: 100 * 1024 * 1024,
     apiRequestsPerMonth: 100,
     teamMembers: 1,
   },
   pro: {
     proofsPerMonth: 100,
-    storageBytes: 1024 * 1024 * 1024, // 1 GB
+    storageBytes: 1024 * 1024 * 1024,
     apiRequestsPerMonth: 10_000,
     teamMembers: 1,
   },
   business: {
     proofsPerMonth: 1000,
-    storageBytes: 10 * 1024 * 1024 * 1024, // 10 GB
+    storageBytes: 10 * 1024 * 1024 * 1024,
     apiRequestsPerMonth: 100_000,
     teamMembers: 10,
   },
   enterprise: {
-    proofsPerMonth: -1, // unlimited
+    proofsPerMonth: -1,
     storageBytes: -1,
     apiRequestsPerMonth: -1,
     teamMembers: -1,
