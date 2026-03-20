@@ -1,8 +1,12 @@
 import { getIpfsUrl } from "~~/utils/vault/ipfsConfig";
 
-export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
+export const uploadToIPFS = async (data: ArrayBuffer, accessToken?: string): Promise<string> => {
+  const headers: HeadersInit = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
   const res = await fetch("/api/ipfs-upload", {
     method: "POST",
+    headers,
     body: data,
   });
   if (!res.ok) {
@@ -18,9 +22,13 @@ export const uploadToIPFS = async (data: ArrayBuffer): Promise<string> => {
   return json.cid;
 };
 
-export const uploadToArweave = async (data: ArrayBuffer): Promise<string> => {
+export const uploadToArweave = async (data: ArrayBuffer, accessToken?: string): Promise<string> => {
+  const headers: HeadersInit = {};
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
   const res = await fetch("/api/arweave-upload", {
     method: "POST",
+    headers,
     body: data,
   });
   if (!res.ok) {

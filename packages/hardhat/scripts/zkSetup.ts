@@ -10,7 +10,7 @@ import { ethers } from "ethers";
 const ROOT = path.resolve(__dirname, "..");
 const CIRCUIT = path.join(ROOT, "circuits/commitment.circom");
 const BUILD_DIR = path.join(ROOT, "build/circuits");
-const PTAU_FILE = path.join(BUILD_DIR, "pot15_final.ptau"); // Powers of Tau (2^15 constraints)
+const PTAU_FILE = path.join(BUILD_DIR, "pot15_final.ptau");
 const R1CS_FILE = path.join(BUILD_DIR, "commitment.r1cs");
 const ZKEY_0 = path.join(BUILD_DIR, "commitment_0.zkey");
 const ZKEY_FINAL = path.join(BUILD_DIR, "commitment_final.zkey");
@@ -63,7 +63,7 @@ async function setup() {
   console.log("\n[5/6] Exporting verification key...");
   const vKey = await snarkjs.zKey.exportVerificationKey(ZKEY_FINAL);
   fs.writeFileSync(VKEY_FILE, JSON.stringify(vKey, null, 2));
-  console.log(`      ✓ verification_key.json saved`);
+  console.log(`✓ verification_key.json saved`);
 
   console.log("\n[6/6] Generating Solidity verifier contract...");
   const verifierTmp = path.join(BUILD_DIR, "verifier.sol");
@@ -76,7 +76,7 @@ async function setup() {
 
   const renamed = solidityCode.replace("contract Groth16Verifier", "contract CommitmentVerifier");
   fs.writeFileSync(VERIFIER_OUT, renamed);
-  console.log(`      ✓ CommitmentVerifier.sol written to ${VERIFIER_OUT}`);
+  console.log(`✓ CommitmentVerifier.sol written to ${VERIFIER_OUT}`);
 
   console.log("\n═══════════════════════════════════════════════════");
   console.log("  Setup Complete. Artifacts:");
@@ -119,7 +119,7 @@ async function prove() {
 
   const input = {
     fileHash: fileHash_felt.toString(),
-    secret: secret_felt.toString(), // private — stays in witness
+    secret: secret_felt.toString(),
     commitment: commitment_felt.toString(),
   };
 
