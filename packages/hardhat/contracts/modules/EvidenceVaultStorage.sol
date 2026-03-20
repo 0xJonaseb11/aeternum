@@ -4,8 +4,8 @@ pragma solidity ^0.8.24;
 import { IEvidenceVault } from "../interface/IEvidenceVault.sol";
 
 /**
- * @author @0xJonaseb11
  * @title EvidenceVaultStorage
+ * @author @0xJonaseb11
  * @notice Isolated, append-only storage for EvidenceVault (upgrade-safe).
  * @dev UPGRADE: Do not remove, reorder, or change types. Append new state above __gap and decrease __gap by 1 per slot. Current __gap: 48.
  */
