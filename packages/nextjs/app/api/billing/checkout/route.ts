@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import type { PlanId } from "~~/lib/billing/plans";
 import { getPriceId } from "~~/lib/billing/stripe";
 import { createCheckoutSession } from "~~/lib/billing/stripe";
+import { logger } from "~~/lib/logger";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
-/** POST: create Stripe Checkout session for a plan, return redirect URL. Body: { plan: "pro" | "business" }. */
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUserFromRequest(req);
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
     const priceId = getPriceId(plan, body.priceId as "discounted" | "standard" | undefined);
     if (!priceId) {
-      console.error(`[CheckoutAPI] Price ID not found for plan: ${plan} (option: ${body.priceId})`);
+      logger.error("Stripe Checkout price ID not found", { plan, priceId: body.priceId });
       return NextResponse.json(
         { error: "Plan option not configured. Check STRIPE_PRICE environment variables." },
         { status: 400 },
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ url });
   } catch (err: any) {
-    console.error(`[CheckoutAPI] Uncaught error:`, err);
+    logger.error("Stripe checkout uncaught error", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { error: err.message || "Internal Server Error", details: err.toString() },
       { status: 500 },

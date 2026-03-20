@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
+import { logger } from "~~/lib/logger";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
@@ -15,7 +16,6 @@ function sha256Hex(input: string): string {
   return createHash("sha256").update(input, "utf8").digest("hex");
 }
 
-/** GET: list API keys for the current user (requires Supabase session token in Authorization). */
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
@@ -31,13 +31,12 @@ export async function GET(req: NextRequest) {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   if (error) {
-    console.error("api-keys GET error:", error);
+    logger.error("Supabase api-keys GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to list keys" }, { status: 500 });
   }
   return NextResponse.json({ keys: data ?? [] });
 }
 
-/** POST: create a new API key (requires Supabase session token). Returns full key only once. */
 export async function POST(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) {
@@ -65,7 +64,7 @@ export async function POST(req: NextRequest) {
     .select("id, name, key_prefix, created_at")
     .single();
   if (error) {
-    console.error("api-keys POST error:", error);
+    logger.error("Supabase api-keys POST error", { error: error.message });
     return NextResponse.json({ error: "Failed to create key" }, { status: 500 });
   }
   return NextResponse.json({

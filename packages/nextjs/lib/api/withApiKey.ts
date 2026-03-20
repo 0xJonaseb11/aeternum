@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * API key format: aet_<prefix>_<secret> (e.g. aet_abc12345_<secret>).
- * Store key_hash = SHA-256(fullKey) and key_prefix (e.g. aet_abc12345) in DB.
- * This helper validates Authorization: Bearer <key> and returns userId or null.
- */
 const KEY_PREFIX = "aet_";
-const PREFIX_LENGTH = KEY_PREFIX.length + 8; // aet_ + 8 chars
+const PREFIX_LENGTH = KEY_PREFIX.length + 8;
 
 function sha256Hex(input: string): string {
   return createHash("sha256").update(input, "utf8").digest("hex");
@@ -44,7 +39,6 @@ export async function getApiKeyAuth(req: NextRequest): Promise<ApiKeyAuth | null
   return { userId: row.user_id, keyId: row.id };
 }
 
-/** Returns 401 JSON if no valid API key; otherwise returns null (caller proceeds). */
 export function requireApiKey(result: ApiKeyAuth | null): NextResponse | null {
   if (result) return null;
   return NextResponse.json({ error: "Invalid or missing API key" }, { status: 401 });

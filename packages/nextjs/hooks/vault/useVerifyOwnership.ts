@@ -48,9 +48,7 @@ export function useVerifyOwnership(organizationId?: string | null) {
               data: { publicInputs },
             }),
           });
-        } catch {
-          // non-fatal
-        }
+        } catch {}
       }
 
       return { verified };

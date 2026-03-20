@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 import { AppLogo } from "~~/components/AppLogo";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 
@@ -7,20 +8,40 @@ const FOOTER_LINKS = {
   product: [
     { href: "/", label: "Home" },
     { href: "/vault", label: "Vault" },
+    { href: "/plans", label: "Pricing" },
     { href: "/verify", label: "Verify" },
   ],
-  account: [
+  resources: [
+    { href: "/billing", label: "Billing" },
+    { href: "/settings/api-keys", label: "API Tools" },
+    { href: "/docs", label: "Documentation" },
+    { href: "/help", label: "Help Center" },
+    { href: "/status", label: "Status" },
     { href: "/settings", label: "Settings" },
-    { href: "/team", label: "Team" },
   ],
-  legal: [
-    { href: "/privacy-policy", label: "Privacy Policy" },
-    { href: "/tos", label: "Terms of Service" },
+  company: [
+    { href: "/about", label: "About Us" },
+    { href: "/privacy-policy", label: "Privacy" },
+    { href: "/tos", label: "Terms" },
   ],
-  dev: [{ href: "https://github.com/0xJonaseb11/aeternum", label: "Source Code", external: true }],
+  community: [
+    { href: "#", label: "Twitter / X", external: true },
+    { href: "#", label: "Discord", external: true },
+    { href: "https://github.com/0xJonaseb11/aeternum", label: "GitHub", external: true },
+  ],
 } as const;
 
 export const Footer = () => {
+  const { address } = useAccount();
+
+  const adminWallets = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || "").toLowerCase().split(",").filter(Boolean);
+  const isAdmin = address && adminWallets.includes(address.toLowerCase());
+
+  const companyLinks = [...FOOTER_LINKS.company];
+  if (isAdmin) {
+    companyLinks.push({ href: "/admin", label: "Admin" } as any);
+  }
+
   return (
     <footer className="mt-auto border-t border-base-300 bg-base-100/50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 w-full min-w-0">
       <div className="mx-auto max-w-7xl w-full">
@@ -31,8 +52,7 @@ export const Footer = () => {
               <span className="font-bold text-lg sm:text-xl tracking-tight text-base-content">Aeternum</span>
             </div>
             <p className="max-w-xs text-xs sm:text-sm text-base-content/60 leading-relaxed">
-              Secure, permanent, and private evidence vault. Leveraging zero-knowledge proofs and decentralized storage
-              for ultimate data integrity.
+              Secure, permanent, and private evidence vault. Leveraging zero-knowledge proofs and decentralized storage.
             </p>
           </div>
 
@@ -40,7 +60,7 @@ export const Footer = () => {
             <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               {FOOTER_LINKS.product.map(({ href, label }) => (
-                <li key={href}>
+                <li key={href + label}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
@@ -50,10 +70,10 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Account</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
-              {FOOTER_LINKS.account.map(({ href, label }) => (
-                <li key={href}>
+              {FOOTER_LINKS.resources.map(({ href, label }) => (
+                <li key={href + label}>
                   <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
@@ -63,11 +83,11 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm text-base-content/70">
-              {FOOTER_LINKS.legal.map(({ href, label }) => (
-                <li key={href}>
-                  <Link href={href} className="link link-hover">
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Company</h3>
+            <ul className="space-y-2 text-sm">
+              {companyLinks.map(({ href, label }) => (
+                <li key={href + label}>
+                  <Link href={href} className="link link-hover text-base-content/70">
                     {label}
                   </Link>
                 </li>
@@ -76,10 +96,10 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Dev</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Connect</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
-              {FOOTER_LINKS.dev.map(({ href, label, external }) => (
-                <li key={href}>
+              {FOOTER_LINKS.community.map(({ href, label, external }) => (
+                <li key={href + label}>
                   {external ? (
                     <a href={href} target="_blank" rel="noreferrer" className="link link-hover">
                       {label}
