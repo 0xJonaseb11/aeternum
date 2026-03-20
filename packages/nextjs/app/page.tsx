@@ -121,7 +121,7 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {/* Vault functionality now lives at /vault; home remains marketing-focused. */}
+      {}
     </div>
   );
 };

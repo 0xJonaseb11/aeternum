@@ -367,7 +367,7 @@ export const getParsedErrorWithAllAbis = (error: any, chainId: AllowedChainIds):
               const errorSignature = `${errorName}(${inputTypes})`;
 
               const hash = keccak256(toHex(errorSignature));
-              const errorSelector = hash.slice(0, 10); // 0x + 8 chars = 10 total
+              const errorSelector = hash.slice(0, 10);
 
               errorLookup[errorSelector] = {
                 name: errorName,

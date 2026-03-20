@@ -197,3 +197,22 @@ CREATE TABLE IF NOT EXISTS public.api_usage (
   UNIQUE(user_id, period_start)
 );
 CREATE INDEX IF NOT EXISTS idx_api_usage_user_period ON public.api_usage(user_id, period_start);
+
+-- -----------------------------------------------------------------------------
+-- Team invites (email-based member invitations)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.team_invites (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'viewer' CHECK (role IN ('admin', 'contributor', 'viewer')),
+  token TEXT NOT NULL,
+  invited_by UUID NOT NULL, -- user_id of inviter
+  expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+  accepted_at TIMESTAMPTZ, -- null until accepted
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(organization_id, email, token)
+);
+
+CREATE INDEX IF NOT EXISTS idx_team_invites_org_email ON public.team_invites(organization_id, email);
+CREATE INDEX IF NOT EXISTS idx_team_invites_token ON public.team_invites(token);
