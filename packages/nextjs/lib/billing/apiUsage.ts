@@ -2,7 +2,6 @@ import { getSubscriptionForUser } from "~~/lib/billing/getSubscription";
 import { getPlanLimits, isWithinLimit } from "~~/lib/billing/plans";
 import { getSupabase } from "~~/lib/supabase";
 
-/** First day of current month UTC (YYYY-MM-DD). */
 function currentMonthStart(): string {
   const d = new Date();
   d.setUTCDate(1);
@@ -10,10 +9,6 @@ function currentMonthStart(): string {
   return d.toISOString().slice(0, 10);
 }
 
-/**
- * Check if user is within API requests limit for this month, then increment.
- * Returns { allowed: true } or { allowed: false, reason }.
- */
 export async function checkAndIncrementApiUsage(userId: string): Promise<{
   allowed: boolean;
   reason?: string;
@@ -40,7 +35,6 @@ export async function checkAndIncrementApiUsage(userId: string): Promise<{
     };
   }
 
-  // Increment: update existing row or insert new
   const { data: updated, error: updateError } = await supabase
     .from("api_usage")
     .update({ requests_count: current + 1 })
