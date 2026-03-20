@@ -43,6 +43,7 @@ async function saveEvidence(input: {
   title?: string;
   description?: string;
   folderId?: string | null;
+  tags?: string[] | null;
   accessToken?: string | null;
 }) {
   const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -57,6 +58,7 @@ async function saveEvidence(input: {
       title: input.title,
       description: input.description,
       folderId: input.folderId ?? undefined,
+      tags: input.tags ?? undefined,
     }),
   });
   if (!res.ok) {
@@ -80,7 +82,7 @@ export function useEvidenceMetadata(fileHash: string | undefined, organizationId
   });
 
   const mutation = useMutation({
-    mutationFn: (input: { title?: string; description?: string; folderId?: string | null }) =>
+    mutationFn: (input: { title?: string; description?: string; folderId?: string | null; tags?: string[] | null }) =>
       saveEvidence({
         fileHash: fileHash!,
         userId,

@@ -38,10 +38,9 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   const margin = 22;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const accent = { r: 236, g: 72, b: 153 }; // Aeternum primary
+  const accent = { r: 236, g: 72, b: 153 };
   let y = margin;
 
-  // Branded header band + logo
   doc.setFillColor(accent.r, accent.g, accent.b);
   doc.rect(0, 0, pageWidth, 26, "F");
 
@@ -59,7 +58,6 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.setFont("helvetica", "normal");
   doc.text("Zero-knowledge Evidence Vault", margin, 21);
 
-  // Badge
   doc.setDrawColor(255, 255, 255);
   doc.setLineWidth(0.2);
   const badgeText = "EVIDENCE CERTIFICATE";
@@ -69,11 +67,9 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.setFont("helvetica", "bold");
   doc.text(badgeText, pageWidth - margin - badgeWidth + 3, 15);
 
-  // Reset for body
   doc.setTextColor(0, 0, 0);
   y = 32;
 
-  // Title
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.text("Onchain Evidence Attestation", margin, y);
@@ -94,7 +90,6 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.line(margin, y, pageWidth - margin, y);
   y += 8;
 
-  // Evidence section
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.text("Evidence details", margin, y);
@@ -141,7 +136,6 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.line(margin, y, pageWidth - margin, y);
   y += 8;
 
-  // On-chain section
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.text("On-chain record", margin, y);
@@ -169,7 +163,6 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
     y += urlLines.length * 5 + 3;
   }
 
-  // Right-side verification block (QR placeholder)
   const rightX = pageWidth / 2 + 10;
   const boxWidth = pageWidth - rightX - margin;
   const boxHeight = 40;
@@ -199,12 +192,9 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
     try {
       const qrDataUrl = await QRCode.toDataURL(qrTarget, { margin: 0 });
       doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
-    } catch {
-      // fall through silently if QR generation fails
-    }
+    } catch {}
   }
 
-  // Footer / legal text
   const footerY = pageHeight - margin;
   doc.setFontSize(8);
   doc.setFont("helvetica", "italic");
