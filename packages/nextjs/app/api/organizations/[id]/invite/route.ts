@@ -6,7 +6,6 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** POST: invite by email. Body: { email: string, role: OrgRole }. Looks up profile by email and adds membership. */
 export async function POST(req: NextRequest, { params }: Params) {
   const user = await getCurrentUserFromRequest(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

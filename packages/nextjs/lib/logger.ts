@@ -1,23 +1,21 @@
-/**
- * Structured logger foundation for observability.
- * Replace with Pino/Winston or send to Sentry/Vercel in production.
- * Sentry: add @sentry/nextjs, sentry.client.config.ts, sentry.server.config.ts, instrumentation.ts when ready.
- */
-
 type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogPayload {
   level: LogLevel;
   message: string;
   timestamp: string;
+  service: string;
   [key: string]: unknown;
 }
+
+const SERVICE_NAME = "aeternum";
 
 function formatPayload(level: LogLevel, message: string, meta?: Record<string, unknown>): LogPayload {
   return {
     level,
     message,
     timestamp: new Date().toISOString(),
+    service: SERVICE_NAME,
     ...meta,
   };
 }

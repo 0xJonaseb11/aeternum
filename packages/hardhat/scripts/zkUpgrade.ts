@@ -23,7 +23,7 @@ async function main() {
   console.log(`  Old impl : ${oldImpl}`);
 
   console.log("\n[1/3] Validating storage layout compatibility...");
-  const V2 = await ethers.getContractFactory("EvidenceVaultV2"); // change to your new contract name
+  const V2 = await ethers.getContractFactory("EvidenceVaultV2");
   await upgrades.validateUpgrade(PROXY, V2, { kind: "uups" });
   console.log("      ✓ Storage layout is compatible");
 
