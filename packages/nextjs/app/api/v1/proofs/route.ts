@@ -4,9 +4,6 @@ import { checkAndIncrementApiUsage } from "~~/lib/billing/apiUsage";
 import { getClientIdentifier, rateLimit } from "~~/lib/rateLimit";
 import { getSupabase } from "~~/lib/supabase";
 
-/**
- * Developer API v1 — Proofs. List proofs for the API key owner.
- */
 export async function GET(req: NextRequest) {
   const auth = await getApiKeyAuth(req);
   if (!auth) {
