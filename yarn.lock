@@ -14757,10 +14757,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^6.0.8":
-  version: 6.1.3
-  resolution: "jose@npm:6.1.3"
-  checksum: 7f51c7e77f82b70ef88ede9fd1760298bc0ffbf143b9d94f78c08462987ae61864535c1856bc6c26d335f857c7d41f4fffcc29134212c19ea929ce34a4c790f0
+"h3@npm:^1.15.5":
+  version: 1.15.9
+  resolution: "h3@npm:1.15.9"
+  dependencies:
+    cookie-es: ^1.2.2
+    crossws: ^0.3.5
+    defu: ^6.1.4
+    destr: ^2.0.5
+    iron-webcrypto: ^1.2.1
+    node-mock-http: ^1.0.4
+    radix3: ^1.1.2
+    ufo: ^1.6.3
+    uncrypto: ^0.1.3
+  checksum: 64c34bfc089722151cd1077e621a53a4077329432a431989705fbfc542453cf4d0804f9cf2d42ed4bd5c57f970bf7ee8374e8ced5811e782f172110baa086266
   languageName: node
   linkType: hard
 
