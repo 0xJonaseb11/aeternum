@@ -5111,7 +5111,7 @@ __metadata:
     "@scaffold-ui/hooks": ^0.1.7
     "@supabase/supabase-js": ^2.99.3
     "@tailwindcss/postcss": 4.0.15
-    "@tanstack/react-query": ~5.91.2
+    "@tanstack/react-query": ~5.95.0
     "@trivago/prettier-plugin-sort-imports": ~6.0.2
     "@types/circomlibjs": ^0.1.6
     "@types/node": ~18.19.50
@@ -5150,7 +5150,7 @@ __metadata:
     typescript: ~5.9.3
     usehooks-ts: ~3.1.0
     vercel: ~39.1.3
-    viem: 2.47.5
+    viem: 2.47.6
     wagmi: 2.19.5
     zod: ^3.24.0
     zustand: ~5.0.12
@@ -6143,21 +6143,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.91.2":
-  version: 5.91.2
-  resolution: "@tanstack/query-core@npm:5.91.2"
-  checksum: 415ed176f5229344c8b37dd2483f23b57fe52ff505fd2149da06a5e401663652b88cf171ffc095b28442d02a52f0df99120511b89dd91d84ef710199dae512c2
+"@tanstack/query-core@npm:5.95.0":
+  version: 5.95.0
+  resolution: "@tanstack/query-core@npm:5.95.0"
+  checksum: 08dc9c900c62f7bf81fd6a858b0f4fe68a473d787acfbcb988bfc05d988f249595d55d38c77de096f64ad82ae794d891f2fd88d66469f7d42ce3e7642c3da162
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:~5.91.2":
-  version: 5.91.2
-  resolution: "@tanstack/react-query@npm:5.91.2"
+"@tanstack/react-query@npm:~5.95.0":
+  version: 5.95.0
+  resolution: "@tanstack/react-query@npm:5.95.0"
   dependencies:
-    "@tanstack/query-core": 5.91.2
+    "@tanstack/query-core": 5.95.0
   peerDependencies:
     react: ^18 || ^19
-  checksum: 83c9fb7aab9183bb3c9ba14d7104ca5bf621dabb30d4e5d7ee95afe6cdb25bb8f1586dbbfbe950c05a563b7a2083d19b02caed9a82bc3090fafe64483bd68e17
+  checksum: 0c880ae5f7f9c06eec074d64d3f0afbfcd44405707e018a12adfa51f751c9e01bd34d5643bfb25180b235e7ebee86f204121c61a3ec6b65a1d2215a53484a9f0
   languageName: node
   linkType: hard
 
@@ -17398,6 +17398,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ox@npm:0.14.7":
+  version: 0.14.7
+  resolution: "ox@npm:0.14.7"
+  dependencies:
+    "@adraffy/ens-normalize": ^1.11.0
+    "@noble/ciphers": ^1.3.0
+    "@noble/curves": 1.9.1
+    "@noble/hashes": ^1.8.0
+    "@scure/bip32": ^1.7.0
+    "@scure/bip39": ^1.6.0
+    abitype: ^1.2.3
+    eventemitter3: 5.0.1
+  peerDependencies:
+    typescript: ">=5.4.0"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 072768caa20419f6fba739aa28cca3896789b37e59e33d811d7a265a6c1044b4a03ff6abd82613f3da0e3965c517994b4841afa36da2c1bbf545fcf16680e885
+  languageName: node
+  linkType: hard
+
 "ox@npm:0.6.7":
   version: 0.6.7
   resolution: "ox@npm:0.6.7"
@@ -22185,7 +22206,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:2.47.5, viem@npm:>=2.29.0, viem@npm:^2.1.1, viem@npm:^2.27.0, viem@npm:^2.27.2, viem@npm:^2.31.7":
+"viem@npm:2.47.6":
+  version: 2.47.6
+  resolution: "viem@npm:2.47.6"
+  dependencies:
+    "@noble/curves": 1.9.1
+    "@noble/hashes": 1.8.0
+    "@scure/bip32": 1.7.0
+    "@scure/bip39": 1.6.0
+    abitype: 1.2.3
+    isows: 1.0.7
+    ox: 0.14.7
+    ws: 8.18.3
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 3aefa1edc74598affb715f2b2c325db0fad2330e193a94fa7ff0293acd4b24b8a9ea3d082d78dc40c763e051b07853320074a69b1e72621ac339ccb1995ac92b
+  languageName: node
+  linkType: hard
+
+"viem@npm:>=2.29.0, viem@npm:^2.1.1, viem@npm:^2.27.0, viem@npm:^2.27.2, viem@npm:^2.31.7":
   version: 2.47.5
   resolution: "viem@npm:2.47.5"
   dependencies:
