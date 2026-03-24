@@ -36,7 +36,7 @@
     "daisyui": "5.5.19",
     "dotenv": "^17.3.1",
     "jspdf": "^4.2.1",
-    "kubo-rpc-client": "~5.0.2",
+    "kubo-rpc-client": "~6.1.0",
     "next": "~15.5.14",
     "next-nprogress-bar": "~2.4.7",
     "next-themes": "~0.4.6",
