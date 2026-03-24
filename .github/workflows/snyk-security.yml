@@ -27,10 +27,10 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: "yarn"
@@ -39,7 +39,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Set up Snyk CLI
-        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+        uses: snyk/actions/setup@9adf32b1121593767fc3c057af55b55db032dc04
 
       # Snyk Code: produce SARIF for GitHub Code Scanning; do not fail the job on findings
       - name: Snyk Code test
