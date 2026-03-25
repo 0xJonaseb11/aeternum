@@ -51,7 +51,7 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
   doc.text("AETERNUM", margin, 20);
-  
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.text("PERMANENT EVIDENCE VAULT", margin, 26);
@@ -80,7 +80,8 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(71, 85, 105);
-  const intro = "This document serves as formal attestation that the digital evidence described below has been cryptographically secured and anchored to the blockchain. This record is permanent, immutable, and verifiable through zero-knowledge protocols.";
+  const intro =
+    "This document serves as formal attestation that the digital evidence described below has been cryptographically secured and anchored to the blockchain. This record is permanent, immutable, and verifiable through zero-knowledge protocols.";
   const introLines = doc.splitTextToSize(intro, pageWidth - margin * 2);
   doc.text(introLines, margin, y);
   y += introLines.length * 5 + 10;
@@ -91,12 +92,12 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
     doc.setFontSize(9);
     doc.setTextColor(30, 41, 59);
     doc.text(label.toUpperCase(), margin, currentY);
-    
+
     doc.setFont("helvetica", "normal");
     doc.setTextColor(15, 23, 42);
     const splitValue = doc.splitTextToSize(value, pageWidth - margin * 2 - 45);
     doc.text(splitValue, margin + 45, currentY);
-    
+
     const rowHeight = splitValue.length * 5 + 3;
     if (hasBorder) {
       doc.setDrawColor(241, 245, 249);
@@ -152,16 +153,17 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   const vBoxX = margin;
   const vBoxY = pageHeight - margin - 45;
   const vBoxWidth = 110;
-  
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.setTextColor(primaryColor.r, primaryColor.g, primaryColor.b);
   doc.text("Verification Instructions", vBoxX, vBoxY);
-  
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(71, 85, 105);
-  const vText = "To verify the authenticity of this evidence, visit the Aeternum Public Registry and use the Hash or Transaction ID provided. You can also scan the QR code to view the live on-chain status.";
+  const vText =
+    "To verify the authenticity of this evidence, visit the Aeternum Public Registry and use the Hash or Transaction ID provided. You can also scan the QR code to view the live on-chain status.";
   const vLines = doc.splitTextToSize(vText, vBoxWidth);
   doc.text(vLines, vBoxX, vBoxY + 6);
 
@@ -183,7 +185,11 @@ export async function createCertificatePdf(data: CertificateData): Promise<Blob>
   doc.setFont("helvetica", "italic");
   doc.setFontSize(7);
   doc.setTextColor(148, 163, 184);
-  doc.text("Aeternum © 2026. This certificate is a cryptographic attestation of data existence and is not a substitute for legal advice. Permanent storage powered by Arweave.", margin, footerY);
+  doc.text(
+    "Aeternum © 2026. This certificate is a cryptographic attestation of data existence and is not a substitute for legal advice. Permanent storage powered by Arweave.",
+    margin,
+    footerY,
+  );
 
   return doc.output("blob");
 }

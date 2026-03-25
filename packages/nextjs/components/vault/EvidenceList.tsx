@@ -533,12 +533,11 @@ const SecretFinderSection = ({
   <div className="mb-6 sm:mb-8 p-6 sm:p-8 rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 glass relative overflow-hidden">
     <div className="absolute top-0 right-0 -m-8 w-32 h-32 bg-primary/10 blur-3xl rounded-full" />
     <div className="relative z-10">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
-        Find evidence by secret key
-      </p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">Find evidence by secret key</p>
       <h3 className="text-xl sm:text-2xl font-bold mb-3 tracking-tight">Your keys, your archive.</h3>
       <p className="text-sm text-base-content/60 mb-6 max-w-xl">
-        Paste a secret key to identify all evidence anchored by this specific commitment. This process is 100% client-side.
+        Paste a secret key to identify all evidence anchored by this specific commitment. This process is 100%
+        client-side.
       </p>
     </div>
     <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 
 export type OrgMember = {
@@ -38,7 +38,7 @@ export function useOrganization(orgId: string | undefined) {
     setError(null);
     try {
       const authHeader = { Authorization: `Bearer ${session.access_token}` };
-      
+
       const [orgRes, membersRes] = await Promise.all([
         fetch(`/api/organizations/${orgId}`, { headers: authHeader }),
         fetch(`/api/organizations/${orgId}/members`, { headers: authHeader }),
