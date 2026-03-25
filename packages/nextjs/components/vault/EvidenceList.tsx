@@ -169,12 +169,12 @@ export const EvidenceCard = ({
 
   return (
     <div
-      className={`card bg-base-100 border shadow-sm hover:shadow-md transition-all duration-200 group overflow-hidden min-w-0 ${isMatching ? "border-primary ring-2 ring-primary/30" : "border-base-300"}`}
+      className={`card border shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden min-w-0 glass ${isMatching ? "border-primary/50 ring-4 ring-primary/10 bg-primary/5" : "border-base-300/50"}`}
     >
       <div className="card-body p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/10">
               <ShieldCheckIcon className="h-3 w-3" />
               <span>Verified On-chain</span>
             </div>
@@ -185,9 +185,9 @@ export const EvidenceCard = ({
               </div>
             )}
             {isMatching && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-bold uppercase tracking-wider border border-success/30">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 text-success text-[10px] font-bold uppercase tracking-widest border border-success/20">
                 <KeyIcon className="h-3 w-3" />
-                <span>Matches key</span>
+                <span>Private Key Match</span>
               </div>
             )}
           </div>
@@ -289,10 +289,10 @@ export const EvidenceCard = ({
                 <button
                   type="button"
                   onClick={() => setIsEditingMeta(true)}
-                  className="btn btn-ghost btn-[10px] btn-circle text-base-content/40 hover:text-primary hover:bg-primary/5"
+                  className="btn btn-ghost btn-xs btn-circle text-base-content/30 hover:text-primary hover:bg-primary/5 group-hover:opacity-100 opacity-0 transition-opacity"
                   aria-label="Edit details"
                 >
-                  •••
+                  <MagnifyingGlassIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
               {metadata?.description && (
@@ -530,13 +530,17 @@ const SecretFinderSection = ({
   matchingCount: number;
   fileHashes: string[];
 }) => (
-  <div className="mb-6 sm:mb-8 p-4 sm:p-5 rounded-2xl border border-base-300 bg-base-200/50">
-    <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-2">
-      Find evidence by secret key
-    </p>
-    <p className="text-xs sm:text-sm text-base-content/70 mb-3">
-      You hold the key. Paste it below to find matching evidence, then verify or recover.
-    </p>
+  <div className="mb-6 sm:mb-8 p-6 sm:p-8 rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 glass relative overflow-hidden">
+    <div className="absolute top-0 right-0 -m-8 w-32 h-32 bg-primary/10 blur-3xl rounded-full" />
+    <div className="relative z-10">
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+        Find evidence by secret key
+      </p>
+      <h3 className="text-xl sm:text-2xl font-bold mb-3 tracking-tight">Your keys, your archive.</h3>
+      <p className="text-sm text-base-content/60 mb-6 max-w-xl">
+        Paste a secret key to identify all evidence anchored by this specific commitment. This process is 100% client-side.
+      </p>
+    </div>
     <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
       <input
         type="password"

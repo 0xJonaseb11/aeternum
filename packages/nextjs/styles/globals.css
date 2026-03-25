@@ -16,50 +16,50 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #c2185b;
+  --color-primary: #ec4899; /* Vibrant Pink */
   --color-primary-content: #ffffff;
-  --color-secondary: #e0f2f1;
-  --color-secondary-content: #1a3a3d;
-  --color-accent: #1a3a3d;
+  --color-secondary: #fdf2f8;
+  --color-secondary-content: #831843;
+  --color-accent: #0f172a; /* Deep Slate */
   --color-accent-content: #ffffff;
-  --color-neutral: #1a3a3d;
+  --color-neutral: #1e293b;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
-  --color-base-200: #f0f4f3;
-  --color-base-300: #e0eae8;
-  --color-base-content: #1a3a3d;
-  --color-info: #c2185b;
-  --color-success: #1a3a3d;
-  --color-warning: #c2185b;
-  --color-error: #c62828;
+  --color-base-200: #f8fafc;
+  --color-base-300: #f1f5f9;
+  --color-base-content: #0f172a;
+  --color-info: #ec4899;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
+  --radius-field: 12px;
+  --radius-box: 24px;
   --tt-tailw: 6px;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #e91e63;
+  --color-primary: #f472b6; /* Lighter Pink for Dark Mode */
   --color-primary-content: #ffffff;
-  --color-secondary: #2a5a5d;
-  --color-secondary-content: #f0f4f3;
-  --color-accent: #1a3a3d;
-  --color-accent-content: #e0eae8;
-  --color-neutral: #e0eae8;
-  --color-neutral-content: #1a3a3d;
-  --color-base-100: #1c3c3a;
-  --color-base-200: #1a3a3d;
-  --color-base-300: #152d2b;
-  --color-base-content: #f0f4f3;
-  --color-info: #e91e63;
-  --color-success: #e91e63;
-  --color-warning: #e91e63;
-  --color-error: #ef5350;
+  --color-secondary: #831843;
+  --color-secondary-content: #fdf2f8;
+  --color-accent: #f8fafc;
+  --color-accent-content: #0f172a;
+  --color-neutral: #f1f5f9;
+  --color-neutral-content: #0f172a;
+  --color-base-100: #0f172a; /* Deep Dark */
+  --color-base-200: #1e293b;
+  --color-base-300: #334155;
+  --color-base-content: #f8fafc;
+  --color-info: #f472b6;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
 
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
+  --radius-field: 12px;
+  --radius-box: 24px;
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
 }
@@ -74,26 +74,28 @@
   }
 
   p {
-    margin: 1rem 0;
+    margin: 1.25rem 0;
   }
 
   html {
     width: 100%;
     overflow-x: hidden;
+    scroll-behavior: smooth;
   }
 
   body {
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
+    @apply antialiased text-base-content selection:bg-primary/20 selection:text-primary;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    margin-bottom: 0.5rem;
-    line-height: 1;
+    @apply font-bold tracking-tight mb-4;
+    line-height: 1.1;
   }
 }
 
@@ -104,14 +106,32 @@
 
 .bg-pattern {
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(233, 30, 99, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 20% 80%, rgba(233, 30, 99, 0.02) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.02) 0%, transparent 60%);
 }
 
 [data-theme="dark"] .bg-pattern {
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(233, 30, 99, 0.04) 0%, transparent 55%),
-    radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 45%);
+    radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(248, 250, 252, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.04) 0%, transparent 60%);
+}
+
+.glass {
+  @apply backdrop-blur-md bg-white/60 border border-white/20 shadow-xl;
+}
+
+[data-theme="dark"] .glass {
+  @apply bg-slate-900/60 border-slate-800/40;
+}
+
+.btn {
+  @apply shadow-lg hover:shadow-xl active:scale-95 transition-all duration-200;
+}
+
+.card {
+  @apply transition-transform duration-300 hover:-translate-y-1;
 }
 
 .btn {

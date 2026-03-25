@@ -1,4 +1,5 @@
-import { buildPoseidon } from "circomlibjs";
+let cachedPoseidon: any = null;
+let cachedSnarkjs: any = null;
 
 const BN254_FIELD_SIZE = BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 
@@ -17,11 +18,26 @@ function toFieldHex(hex: string): string {
   return value.toString();
 }
 
+async function getPoseidon() {
+  if (!cachedPoseidon) {
+    const { buildPoseidon } = await import("circomlibjs");
+    cachedPoseidon = await buildPoseidon();
+  }
+  return cachedPoseidon;
+}
+
+async function getSnarkjs() {
+  if (!cachedSnarkjs) {
+    cachedSnarkjs = await import("snarkjs");
+  }
+  return cachedSnarkjs;
+}
+
 async function getCommitmentFelt(
   fileHash: string,
   secret: string,
 ): Promise<{ commitmentHex: string; commitmentFelt: string }> {
-  const poseidon = await buildPoseidon();
+  const poseidon = await getPoseidon();
   const fileHashFelt = toFieldHex(fileHash);
   const secretFelt = toFieldHex(secret);
   const hash = poseidon([BigInt(fileHashFelt), BigInt(secretFelt)]);
@@ -44,7 +60,7 @@ export async function generateZKProofBundle(fileHash: string, secret: string): P
   const wasmPath = typeof window !== "undefined" ? `${window.location.origin}${WASM_URL}` : WASM_URL;
   const zkeyPath = typeof window !== "undefined" ? `${window.location.origin}${ZKEY_URL}` : ZKEY_URL;
 
-  const snarkjs = await import("snarkjs");
+  const snarkjs = await getSnarkjs();
   const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasmPath, zkeyPath);
 
   const pA: [bigint, bigint] = [BigInt(proof.pi_a[0]), BigInt(proof.pi_a[1])];
