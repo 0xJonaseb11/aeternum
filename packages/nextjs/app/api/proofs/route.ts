@@ -10,7 +10,7 @@ import { proofsPostSchema } from "~~/lib/validation/schemas";
 
 export async function GET(req: NextRequest) {
   const clientId = getClientIdentifier(req);
-  if (!rateLimit(clientId, "proofs")) {
+  if (!(await rateLimit(clientId, "proofs"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   const supabase = getSupabase();
@@ -207,7 +207,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const clientId = getClientIdentifier(req);
-  if (!rateLimit(clientId, "upload")) {
+  if (!(await rateLimit(clientId, "upload"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   const supabase = getSupabase();

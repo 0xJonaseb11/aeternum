@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "API key required" }, { status: 401 });
   }
   const clientId = getClientIdentifier(req);
-  if (!rateLimit(clientId, "v1")) {
+  if (!(await rateLimit(clientId, "v1"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   const usage = await checkAndIncrementApiUsage(auth.userId);

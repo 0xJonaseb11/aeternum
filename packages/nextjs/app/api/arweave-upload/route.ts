@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const clientId = user.id ?? getClientIdentifier(req);
-  if (!rateLimit(clientId, "upload")) {
+  if (!(await rateLimit(clientId, "upload"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
