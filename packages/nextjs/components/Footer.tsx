@@ -96,7 +96,7 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Connect</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-base-content/40 mb-4">Community</h3>
             <ul className="space-y-2 text-sm text-base-content/70">
               {FOOTER_LINKS.community.map(({ href, label, external }) => (
                 <li key={href + label}>
