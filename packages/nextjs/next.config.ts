@@ -2,9 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  devIndicators: {
-    appIsrStatus: false,
-  },
+  devIndicators: false,
   turbopack: {}, // Placeholder to allow custom webpack config in Next.js 16
   experimental: {
     serverActions: {
