@@ -11,8 +11,8 @@
     "react": "~19.2.3",
     "react-dom": "~19.2.3",
     "eslint-plugin-react": "7.33.2",
-    "@wagmi/core": "^2.16.7",
-    "@wagmi/connectors": "^5.7.7"
+    "@wagmi/core": "~2.22.1",
+    "@wagmi/connectors": "~5.11.2"
   },
   "scripts": {
     "account": "yarn hardhat:account",

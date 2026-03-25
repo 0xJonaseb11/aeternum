@@ -1,3 +1,5 @@
+import { getSupabase } from "./supabase";
+
 const ROUTE_LIMITS: Record<string, { maxPerWindow: number; windowMs: number }> = {
   upload: { maxPerWindow: 10, windowMs: 60_000 },
   proofs: { maxPerWindow: 60, windowMs: 60_000 },
@@ -5,8 +7,6 @@ const ROUTE_LIMITS: Record<string, { maxPerWindow: number; windowMs: number }> =
   v1: { maxPerWindow: 120, windowMs: 60_000 },
   default: { maxPerWindow: 60, windowMs: 60_000 },
 };
-
-import { getSupabase } from "./supabase";
 
 const store = new Map<string, { count: number; resetAt: number }>();
 
@@ -42,41 +42,31 @@ export async function rateLimit(identifier: string, prefix: string): Promise<boo
     }
 
     // 2. Try to get and update current limit
-    const { data, error } = await supabase
-      .from("rate_limits")
-      .select("count, reset_at")
-      .eq("key", key)
-      .maybeSingle();
+    const { data, error } = await supabase.from("rate_limits").select("count, reset_at").eq("key", key).maybeSingle();
 
     if (error) throw error;
 
     if (!data || new Date(data.reset_at).getTime() < now) {
       // New or expired: Upsert a fresh window
-      const { error: upsertError } = await supabase
-        .from("rate_limits")
-        .upsert({
-          key,
-          count: 1,
-          reset_at: new Date(now + config.windowMs).toISOString(),
-        });
+      const { error: upsertError } = await supabase.from("rate_limits").upsert({
+        key,
+        count: 1,
+        reset_at: new Date(now + config.windowMs).toISOString(),
+      });
       if (upsertError) throw upsertError;
       return true;
     }
 
     // Existing and valid window: Increment count
     const newCount = data.count + 1;
-    const { error: updateError } = await supabase
-      .from("rate_limits")
-      .update({ count: newCount })
-      .eq("key", key);
-      
+    const { error: updateError } = await supabase.from("rate_limits").update({ count: newCount }).eq("key", key);
+
     if (updateError) throw updateError;
     return newCount <= config.maxPerWindow;
-
   } catch (err) {
     console.warn("Persistent rate limiting error (falling back):", err);
     // On DB error, allow request but log warning to avoid blocking users
-    return true; 
+    return true;
   }
 }
 

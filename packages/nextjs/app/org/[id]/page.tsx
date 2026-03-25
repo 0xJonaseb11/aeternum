@@ -2,16 +2,16 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
-import { useOrganization } from "~~/hooks/useOrganization";
-import { 
-  BuildingOfficeIcon, 
-  UserGroupIcon, 
-  ShieldCheckIcon, 
+import {
   ArrowLeftIcon,
+  BuildingOfficeIcon,
   Cog6ToothIcon,
+  MagnifyingGlassIcon,
   PlusIcon,
-  MagnifyingGlassIcon
+  ShieldCheckIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { useOrganization } from "~~/hooks/useOrganization";
 import { notification } from "~~/utils/scaffold-eth";
 
 export default function OrganizationPage({ params }: { params: Promise<{ id: string }> }) {
@@ -95,13 +95,13 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
               Open Vault
             </Link>
             {canManage && (
-              <button 
+              <button
                 onClick={() => {
                   setName(organization.name);
                   setDescription(organization.description || "");
                   setIsEditing(!isEditing);
                 }}
-                className={`btn btn-ghost rounded-xl h-12 w-12 p-0 ${isEditing ? 'text-primary' : ''}`}
+                className={`btn btn-ghost rounded-xl h-12 w-12 p-0 ${isEditing ? "text-primary" : ""}`}
               >
                 <Cog6ToothIcon className="w-6 h-6" />
               </button>
@@ -118,30 +118,38 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-bold uppercase text-[10px] tracking-widest text-base-content/60">Organization Name</span>
+                  <span className="label-text font-bold uppercase text-[10px] tracking-widest text-base-content/60">
+                    Organization Name
+                  </span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="input input-bordered w-full rounded-xl bg-base-100/50"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                 />
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-bold uppercase text-[10px] tracking-widest text-base-content/60">Description</span>
+                  <span className="label-text font-bold uppercase text-[10px] tracking-widest text-base-content/60">
+                    Description
+                  </span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="input input-bordered w-full rounded-xl bg-base-100/50"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={e => setDescription(e.target.value)}
                 />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-8">
-              <button onClick={() => setIsEditing(false)} className="btn btn-ghost rounded-xl">Cancel</button>
-              <button onClick={handleUpdate} className="btn btn-primary rounded-xl px-8">Save Changes</button>
+              <button onClick={() => setIsEditing(false)} className="btn btn-ghost rounded-xl">
+                Cancel
+              </button>
+              <button onClick={handleUpdate} className="btn btn-primary rounded-xl px-8">
+                Save Changes
+              </button>
             </div>
           </div>
         )}
@@ -161,14 +169,20 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                 <table className="table w-full">
                   <thead>
                     <tr className="bg-base-300/10 border-b border-base-300">
-                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40 pl-6">Member</th>
-                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40">Role</th>
-                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40">Joined</th>
+                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40 pl-6">
+                        Member
+                      </th>
+                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40">
+                        Role
+                      </th>
+                      <th className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-base-content/40">
+                        Joined
+                      </th>
                       {canManage && <th className="bg-transparent pr-6"></th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-base-300/50">
-                    {members.map((member) => (
+                    {members.map(member => (
                       <tr key={member.id} className="hover:bg-primary/5 transition-colors group">
                         <td className="bg-transparent py-4 pl-6">
                           <div className="flex items-center gap-4">
@@ -177,7 +191,9 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                                 {member.avatar_url ? (
                                   <img src={member.avatar_url} alt={member.full_name || ""} />
                                 ) : (
-                                  <span className="text-sm font-bold">{(member.full_name || member.email || "M")[0].toUpperCase()}</span>
+                                  <span className="text-sm font-bold">
+                                    {(member.full_name || member.email || "M")[0].toUpperCase()}
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -188,11 +204,15 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                           </div>
                         </td>
                         <td className="bg-transparent">
-                          <span className={`badge badge-sm font-bold uppercase tracking-wider text-[9px] px-2 py-2 border-0 ${
-                            member.role === 'owner' ? 'bg-primary/20 text-primary' : 
-                            member.role === 'admin' ? 'bg-secondary/20 text-secondary-content' : 
-                            'bg-base-200 text-base-content/60'
-                          }`}>
+                          <span
+                            className={`badge badge-sm font-bold uppercase tracking-wider text-[9px] px-2 py-2 border-0 ${
+                              member.role === "owner"
+                                ? "bg-primary/20 text-primary"
+                                : member.role === "admin"
+                                  ? "bg-secondary/20 text-secondary-content"
+                                  : "bg-base-200 text-base-content/60"
+                            }`}
+                          >
                             {member.role}
                           </span>
                         </td>
@@ -201,7 +221,7 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                         </td>
                         {canManage && (
                           <td className="bg-transparent pr-6 text-right">
-                            {member.role !== 'owner' && (
+                            {member.role !== "owner" && (
                               <button className="btn btn-ghost btn-xs btn-circle text-error opacity-0 group-hover:opacity-100 transition-opacity">
                                 &times;
                               </button>
@@ -230,31 +250,35 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                 <div className="space-y-4">
                   <div className="form-control">
                     <label className="label p-1">
-                      <span className="label-text text-[10px] font-bold uppercase tracking-widest text-base-content/50">User ID</span>
+                      <span className="label-text text-[10px] font-bold uppercase tracking-widest text-base-content/50">
+                        User ID
+                      </span>
                     </label>
-                    <input 
-                      type="text" 
-                      placeholder="Paste User ID here" 
+                    <input
+                      type="text"
+                      placeholder="Paste User ID here"
                       className="input input-bordered w-full rounded-xl bg-base-100/50 text-xs font-mono h-11"
                       value={newMemberId}
-                      onChange={(e) => setNewMemberId(e.target.value)}
+                      onChange={e => setNewMemberId(e.target.value)}
                     />
                   </div>
                   <div className="form-control">
                     <label className="label p-1">
-                      <span className="label-text text-[10px] font-bold uppercase tracking-widest text-base-content/50">Role</span>
+                      <span className="label-text text-[10px] font-bold uppercase tracking-widest text-base-content/50">
+                        Role
+                      </span>
                     </label>
-                    <select 
+                    <select
                       className="select select-bordered w-full rounded-xl bg-base-100/50 text-xs h-11"
                       value={newMemberRole}
-                      onChange={(e) => setNewMemberRole(e.target.value)}
+                      onChange={e => setNewMemberRole(e.target.value)}
                     >
                       <option value="viewer">Viewer (Read-only)</option>
                       <option value="contributor">Contributor (Upload)</option>
                       <option value="admin">Admin (Manage)</option>
                     </select>
                   </div>
-                  <button 
+                  <button
                     onClick={handleInvite}
                     disabled={!newMemberId.trim()}
                     className="btn btn-primary w-full rounded-xl mt-4 h-11"
@@ -271,7 +295,8 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                 Security Notice
               </h3>
               <p className="text-xs text-base-content/50 leading-relaxed font-medium">
-                Organization vaults inherit the same end-to-end encryption principles. All evidence is encrypted client-side. Team members MUST hold individual secret keys or share them securely off-app.
+                Organization vaults inherit the same end-to-end encryption principles. All evidence is encrypted
+                client-side. Team members MUST hold individual secret keys or share them securely off-app.
               </p>
             </div>
           </div>

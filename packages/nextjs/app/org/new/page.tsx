@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BuildingOfficeIcon, RocketLaunchIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { notification } from "~~/utils/scaffold-eth";
-import { BuildingOfficeIcon, UserGroupIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 
 export default function NewOrganizationPage() {
   const [name, setName] = useState("");
@@ -74,7 +74,7 @@ export default function NewOrganizationPage() {
                 placeholder="e.g. Acme Investigations"
                 className="input input-bordered w-full pl-10 bg-base-100/50 border-base-300 focus:border-primary transition-all rounded-xl"
                 value={name}
-                onChange={(e) => {
+                onChange={e => {
                   setName(e.target.value);
                   if (!slug) setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"));
                 }}
@@ -84,9 +84,7 @@ export default function NewOrganizationPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-widest text-base-content/50 ml-1">
-              URL Slug
-            </label>
+            <label className="text-xs font-bold uppercase tracking-widest text-base-content/50 ml-1">URL Slug</label>
             <div className="flex items-center gap-2 px-3 py-2 bg-base-300/30 rounded-xl border border-base-300/50">
               <span className="text-xs text-base-content/40 font-mono">aeternum.app/org/</span>
               <input
@@ -94,7 +92,7 @@ export default function NewOrganizationPage() {
                 placeholder="acme-inv"
                 className="bg-transparent border-none outline-none text-xs font-mono flex-1 text-primary"
                 value={slug}
-                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+                onChange={e => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
               />
             </div>
           </div>

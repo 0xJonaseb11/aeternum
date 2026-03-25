@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: false,
+  turbopack: {}, // Placeholder to allow custom webpack config in Next.js 16
   experimental: {
     serverActions: {
       bodySizeLimit: "52mb", // Allow encrypted evidence up to ~50MB (encryption adds small overhead)
@@ -10,9 +11,6 @@ const nextConfig: NextConfig = {
   },
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
