@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useVault } from "~~/hooks/vault/useVault";
 import type { VaultScope } from "~~/hooks/vault/useVaultScope";
+import { useFolders } from "~~/hooks/useFolders";
 
 interface UploadResult {
   fileHash: string;
@@ -38,10 +39,18 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
 
   const organizationId = scope?.type === "org" ? scope.orgId : undefined;
   const { uploadEvidence, isProcessing, step } = useVault(organizationId);
+  const { data: folders } = useFolders(organizationId);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState("");
+  const [folderId, setFolderId] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      if (!title) setTitle(selectedFile.name);
     }
   };
 
@@ -58,7 +67,9 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0]);
+      const selectedFile = e.dataTransfer.files[0];
+      setFile(selectedFile);
+      if (!title) setTitle(selectedFile.name);
     }
   };
 
@@ -66,13 +77,27 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
     setFile(null);
     setResult(null);
     setSecretSavedConfirmed(false);
+    setTitle("");
+    setDescription("");
+    setTags("");
+    setFolderId("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleUpload = async () => {
     if (!file) return;
     try {
-      const uploadResult = await uploadEvidence(file);
+      const uploadResult = await uploadEvidence(file, {
+        title: title || file.name,
+        description: description || undefined,
+        tags: tags
+          ? tags
+              .split(",")
+              .map(t => t.trim())
+              .filter(Boolean)
+          : undefined,
+        folderId: folderId || null,
+      });
       if (uploadResult) setResult(uploadResult);
     } catch {}
   };
@@ -281,8 +306,68 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
               </button>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-base-300">
-              <div className="flex items-center justify-between mb-4">
+            <div className="mt-8 pt-6 border-t border-base-300 space-y-4">
+              <div className="flex flex-col gap-4 bg-base-100/50 p-4 rounded-xl border border-base-300">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                    Evidence Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter a descriptive title..."
+                    className="input input-bordered input-sm w-full"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Optional details about this evidence..."
+                    className="textarea textarea-bordered textarea-sm w-full leading-tight"
+                    rows={2}
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                      Folder
+                    </label>
+                    <select
+                      className="select select-bordered select-sm w-full"
+                      value={folderId}
+                      onChange={e => setFolderId(e.target.value)}
+                    >
+                      <option value="">No folder</option>
+                      {(folders ?? []).map(f => (
+                        <option key={f.id} value={f.id}>
+                          {f.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                      Tags
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="tag1, tag2..."
+                      className="input input-bordered input-sm w-full font-mono"
+                      value={tags}
+                      onChange={e => setTags(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
                   <ShieldCheckIcon className="h-4 w-4" />
                   <span>AES-256-GCM Encryption Ready</span>
