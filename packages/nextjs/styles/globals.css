@@ -101,7 +101,7 @@
 
 :root,
 [data-theme] {
-  background: var(--color-base-200);
+  background: var(--color-base-100);
 }
 
 .bg-pattern {
@@ -148,4 +148,24 @@
 
 .link:hover {
   opacity: 80%;
+}
+
+@layer components {
+  .input,
+  .textarea {
+    @apply transition-all duration-200;
+  }
+
+  .input:focus,
+  .textarea:focus {
+    @apply outline-none border-primary ring-4 ring-primary/10;
+  }
+
+  /* Specific fix for DaisyUI input-bordered to ensure our focus style takes precedence */
+  .input-bordered:focus,
+  .textarea-bordered:focus {
+    @apply border-primary ring-4 ring-primary/10;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
 }
