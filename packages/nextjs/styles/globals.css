@@ -151,21 +151,29 @@
 }
 
 @layer components {
+  /* Global Input & Textarea Refinement */
   .input,
-  .textarea {
-    @apply transition-all duration-200;
+  .textarea,
+  .select {
+    @apply transition-all duration-300;
   }
 
+  /* Aggressive System-Wide Focus States */
+  input:focus,
+  textarea:focus,
+  select:focus,
   .input:focus,
-  .textarea:focus {
-    @apply outline-none border-primary ring-4 ring-primary/10;
-  }
-
-  /* Specific fix for DaisyUI input-bordered to ensure our focus style takes precedence */
+  .textarea:focus,
+  .select:focus,
   .input-bordered:focus,
   .textarea-bordered:focus {
-    @apply border-primary ring-4 ring-primary/10;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    @apply border-primary! ring-4! ring-primary/15! outline-hidden! shadow-sm;
+    border-color: var(--color-primary) !important;
+  }
+
+  /* Specific fix for DaisyUI specific components */
+  .input:focus-within,
+  .textarea:focus-within {
+    @apply border-primary! ring-4! ring-primary/15!;
   }
 }
