@@ -12,6 +12,7 @@ import {
 import { useFolders } from "~~/hooks/useFolders";
 import { useVault } from "~~/hooks/vault/useVault";
 import type { VaultScope } from "~~/hooks/vault/useVaultScope";
+import { useFolders } from "~~/hooks/useFolders";
 
 interface UploadResult {
   fileHash: string;
