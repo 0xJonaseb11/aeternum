@@ -12,7 +12,6 @@ import {
 import { useFolders } from "~~/hooks/useFolders";
 import { useVault } from "~~/hooks/vault/useVault";
 import type { VaultScope } from "~~/hooks/vault/useVaultScope";
-import { useFolders } from "~~/hooks/useFolders";
 
 interface UploadResult {
   fileHash: string;
@@ -93,14 +92,14 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
         description: description || undefined,
         tags: tags
           ? tags
-              .split(",")
-              .map(t => t.trim())
-              .filter(Boolean)
+            .split(",")
+            .map(t => t.trim())
+            .filter(Boolean)
           : undefined,
         folderId: folderId || null,
       });
       if (uploadResult) setResult(uploadResult);
-    } catch {}
+    } catch { }
   };
 
   const copyToClipboard = (text: string) => {
@@ -394,13 +393,12 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
                     return (
                       <div key={key} className="flex items-center gap-2 text-sm">
                         <span
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                            isPast
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${isPast
                               ? "bg-success/20 text-success"
                               : isCurrent
                                 ? "bg-primary text-primary-content animate-pulse"
                                 : "bg-base-300 text-base-content/40"
-                          }`}
+                            }`}
                         >
                           {isPast ? "✓" : i + 1}
                         </span>
