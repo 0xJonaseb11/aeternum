@@ -97,6 +97,20 @@
     @apply font-bold tracking-tight mb-4;
     line-height: 1.1;
   }
+
+  /* Standard System-Wide Focus States (at base level to allow easy component overrides) */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .input:focus,
+  .textarea:focus,
+  .select:focus,
+  .input-bordered:focus,
+  .textarea-bordered:focus,
+  .select-bordered:focus {
+    @apply border-primary ring-4 ring-primary/15 outline-hidden shadow-sm;
+    border-color: var(--color-primary);
+  }
 }
 
 :root,
@@ -151,29 +165,17 @@
 }
 
 @layer components {
-  /* Global Input & Textarea Refinement */
+  /* Global Input, Textarea & Select Refinement */
   .input,
   .textarea,
   .select {
     @apply transition-all duration-300;
   }
 
-  /* Aggressive System-Wide Focus States */
-  input:focus,
-  textarea:focus,
-  select:focus,
-  .input:focus,
-  .textarea:focus,
-  .select:focus,
-  .input-bordered:focus,
-  .textarea-bordered:focus {
-    @apply border-primary! ring-4! ring-primary/15! outline-hidden! shadow-sm;
-    border-color: var(--color-primary) !important;
-  }
-
-  /* Specific fix for DaisyUI specific components */
+  /* Specific fix for focus-within components */
   .input:focus-within,
-  .textarea:focus-within {
-    @apply border-primary! ring-4! ring-primary/15!;
+  .textarea:focus-within,
+  .select:focus-within {
+    @apply border-primary ring-4 ring-primary/15;
   }
 }
