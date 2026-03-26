@@ -36,7 +36,16 @@ export const useVault = (organizationId?: string | null) => {
     contractName: "EvidenceVault",
   });
 
-  const uploadEvidence = async (file: File) => {
+  const uploadEvidence = async (
+    file: File,
+    metadata?: {
+      title?: string;
+      description?: string;
+      caseId?: string;
+      tags?: string[];
+      folderId?: string | null;
+    },
+  ) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
       notification.error(`File too large. Maximum size is 50 MB.`);
       return;
@@ -85,6 +94,8 @@ export const useVault = (organizationId?: string | null) => {
         } catch (e) {
           console.warn("Could not get tx receipt for Supabase metadata:", e);
         }
+
+        // 1. Save proof metadata
         try {
           const res = await fetch("/api/proofs", {
             method: "POST",
@@ -108,7 +119,32 @@ export const useVault = (organizationId?: string | null) => {
           }
         } catch (e) {
           console.error("Supabase proof metadata request failed:", e);
-          notification.warning("Proof saved on-chain; metadata mirror failed. List may still work from chain.");
+        }
+
+        // 2. Save evidence metadata (tags, folders, etc) if provided or just defaults
+        try {
+          const headers: HeadersInit = { "Content-Type": "application/json" };
+          if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+
+          const res = await fetch("/api/evidence", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              fileHash,
+              userId: user?.id,
+              organizationId: organizationId ?? undefined,
+              title: metadata?.title || file.name,
+              description: metadata?.description,
+              caseId: metadata?.caseId,
+              tags: metadata?.tags,
+              folderId: metadata?.folderId,
+            }),
+          });
+          if (!res.ok) {
+            console.error("Evidence metadata save failed:", res.status);
+          }
+        } catch (e) {
+          console.error("Evidence metadata request failed:", e);
         }
       }
 

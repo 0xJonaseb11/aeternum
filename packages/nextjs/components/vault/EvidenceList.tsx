@@ -4,10 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 import { usePublicClient } from "wagmi";
 import {
+  AdjustmentsVerticalIcon,
   ArrowDownTrayIcon,
   CalendarIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
+  CloudArrowUpIcon,
   DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   KeyIcon,
@@ -15,6 +17,8 @@ import {
   ShareIcon,
   ShieldCheckIcon,
   UserGroupIcon,
+  UserPlusIcon,
+  XCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
@@ -23,6 +27,7 @@ import {
   useDeployedContractInfo,
   useScaffoldEventHistory,
   useScaffoldReadContract,
+  useScaffoldWriteContract,
   useSelectedNetwork,
 } from "~~/hooks/scaffold-eth";
 import { useEvidenceEvents } from "~~/hooks/useEvidenceEvents";
@@ -71,15 +76,21 @@ export const EvidenceCard = ({
   isMatching,
   organizationId,
   onTagClick,
+  onRefresh,
 }: {
   proof: EvidenceItem;
   initialSecret?: string;
   isMatching?: boolean;
   organizationId?: string | null;
   onTagClick?: (tag: string) => void;
+  onRefresh?: () => void;
 }) => {
   const [showRecover, setShowRecover] = useState(false);
   const [showVerify, setShowVerify] = useState(false);
+  const [showGrant, setShowGrant] = useState(false);
+  const [grantee, setGrantee] = useState("");
+  const [isRevoking, setIsRevoking] = useState(false);
+  const [isGranting, setIsGranting] = useState(false);
   const [secret, setSecret] = useState(initialSecret ?? "");
   const [verifySecret, setVerifySecret] = useState(initialSecret ?? "");
   const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
@@ -94,6 +105,9 @@ export const EvidenceCard = ({
   const { verify, isVerifying } = useVerifyOwnership(organizationId);
   const { metadata, isLoading: metaLoading, save, isSaving } = useEvidenceMetadata(proof.fileHash, organizationId);
   const { data: events } = useEvidenceEvents(proof.fileHash, organizationId);
+  const { writeContractAsync: vaultContractWrite } = useScaffoldWriteContract({
+    contractName: "EvidenceVault",
+  });
   const { session, user } = useSupabaseAuth();
 
   useEffect(() => {
@@ -416,71 +430,123 @@ export const EvidenceCard = ({
           </div>
         ) : (
           <>
-            <div className="mt-4 sm:mt-5 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-between gap-0 min-w-0 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+            <div className="mt-4 sm:mt-5 pt-4 border-t border-base-300 flex flex-wrap items-center justify-center sm:justify-start gap-0 min-w-0 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               <button
                 type="button"
                 onClick={() => setShowRecover(true)}
-                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary"
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-primary transition-colors"
               >
                 <ArrowDownTrayIcon className="h-3.5 w-3.5 shrink-0" />
                 <span>Recover</span>
               </button>
-              <span className="text-base-content/40 px-1">|</span>
+              <span className="text-base-content/20 px-0.5">|</span>
               <button
                 type="button"
                 onClick={() => zkAvailable && setShowVerify(true)}
                 disabled={!zkAvailable}
-                title={
-                  zkAvailable
-                    ? "Prove ownership with zero-knowledge (no secret on-chain)"
-                    : "ZK proof not available right now."
-                }
-                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary disabled:opacity-50"
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-primary transition-colors disabled:opacity-30"
               >
                 <FingerPrintIcon className="h-3.5 w-3.5 shrink-0" />
                 <span>Verify</span>
               </button>
-              <span className="text-base-content/40 px-1">|</span>
+              <span className="text-base-content/20 px-0.5">|</span>
+              <button
+                type="button"
+                onClick={() => setShowGrant(true)}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-secondary transition-colors"
+                title="Authorize another address to access this evidence"
+              >
+                <UserPlusIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Grant</span>
+              </button>
+              <span className="text-base-content/20 px-0.5">|</span>
               <button
                 type="button"
                 onClick={async () => {
-                  handleDetails();
+                  if (!window.confirm("Are you sure you want to PERMANENTLY revoke this proof? This cannot be undone."))
+                    return;
+                  setIsRevoking(true);
                   try {
-                    const headers: HeadersInit = { "Content-Type": "application/json" };
-                    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
-                    void fetch("/api/events", {
-                      method: "POST",
-                      headers,
-                      body: JSON.stringify({
-                        fileHash: proof.fileHash,
-                        eventType: "certificate_downloaded",
-                        userId: user?.id,
-                        organizationId: organizationId ?? undefined,
-                      }),
+                    await vaultContractWrite({
+                      functionName: "revokeProof",
+                      args: [proof.fileHash as `0x${string}`],
                     });
-                  } catch {}
+                    notification.success("Proof revoked successfully");
+                    onRefresh?.();
+                  } catch (e) {
+                    notification.error("Failed to revoke proof");
+                    console.error(e);
+                  } finally {
+                    setIsRevoking(false);
+                  }
                 }}
-                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-secondary-content"
+                disabled={isRevoking}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-error transition-colors disabled:opacity-50"
               >
-                <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 shrink-0" />
-                <span>Certificate</span>
+                <XCircleIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Revoke</span>
               </button>
+              <div className="flex-1 min-w-[10px]" />
               {proof.proofId && (
-                <>
-                  <span className="text-base-content/40 px-1">|</span>
-                  <Link
-                    href={`/evidence/${proof.proofId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1.5 text-base-content hover:bg-transparent hover:text-primary"
-                    title="Open public verification link"
-                  >
-                    <ShareIcon className="h-3.5 w-3.5 shrink-0" />
-                    <span>Share</span>
-                  </Link>
-                </>
+                <Link
+                  href={`/evidence/${proof.proofId}`}
+                  target="_blank"
+                  className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-primary transition-colors"
+                >
+                  <ShareIcon className="h-3.5 w-3.5 shrink-0" />
+                  <span>Share</span>
+                </Link>
               )}
             </div>
+
+            {showGrant && (
+              <div className="mt-4 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase text-base-content/40 tracking-wider">
+                    Grant Access
+                  </span>
+                  <button onClick={() => setShowGrant(false)} className="btn btn-ghost btn-xs btn-circle">
+                    <XMarkIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="join w-full">
+                  <input
+                    type="text"
+                    placeholder="Grantee address (0x...)"
+                    className="input input-bordered input-sm join-item flex-1 font-mono text-xs"
+                    value={grantee}
+                    onChange={e => setGrantee(e.target.value)}
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!grantee.startsWith("0x") || grantee.length !== 42) {
+                        notification.error("Invalid Ethereum address");
+                        return;
+                      }
+                      setIsGranting(true);
+                      try {
+                        await vaultContractWrite({
+                          functionName: "grantAccess",
+                          args: [proof.fileHash as `0x${string}`, grantee as `0x${string}`],
+                        });
+                        notification.success("Access granted successfully");
+                        setShowGrant(false);
+                        setGrantee("");
+                      } catch (e) {
+                        notification.error("Failed to grant access");
+                        console.error(e);
+                      } finally {
+                        setIsGranting(false);
+                      }
+                    }}
+                    disabled={isGranting || !grantee}
+                    className={`btn btn-primary btn-sm join-item ${isGranting ? "loading" : ""}`}
+                  >
+                    Grant
+                  </button>
+                </div>
+              </div>
+            )}
 
             {events && events.length > 0 && (
               <div className="mt-3 border-t border-base-200 pt-2">
@@ -596,6 +662,7 @@ export const EvidenceList = ({
   const [serverDateTo, setServerDateTo] = useState("");
   const [newFolderName, setNewFolderName] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const queryClient = useQueryClient();
   const { session } = useSupabaseAuth();
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
@@ -879,162 +946,211 @@ export const EvidenceList = ({
     return (
       <>
         <div className="mb-4 flex flex-col gap-2">
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center flex-wrap">
-            <input
-              type="search"
-              placeholder="Search by file hash or proof ID…"
-              className="input input-bordered input-sm flex-1 max-w-xs"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            {searchLower && (
-              <span className="text-xs text-base-content/50">
-                {filteredSupabase.length} of {supabaseProofs.length}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs">
-            <span className="font-bold uppercase text-base-content/50">Filters</span>
-            <input
-              type="search"
-              placeholder="Title or description…"
-              className="input input-bordered input-sm w-40 max-w-[180px]"
-              value={serverSearch}
-              onChange={e => {
-                setServerSearch(e.target.value);
-                setServerOffset(0);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Case ID"
-              className="input input-bordered input-sm w-28 max-w-[120px]"
-              value={serverCaseId}
-              onChange={e => {
-                setServerCaseId(e.target.value);
-                setServerOffset(0);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Tags (comma-separated)"
-              className="input input-bordered input-sm w-40 max-w-[180px]"
-              value={serverTagsInput}
-              onChange={e => {
-                setServerTagsInput(e.target.value);
-                setServerOffset(0);
-              }}
-            />
-            <select
-              className="select select-bordered select-sm w-36 max-w-[140px]"
-              value={serverFolderId}
-              onChange={e => {
-                setServerFolderId(e.target.value);
-                setServerOffset(0);
-              }}
-              title="Filter by folder"
-            >
-              <option value="">All folders</option>
-              {(folders ?? []).map(f => (
-                <option key={f.id} value={f.id}>
-                  {f.name}
-                </option>
-              ))}
-            </select>
-            <div className="flex items-center gap-1">
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <div className="relative flex-1 max-w-md group">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/30 group-focus-within:text-primary transition-colors" />
               <input
-                type="text"
-                className="input input-bordered input-sm w-28 max-w-[120px]"
-                placeholder="New folder"
-                value={newFolderName}
-                onChange={e => setNewFolderName(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && (e.preventDefault(), handleCreateFolder())}
+                type="search"
+                placeholder="Search file hash or proof ID…"
+                className="input input-bordered input-sm pl-9 w-full bg-base-100/50 focus:bg-base-100 transition-all border-base-300"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                disabled={creatingFolder || !newFolderName.trim()}
-                onClick={handleCreateFolder}
-              >
-                {creatingFolder ? "…" : "Add"}
-              </button>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 text-[10px] sm:text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-bold uppercase text-base-content/50">Date range</span>
-              <input
-                type="date"
-                className="input input-bordered input-sm py-0 h-8 text-[10px]"
-                value={serverDateFrom}
-                onChange={e => {
-                  setServerDateFrom(e.target.value);
-                  setServerOffset(0);
-                }}
-                title="From date"
-              />
-              <span className="text-base-content/30">to</span>
-              <input
-                type="date"
-                className="input input-bordered input-sm py-0 h-8 text-[10px]"
-                value={serverDateTo}
-                onChange={e => {
-                  setServerDateTo(e.target.value);
-                  setServerOffset(0);
-                }}
-                title="To date"
-              />
-              {(serverDateFrom || serverDateTo) && (
-                <button
-                  onClick={() => {
-                    setServerDateFrom("");
-                    setServerDateTo("");
-                    setServerOffset(0);
-                  }}
-                  className="btn btn-ghost btn-xs text-base-content/40 h-8 min-h-0"
-                >
-                  Clear
-                </button>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`btn btn-sm gap-2 transition-all ${
+                  showFilters
+                    ? "btn-primary bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
+                    : "btn-ghost border border-base-300 bg-base-100/50 hover:bg-base-100"
+                }`}
+              >
+                <div className="relative">
+                  <AdjustmentsVerticalIcon className="h-4 w-4" />
+                  {(serverSearch || serverCaseId || serverTagsInput || serverFolderId || serverDateFrom || serverDateTo) && (
+                    <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  )}
+                </div>
+                <span>{showFilters ? "Hide Filters" : "Advanced Filters"}</span>
+              </button>
+              {searchLower && (
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-base-content/40 px-2">
+                  {filteredSupabase.length} of {supabaseProofs.length} results
+                </span>
               )}
             </div>
-            <div className="divider divider-horizontal mx-1 h-6"></div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold uppercase text-base-content/50">Page</span>
-              <div className="join h-8">
-                <button
-                  className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0"
-                  disabled={serverOffset === 0}
-                  onClick={() => setServerOffset(Math.max(0, serverOffset - serverLimit))}
-                >
-                  «
-                </button>
-                <div className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0 no-animation pointer-events-none">
-                  {Math.floor(serverOffset / serverLimit) + 1}
-                </div>
-                <button
-                  className="btn btn-sm join-item bg-base-100 border-base-300 h-8 min-h-0"
-                  disabled={supabaseProofs && supabaseProofs.length < serverLimit}
-                  onClick={() => setServerOffset(serverOffset + serverLimit)}
-                >
-                  »
-                </button>
-              </div>
-              <select
-                className="select select-bordered select-sm h-8 min-h-0 py-0 text-[10px]"
-                value={serverLimit}
-                onChange={e => {
-                  setServerLimit(parseInt(e.target.value, 10));
-                  setServerOffset(0);
-                }}
-                title="Results per page"
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
           </div>
+
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-base-200/50 rounded-2xl border border-base-300 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+                  Metadata Search
+                </label>
+                <input
+                  type="search"
+                  placeholder="Title or description…"
+                  className="input input-bordered input-sm w-full bg-base-100/50 focus:bg-base-100"
+                  value={serverSearch}
+                  onChange={e => {
+                    setServerSearch(e.target.value);
+                    setServerOffset(0);
+                  }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+                  Folder
+                </label>
+                <div className="flex gap-1">
+                  <select
+                    className="select select-bordered select-sm flex-1 bg-base-100/50 focus:bg-base-100"
+                    value={serverFolderId}
+                    onChange={e => {
+                      setServerFolderId(e.target.value);
+                      setServerOffset(0);
+                    }}
+                  >
+                    <option value="">All folders</option>
+                    {(folders ?? []).map(f => (
+                      <option key={f.id} value={f.id}>
+                        {f.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      className="input input-bordered input-sm w-24 bg-base-100/50 focus:bg-base-100"
+                      placeholder="New..."
+                      value={newFolderName}
+                      onChange={e => setNewFolderName(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && (e.preventDefault(), handleCreateFolder())}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm btn-square"
+                      disabled={creatingFolder || !newFolderName.trim()}
+                      onClick={handleCreateFolder}
+                      title="Add folder"
+                    >
+                      {creatingFolder ? "…" : "+"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+                  Case ID & Tags
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Case ID"
+                    className="input input-bordered input-sm w-1/3 bg-base-100/50 focus:bg-base-100"
+                    value={serverCaseId}
+                    onChange={e => {
+                      setServerCaseId(e.target.value);
+                      setServerOffset(0);
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tags (comma-separated)"
+                    className="input input-bordered input-sm flex-1 bg-base-100/50 focus:bg-base-100 font-mono"
+                    value={serverTagsInput}
+                    onChange={e => {
+                      setServerTagsInput(e.target.value);
+                      setServerOffset(0);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5 lg:col-span-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+                  Date Range
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    className="input input-bordered input-sm flex-1 bg-base-100/50 focus:bg-base-100"
+                    value={serverDateFrom}
+                    onChange={e => {
+                      setServerDateFrom(e.target.value);
+                      setServerOffset(0);
+                    }}
+                  />
+                  <span className="text-base-content/30 lowercase font-medium">to</span>
+                  <input
+                    type="date"
+                    className="input input-bordered input-sm flex-1 bg-base-100/50 focus:bg-base-100"
+                    value={serverDateTo}
+                    onChange={e => {
+                      setServerDateTo(e.target.value);
+                      setServerOffset(0);
+                    }}
+                  />
+                  {(serverDateFrom || serverDateTo) && (
+                    <button
+                      onClick={() => {
+                        setServerDateFrom("");
+                        setServerDateTo("");
+                        setServerOffset(0);
+                      }}
+                      className="btn btn-ghost btn-xs text-error/60"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+                  Pagination
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="join join-horizontal w-full">
+                    <button
+                      className="btn btn-sm join-item bg-base-100 border-base-300"
+                      disabled={serverOffset === 0}
+                      onClick={() => setServerOffset(Math.max(0, serverOffset - serverLimit))}
+                    >
+                      «
+                    </button>
+                    <div className="btn btn-sm join-item bg-base-100 border-base-300 no-animation pointer-events-none flex-1">
+                      {Math.floor(serverOffset / serverLimit) + 1}
+                    </div>
+                    <button
+                      className="btn btn-sm join-item bg-base-100 border-base-300"
+                      disabled={supabaseProofs && supabaseProofs.length < serverLimit}
+                      onClick={() => setServerOffset(serverOffset + serverLimit)}
+                    >
+                      »
+                    </button>
+                  </div>
+                  <select
+                    className="select select-bordered select-sm bg-base-100/50"
+                    value={serverLimit}
+                    onChange={e => {
+                      setServerLimit(parseInt(e.target.value, 10));
+                      setServerOffset(0);
+                    }}
+                  >
+                    {[10, 25, 50, 100].map(v => (
+                      <option key={v} value={v}>
+                        {v} items
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         {showSecretFinder && (
           <SecretFinderSection
@@ -1066,6 +1182,7 @@ export const EvidenceList = ({
                 setServerTagsInput(tag);
                 setServerOffset(0);
               }}
+              onRefresh={refetchSupabase}
             />
           ))}
         </div>
@@ -1171,6 +1288,7 @@ const EvidenceListItem = ({
       isMatching={isMatching}
       organizationId={organizationId}
       onTagClick={onTagClick}
+      onRefresh={() => {}} // contract events will trigger re-reads in ListItem via useScaffoldReadContract anyway
     />
   );
 };
