@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { RevokeConfirmationModal } from "./RevokeConfirmationModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 import { usePublicClient } from "wagmi";
@@ -91,6 +92,12 @@ export const EvidenceCard = ({
   const [grantee, setGrantee] = useState("");
   const [isRevoking, setIsRevoking] = useState(false);
   const [isGranting, setIsGranting] = useState(false);
+  const [isRevokingAccess, setIsRevokingAccess] = useState(false);
+  const [isAddingBackup, setIsAddingBackup] = useState(false);
+  const [showRevokeAccess, setShowRevokeAccess] = useState(false);
+  const [showAddBackup, setShowAddBackup] = useState(false);
+  const [granteeToRevoke, setGranteeToRevoke] = useState("");
+  const [backupCid, setBackupCid] = useState("");
   const [secret, setSecret] = useState(initialSecret ?? "");
   const [verifySecret, setVerifySecret] = useState(initialSecret ?? "");
   const [verifyResult, setVerifyResult] = useState<boolean | null>(null);
@@ -100,6 +107,7 @@ export const EvidenceCard = ({
   const [draftDescription, setDraftDescription] = useState("");
   const [draftFolderId, setDraftFolderId] = useState("");
   const [draftTags, setDraftTags] = useState("");
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
   const { recoverFile, isRecovering } = useRecover();
   const { data: foldersForCard } = useFolders(organizationId);
   const { verify, isVerifying } = useVerifyOwnership(organizationId);
@@ -462,9 +470,42 @@ export const EvidenceCard = ({
               <span className="text-base-content/20 px-0.5">|</span>
               <button
                 type="button"
-                onClick={async () => {
-                  if (!window.confirm("Are you sure you want to PERMANENTLY revoke this proof? This cannot be undone."))
-                    return;
+                onClick={() => setShowRevokeModal(true)}
+                disabled={isRevoking}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-error transition-colors disabled:opacity-50"
+              >
+                <XCircleIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Revoke</span>
+              </button>
+              <span className="text-base-content/20 px-0.5">|</span>
+              <button
+                type="button"
+                onClick={() => setShowRevokeAccess(true)}
+                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-secondary transition-colors"
+                title="Remove access from an address"
+              >
+                <UserGroupIcon className="h-3.5 w-3.5 shrink-0" />
+                <span>Access</span>
+              </button>
+              {!proof.ipfsCid && (
+                <>
+                  <span className="text-base-content/20 px-0.5">|</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddBackup(true)}
+                    className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-accent transition-colors"
+                    title="Add IPFS backup CID"
+                  >
+                    <CloudArrowUpIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span>Backup</span>
+                  </button>
+                </>
+              )}
+              <RevokeConfirmationModal
+                isOpen={showRevokeModal}
+                onClose={() => setShowRevokeModal(false)}
+                onConfirm={async () => {
+                  setShowRevokeModal(false);
                   setIsRevoking(true);
                   try {
                     await vaultContractWrite({
@@ -480,12 +521,9 @@ export const EvidenceCard = ({
                     setIsRevoking(false);
                   }
                 }}
-                disabled={isRevoking}
-                className="btn btn-ghost btn-sm min-h-0 h-auto py-1 gap-1 px-2 text-base-content hover:bg-transparent hover:text-error transition-colors disabled:opacity-50"
-              >
-                <XCircleIcon className="h-3.5 w-3.5 shrink-0" />
-                <span>Revoke</span>
-              </button>
+                isLoading={isRevoking}
+                fileHash={proof.fileHash}
+              />
               <div className="flex-1 min-w-[10px]" />
               {proof.proofId && (
                 <Link
@@ -543,6 +581,102 @@ export const EvidenceCard = ({
                     className={`btn btn-primary btn-sm join-item ${isGranting ? "loading" : ""}`}
                   >
                     Grant
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showRevokeAccess && (
+              <div className="mt-4 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase text-base-content/40 tracking-wider">
+                    Revoke Access
+                  </span>
+                  <button onClick={() => setShowRevokeAccess(false)} className="btn btn-ghost btn-xs btn-circle">
+                    <XMarkIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="join w-full">
+                  <input
+                    type="text"
+                    placeholder="Address to revoke (0x...)"
+                    className="input input-bordered input-sm join-item flex-1 font-mono text-xs"
+                    value={granteeToRevoke}
+                    onChange={e => setGranteeToRevoke(e.target.value)}
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!granteeToRevoke.startsWith("0x") || granteeToRevoke.length !== 42) {
+                        notification.error("Invalid Ethereum address");
+                        return;
+                      }
+                      setIsRevokingAccess(true);
+                      try {
+                        await vaultContractWrite({
+                          functionName: "revokeAccess",
+                          args: [proof.fileHash as `0x${string}`, granteeToRevoke as `0x${string}`],
+                        });
+                        notification.success("Access revoked successfully");
+                        setShowRevokeAccess(false);
+                        setGranteeToRevoke("");
+                      } catch (e) {
+                        notification.error("Failed to revoke access");
+                        console.error(e);
+                      } finally {
+                        setIsRevokingAccess(false);
+                      }
+                    }}
+                    disabled={isRevokingAccess || !granteeToRevoke}
+                    className={`btn btn-secondary btn-sm join-item ${isRevokingAccess ? "loading" : ""}`}
+                  >
+                    Revoke
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showAddBackup && (
+              <div className="mt-4 pt-4 border-t border-base-300 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase text-base-content/40 tracking-wider">
+                    Add Backup (IPFS)
+                  </span>
+                  <button onClick={() => setShowAddBackup(false)} className="btn btn-ghost btn-xs btn-circle">
+                    <XMarkIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="join w-full">
+                  <input
+                    type="text"
+                    placeholder="IPFS CID (Qm...)"
+                    className="input input-bordered input-sm join-item flex-1 font-mono text-xs"
+                    value={backupCid}
+                    onChange={e => setBackupCid(e.target.value)}
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!backupCid.trim()) return;
+                      setIsAddingBackup(true);
+                      try {
+                        await vaultContractWrite({
+                          functionName: "addBackup",
+                          args: [proof.fileHash as `0x${string}`, backupCid.trim()],
+                        });
+                        notification.success("Backup CID added");
+                        setShowAddBackup(false);
+                        setBackupCid("");
+                        onRefresh?.();
+                      } catch (e) {
+                        notification.error("Failed to add backup");
+                        console.error(e);
+                      } finally {
+                        setIsAddingBackup(false);
+                      }
+                    }}
+                    disabled={isAddingBackup || !backupCid}
+                    className={`btn btn-accent btn-sm join-item ${isAddingBackup ? "loading" : ""}`}
+                  >
+                    Add
                   </button>
                 </div>
               </div>
@@ -952,7 +1086,7 @@ export const EvidenceList = ({
               <input
                 type="search"
                 placeholder="Search file hash or proof ID…"
-                className="input input-bordered input-sm pl-9 w-full bg-base-100/50 focus:bg-base-100 transition-all border-base-300"
+                className="input input-bordered input-sm pl-9 w-full bg-base-100/50 focus:bg-base-100 transition-all border-base-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -968,7 +1102,12 @@ export const EvidenceList = ({
               >
                 <div className="relative">
                   <AdjustmentsVerticalIcon className="h-4 w-4" />
-                  {(serverSearch || serverCaseId || serverTagsInput || serverFolderId || serverDateFrom || serverDateTo) && (
+                  {(serverSearch ||
+                    serverCaseId ||
+                    serverTagsInput ||
+                    serverFolderId ||
+                    serverDateFrom ||
+                    serverDateTo) && (
                     <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-primary animate-pulse" />
                   )}
                 </div>
@@ -991,7 +1130,7 @@ export const EvidenceList = ({
                 <input
                   type="search"
                   placeholder="Title or description…"
-                  className="input input-bordered input-sm w-full bg-base-100/50 focus:bg-base-100"
+                  className="input input-bordered input-sm w-full bg-base-100/50 focus:bg-base-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   value={serverSearch}
                   onChange={e => {
                     setServerSearch(e.target.value);
@@ -1006,7 +1145,7 @@ export const EvidenceList = ({
                 </label>
                 <div className="flex gap-1">
                   <select
-                    className="select select-bordered select-sm flex-1 bg-base-100/50 focus:bg-base-100"
+                    className="select select-bordered select-sm flex-1 bg-base-100/50 focus:bg-base-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     value={serverFolderId}
                     onChange={e => {
                       setServerFolderId(e.target.value);
@@ -1023,7 +1162,7 @@ export const EvidenceList = ({
                   <div className="flex items-center gap-1">
                     <input
                       type="text"
-                      className="input input-bordered input-sm w-24 bg-base-100/50 focus:bg-base-100"
+                      className="input input-bordered input-sm w-24 bg-base-100/50 focus:bg-base-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                       placeholder="New..."
                       value={newFolderName}
                       onChange={e => setNewFolderName(e.target.value)}
@@ -1050,7 +1189,7 @@ export const EvidenceList = ({
                   <input
                     type="text"
                     placeholder="Case ID"
-                    className="input input-bordered input-sm w-1/3 bg-base-100/50 focus:bg-base-100"
+                    className="input input-bordered input-sm w-1/3 bg-base-100/50 focus:bg-base-100 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     value={serverCaseId}
                     onChange={e => {
                       setServerCaseId(e.target.value);
@@ -1060,7 +1199,7 @@ export const EvidenceList = ({
                   <input
                     type="text"
                     placeholder="Tags (comma-separated)"
-                    className="input input-bordered input-sm flex-1 bg-base-100/50 focus:bg-base-100 font-mono"
+                    className="input input-bordered input-sm flex-1 bg-base-100/50 focus:bg-base-100 font-mono focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                     value={serverTagsInput}
                     onChange={e => {
                       setServerTagsInput(e.target.value);
