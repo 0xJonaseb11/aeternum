@@ -19,7 +19,7 @@ export const RevokeConfirmationModal = ({
   fileHash,
 }: RevokeConfirmationModalProps) => {
   const [confirmText, setConfirmText] = useState("");
-  const REQUIRED_TEXT = "REVOKE";
+  const REQUIRED_TEXT = "revoke evidence";
 
   useEffect(() => {
     if (!isOpen) {
@@ -36,15 +36,15 @@ export const RevokeConfirmationModal = ({
       message={`You are about to permanently revoke the ownership proof for evidence #${fileHash.slice(
         2,
         10,
-      )}. This action is irreversible on-chain and the proof will no longer be verifiable.`}
+      )}. This action is irreversible on-chain.`}
       confirmText="Revoke Proof"
       variant="error"
       isLoading={isLoading}
-      disabled={confirmText !== REQUIRED_TEXT}
+      disabled={confirmText.toLowerCase() !== REQUIRED_TEXT}
     >
       <div className="space-y-3 mt-2">
         <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
-          Type <span className="text-error">{REQUIRED_TEXT}</span> to confirm
+          Type <span className="text-error italic lowercase">"{REQUIRED_TEXT}"</span> to confirm
         </label>
         <input
           type="text"
