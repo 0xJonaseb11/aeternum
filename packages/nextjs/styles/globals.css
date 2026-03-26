@@ -101,7 +101,7 @@
 
 :root,
 [data-theme] {
-  background: var(--color-base-200);
+  background: var(--color-base-100);
 }
 
 .bg-pattern {
@@ -148,4 +148,32 @@
 
 .link:hover {
   opacity: 80%;
+}
+
+@layer components {
+  /* Global Input & Textarea Refinement */
+  .input,
+  .textarea,
+  .select {
+    @apply transition-all duration-300;
+  }
+
+  /* Aggressive System-Wide Focus States */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  .input:focus,
+  .textarea:focus,
+  .select:focus,
+  .input-bordered:focus,
+  .textarea-bordered:focus {
+    @apply border-primary! ring-4! ring-primary/15! outline-hidden! shadow-sm;
+    border-color: var(--color-primary) !important;
+  }
+
+  /* Specific fix for DaisyUI specific components */
+  .input:focus-within,
+  .textarea:focus-within {
+    @apply border-primary! ring-4! ring-primary/15!;
+  }
 }
