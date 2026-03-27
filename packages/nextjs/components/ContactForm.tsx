@@ -78,7 +78,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
               type="text"
               placeholder="Jonas Sebera"
               required
-              className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+              className="input input-bordered w-full rounded-2xl bg-base-200 border-none font-medium"
             />
           </div>
           <div className="form-control">
@@ -90,7 +90,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
               type="email"
               placeholder="jonas@aeternum.io"
               required
-              className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+              className="input input-bordered w-full rounded-2xl bg-base-200 border-none font-medium"
             />
           </div>
         </div>
@@ -105,7 +105,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
               type="text"
               placeholder="Aeternum Labs"
               required={type === "sales"}
-              className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+              className="input input-bordered w-full rounded-2xl bg-base-200 border-none font-medium"
             />
           </div>
         )}
@@ -132,7 +132,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
             rows={5}
             placeholder="Tell us more about how we can help..."
             required
-            className="textarea textarea-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium text-lg leading-relaxed pt-4"
+            className="textarea textarea-bordered w-full rounded-2xl bg-base-200 border-none font-medium text-lg leading-relaxed pt-4"
           ></textarea>
         </div>
 

@@ -33,7 +33,7 @@
   --color-warning: #f59e0b;
   --color-error: #ef4444;
 
-  --radius-field: 12px;
+  --radius-field: 16px; /* Preferred rounded-2xl feel */
   --radius-box: 24px;
   --tt-tailw: 6px;
 }
@@ -58,7 +58,7 @@
   --color-warning: #fbbf24;
   --color-error: #f87171;
 
-  --radius-field: 12px;
+  --radius-field: 16px; /* Preferred rounded-2xl feel */
   --radius-box: 24px;
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
@@ -98,19 +98,6 @@
     line-height: 1.1;
   }
 
-  /* Standard System-Wide Focus States (at base level to allow easy component overrides) */
-  input:focus,
-  textarea:focus,
-  select:focus,
-  .input:focus,
-  .textarea:focus,
-  .select:focus,
-  .input-bordered:focus,
-  .textarea-bordered:focus,
-  .select-bordered:focus {
-    @apply border-primary ring-4 ring-primary/15 outline-hidden shadow-sm;
-    border-color: var(--color-primary);
-  }
 }
 
 :root,
@@ -165,17 +152,59 @@
 }
 
 @layer components {
-  /* Global Input, Textarea & Select Refinement */
+  /* Global Input, Textarea & Select Refinement (Premium "Help Center" look) */
+  input,
+  textarea,
+  select,
   .input,
   .textarea,
   .select {
-    @apply transition-all duration-300;
+    @apply transition-all duration-200 shadow-sm! border-base-300! bg-base-100!;
+    border-width: 1px !important;
+    border-style: solid !important;
   }
 
   /* Specific fix for focus-within components */
   .input:focus-within,
   .textarea:focus-within,
   .select:focus-within {
-    @apply border-primary ring-4 ring-primary/15;
+    @apply ring-4! ring-primary/10! outline-none!;
+    outline: none !important;
   }
+}
+
+/* 
+  Ultra-Aggressive System-Wide Overrides 
+  Ensures the premium "Help Center" look (ring-primary/10) wins against any library/browser defaults.
+*/
+html body input:focus,
+html body textarea:focus,
+html body select:focus,
+html body .input:focus,
+html body .textarea:focus,
+html body .select:focus,
+html body .input-bordered:focus,
+html body .textarea-bordered:focus,
+html body .select-bordered:focus,
+html body .file-input:focus,
+html body .file-input-bordered:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 10%, transparent), var(--shadow-sm) !important;
+  border-color: transparent !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Ensure background and border are consistent too */
+html body .input,
+html body .textarea,
+html body .select,
+html body .input-bordered,
+html body .textarea-bordered,
+html body .select-bordered,
+html body .file-input,
+html body .file-input-bordered {
+  background-color: var(--color-base-100) !important;
+  border-color: var(--color-base-300) !important;
+  border-radius: var(--radius-field) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
