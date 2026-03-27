@@ -67,7 +67,7 @@ export default function HelpPage() {
               placeholder="Search for articles, guides, and more..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl py-5 pl-14 pr-6 text-lg"
+              className="input input-bordered w-full rounded-2xl py-5 pl-14 pr-6 text-lg"
             />
           </div>
         </div>

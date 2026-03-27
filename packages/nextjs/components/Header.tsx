@@ -47,8 +47,10 @@ export const HeaderMenuLinks = () => {
             <Link
               href={href}
               className={`${
-                isActive ? "text-primary bg-primary/10 shadow-inner" : "text-base-content/70"
-              } hover:bg-primary/5 hover:text-primary active:scale-95 transition-all duration-200 py-2 px-4 text-sm font-bold uppercase tracking-widest rounded-lg flex items-center gap-2`}
+                isActive
+                  ? "text-primary bg-primary/5 after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:bg-primary after:rounded-full"
+                  : "text-base-content/60"
+              } hover:bg-primary/5 hover:text-primary active:scale-95 transition-all duration-300 py-2.5 px-4 text-[11px] font-black uppercase tracking-[0.15em] rounded-xl flex items-center gap-2 relative`}
             >
               {icon}
               <span>{label}</span>

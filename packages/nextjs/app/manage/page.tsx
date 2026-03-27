@@ -15,21 +15,23 @@ const ManagePage: NextPage = () => {
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
-      <section className="bg-pattern pt-12 pb-10 sm:pt-16 sm:pb-14 border-b border-base-300 w-full">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[100vw]">
-          <div className="max-w-4xl mx-auto text-center min-w-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-widest mb-4 border border-secondary/20 shadow-sm transition-all hover:bg-secondary/20">
-              <AdjustmentsHorizontalIcon className="h-4 w-4 shrink-0" />
-              <span>Evidence Management</span>
-            </div>
-            <div className="flex justify-center mb-3">
-              <AppLogo className="h-12 w-12 sm:h-14 sm:w-14 shrink-0" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2 sm:mb-3 tracking-tight">
-              Manage your evidence & access
+      <section className="relative pt-10 pb-12 overflow-hidden border-b border-base-300/50">
+        {/* Premium Background Effects */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight text-base-content">
+              Manage your <br />
+              <span className="text-primary italic drop-shadow-sm">evidence & access</span>
             </h1>
-            <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto leading-relaxed">
-              Grant and revoke access to your evidence proofs, add backups, or permanently revoke proofs from the blockchain.
+
+            <p className="text-lg md:text-xl text-base-content/60 max-w-2xl mx-auto font-medium leading-relaxed">
+              Grant and revoke access to your evidence proofs, add backups, or permanently revoke proofs from the
+              blockchain.
             </p>
           </div>
         </div>
