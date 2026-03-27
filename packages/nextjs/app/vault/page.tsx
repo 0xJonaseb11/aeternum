@@ -4,7 +4,7 @@ import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
-import { ShieldCheckIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
+import { UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { AppLogo } from "~~/components/AppLogo";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
