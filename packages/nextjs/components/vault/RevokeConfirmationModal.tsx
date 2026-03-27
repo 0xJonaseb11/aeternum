@@ -40,15 +40,19 @@ export const RevokeConfirmationModal = ({
       confirmText="Revoke Proof"
       variant="error"
       isLoading={isLoading}
-      disabled={confirmText.toLowerCase() !== REQUIRED_TEXT}
+      disabled={(confirmText || "").trim().toLowerCase() !== REQUIRED_TEXT}
     >
       <div className="space-y-3 mt-2">
-        <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
+        <label
+          htmlFor="revoke-confirm-input"
+          className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1"
+        >
           Type <span className="text-error italic lowercase">"{REQUIRED_TEXT}"</span> to confirm
         </label>
         <input
+          id="revoke-confirm-input"
           type="text"
-          className="input input-bordered w-full font-mono text-sm focus:ring-2 focus:ring-error focus:border-transparent transition-all"
+          className="input input-bordered w-full font-mono text-sm transition-all"
           placeholder={REQUIRED_TEXT}
           value={confirmText}
           onChange={e => setConfirmText(e.target.value)}

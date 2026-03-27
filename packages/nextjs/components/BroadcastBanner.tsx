@@ -38,25 +38,33 @@ export const BroadcastBanner = () => {
 
   const bgClass =
     broadcast.type === "warning"
-      ? "bg-[#b45309] text-white"
+      ? "bg-warning text-warning-content shadow-warning/20"
       : broadcast.type === "error"
-        ? "bg-[#991b1b] text-white"
+        ? "bg-error text-error-content shadow-error/20"
         : broadcast.type === "success"
-          ? "bg-[#059669] text-white"
-          : "bg-[#d81b60] text-white";
+          ? "bg-success text-success-content shadow-success/20"
+          : "bg-primary text-primary-content shadow-primary/20";
 
   return (
     <div
-      className={`w-full py-1.5 px-4 shadow-lg border-b border-black/20 flex items-center justify-center gap-4 relative z-[100] animate-in fade-in slide-in-from-top-4 duration-500 ${bgClass}`}
+      className={`w-full py-2 px-4 shadow-xl border-b border-black/10 flex items-center justify-center gap-4 relative z-[100] animate-in fade-in slide-in-from-top-4 duration-700 ${bgClass}`}
     >
-      <div className="flex items-center gap-2 max-w-5xl overflow-hidden truncate">
-        <MegaphoneIcon className="h-4 w-4 shrink-0" />
-        <span className="text-xs font-black uppercase tracking-widest opacity-60 shrink-0">Update</span>
-        <span className="text-sm font-bold truncate">{broadcast.title}:</span>
-        <span className="text-sm opacity-90 truncate">{broadcast.content}</span>
+      <div className="flex items-center gap-3 max-w-5xl overflow-hidden truncate">
+        <div className="bg-white/20 p-1 rounded-md shrink-0">
+          <MegaphoneIcon className="h-3.5 w-3.5 shrink-0" />
+        </div>
+        <div className="flex items-center gap-2 truncate">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 shrink-0">Announcement</span>
+          <div className="h-3 w-px bg-current opacity-20 hidden sm:block"></div>
+          <span className="text-sm font-black truncate">{broadcast.title}</span>
+          <span className="text-sm opacity-90 truncate font-medium">— {broadcast.content}</span>
+        </div>
       </div>
-      <button onClick={handleDismiss} className="btn btn-ghost btn-xs btn-circle opacity-60 hover:opacity-100">
-        <XMarkIcon className="h-4 w-4" />
+      <button
+        onClick={handleDismiss}
+        className="bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition-colors flex items-center justify-center"
+      >
+        <XMarkIcon className="h-3.5 w-3.5 stroke-[3]" />
       </button>
     </div>
   );

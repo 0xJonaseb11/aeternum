@@ -119,7 +119,7 @@ export default function ContactForm({ formId, title, subtitle, type }: ContactFo
             type="text"
             placeholder={type === "support" ? "Issue with vault encryption" : "Enterprise plan inquiry"}
             required
-            className="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+            className="input input-bordered w-full rounded-2xl bg-base-200 border-none font-medium"
           />
         </div>
 

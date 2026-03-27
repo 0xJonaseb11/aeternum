@@ -27,33 +27,59 @@ const VaultPage: NextPage = () => {
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
-      <section className="bg-pattern pt-12 pb-10 sm:pt-16 sm:pb-14 border-b border-base-300 w-full">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[100vw]">
-          <div className="max-w-4xl mx-auto text-center min-w-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4 border border-primary/20">
-              <ShieldCheckIcon className="h-4 w-4 shrink-0" />
-              <span>Evidence Vault</span>
-            </div>
-            <div className="flex justify-center mb-3">
-              <AppLogo className="h-12 w-12 sm:h-14 sm:w-14 shrink-0" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-base-content mb-2 sm:mb-3">
-              Your encrypted evidence workspace
+      <section className="relative pt-10 pb-12 lg:pt-12 lg:pb-16 overflow-hidden border-b border-base-300/50">
+        {/* Premium Background Effects */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,_rgba(var(--color-primary-rgb),0.08),transparent_70%)]" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-tight text-base-content">
+              Your encrypted <br />
+              <span className="text-primary italic drop-shadow-sm">evidence workspace</span>
             </h1>
-            <div className="space-y-1">
-              <p className="text-sm sm:text-base text-base-content/70 max-w-2xl mx-auto">
+
+            <div className="space-y-4">
+              <p className="text-lg md:text-xl text-base-content/60 max-w-2xl mx-auto font-medium leading-relaxed">
                 Upload, anchor, and verify your evidence proofs. Files are encrypted locally; only you hold the keys.
               </p>
-              {scope.type === "org" && currentOrg ? (
-                <p className="text-[11px] sm:text-xs text-primary font-semibold max-w-2xl mx-auto">
-                  Team vault for <span className="font-bold">{currentOrg.name}</span>
-                  {currentRoleLabel ? <span className="text-primary/80"> · Your role: {currentRoleLabel}</span> : null}.
-                </p>
-              ) : (
-                <p className="text-[11px] sm:text-xs text-base-content/60 max-w-2xl mx-auto">
-                  Personal vault scoped to your connected wallet.
-                </p>
-              )}
+              <div className="flex justify-center mt-4">
+                {scope.type === "org" && currentOrg ? (
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass border border-primary/20 shadow-xl shadow-primary/5 group/scope hover:scale-105 transition-all duration-300">
+                    <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover/scope:bg-primary group-hover/scope:text-primary-content transition-colors">
+                      <UserGroupIcon className="h-5 w-5 stroke-[2.5]" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 opacity-50">
+                        Team Workspace
+                      </p>
+                      <p className="text-sm text-base-content font-black tracking-tight">
+                        {currentOrg.name}
+                        {currentRoleLabel ? <span className="text-primary opacity-40 mx-1">/</span> : null}
+                        <span className="opacity-70">{currentRoleLabel}</span>
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass border border-primary/20 shadow-xl shadow-primary/5 group/scope hover:scale-105 transition-all duration-300">
+                    <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover/scope:bg-primary group-hover/scope:text-primary-content transition-colors">
+                      <UserCircleIcon className="h-5 w-5 stroke-[2.5]" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 opacity-50">
+                        Vault Scope
+                      </p>
+                      <p className="text-sm text-base-content font-black tracking-tight">
+                        Personal vault <span className="text-primary opacity-40 mx-1">/</span>{" "}
+                        <span className="opacity-70">Secured by wallet</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
