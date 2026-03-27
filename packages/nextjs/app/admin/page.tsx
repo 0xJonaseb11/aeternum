@@ -8,8 +8,13 @@ import {
   ArrowPathIcon,
   BanknotesIcon,
   ChartBarIcon,
+  Cog6ToothIcon,
+  CommandLineIcon,
   EyeIcon,
+  GlobeAltIcon,
+  MegaphoneIcon,
   NoSymbolIcon,
+  ServerIcon,
   ShieldCheckIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
@@ -96,152 +101,302 @@ export default function AdminDashboard() {
     );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
-            <ShieldCheckIcon className="h-8 w-8 text-primary" />
-            Platform Owner Dashboard
-          </h1>
-          <p className="text-sm text-base-content/60 mt-1">
-            System-wide activity, usage metrics, and resource allocation.
-          </p>
+    <div className="flex flex-col grow w-full min-w-0 bg-base-100 selection:bg-primary/10 selection:text-primary">
+      <section className="relative overflow-hidden pt-12 pb-24 lg:pt-16 lg:pb-32 w-full">
+        {/* Premium Background Effects — Exactly as on Verification & Landing Pages */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 left-1/3 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] animate-pulse" />
+          <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[150px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,_rgba(var(--color-primary-rgb),0.12),transparent_70%)]" />
         </div>
-        <button onClick={fetchData} className="btn btn-ghost btn-sm">
-          Refresh Data
-        </button>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <StatCard
-          icon={<BanknotesIcon className="h-6 w-6" />}
-          label="Estimated MRR"
-          value={`$${stats?.mrr || 0}`}
-          loading={loading}
-          color="primary"
-        />
-        <StatCard
-          icon={<UsersIcon className="h-6 w-6" />}
-          label="Total Users"
-          value={stats?.totalUsers || 0}
-          loading={loading}
-          color="secondary"
-        />
-        <StatCard
-          icon={<ArrowPathIcon className="h-6 w-6" />}
-          label="Arweave Balance"
-          value={`${stats?.irysBalance || "0"} ETH`}
-          loading={loading}
-          color="accent"
-        />
-        <StatCard
-          icon={<ChartBarIcon className="h-6 w-6" />}
-          label="Active Subs"
-          value={stats?.activeSubscriptions || 0}
-          loading={loading}
-          color="success"
-        />
-      </div>
+        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-2 px-1">
+                <div className="p-1.5 rounded-lg bg-primary/5">
+                  <ShieldCheckIcon className="h-5 w-5 text-primary/70" />
+                </div>
+                <h2 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/70 whitespace-nowrap">
+                  Platform Operations
+                </h2>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-base-content uppercase">
+                Owner Dashboard
+              </h1>
+              <p className="text-sm text-base-content/50 mt-2 font-medium">
+                System-wide activity, usage metrics, and resource allocation.
+              </p>
+            </div>
+            <button
+              onClick={fetchData}
+              className="btn btn-primary btn-sm rounded-xl px-6 gap-2 shadow-lg shadow-primary/20 group uppercase font-black tracking-widest text-[10px]"
+            >
+              <ArrowPathIcon
+                className={`h-3.5 w-3.5 group-hover:rotate-180 transition-transform ${loading ? "animate-spin" : ""}`}
+              />
+              Refresh Data
+            </button>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body">
-              <h2 className="text-lg font-bold mb-6">Plan Distribution</h2>
-              <div className="space-y-6">
-                {stats?.planDistribution &&
-                  Object.entries(stats.planDistribution).map(([plan, count]) => (
-                    <div key={plan}>
-                      <div className="flex justify-between items-center text-sm mb-2">
-                        <span className="capitalize font-medium">{plan}</span>
-                        <span className="font-bold">{count} accounts</span>
-                      </div>
-                      <progress
-                        className={`progress w-full ${
-                          plan === "pro"
-                            ? "progress-primary"
-                            : plan === "business"
-                              ? "progress-secondary"
-                              : plan === "enterprise"
-                                ? "progress-accent"
-                                : "progress-success"
-                        }`}
-                        value={count}
-                        max={Math.max(...Object.values(stats.planDistribution), 1)}
-                      />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <StatCard
+              icon={<BanknotesIcon className="h-5 w-5" />}
+              label="Estimated MRR"
+              value={`$${stats?.mrr || 0}`}
+              loading={loading}
+              color="primary"
+            />
+            <StatCard
+              icon={<UsersIcon className="h-5 w-5" />}
+              label="Total Users"
+              value={stats?.totalUsers || 0}
+              loading={loading}
+              color="secondary"
+            />
+            <StatCard
+              icon={<ArrowPathIcon className="h-5 w-5" />}
+              label="Arweave Balance"
+              value={`${stats?.irysBalance || "0"} ETH`}
+              loading={loading}
+              color="accent"
+            />
+            <StatCard
+              icon={<ChartBarIcon className="h-5 w-5" />}
+              label="Active Subs"
+              value={stats?.activeSubscriptions || 0}
+              loading={loading}
+              color="success"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              <div className="card bg-base-100/50 backdrop-blur-md border border-base-300/50 shadow-xl shadow-primary/5 rounded-3xl overflow-hidden">
+                <div className="card-body p-8">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="p-1.5 rounded-lg bg-primary/5">
+                      <ChartBarIcon className="h-4 w-4 text-primary/70" />
                     </div>
-                  ))}
-                {!stats?.planDistribution && (
-                  <p className="text-base-content/40 italic">No subscription data available.</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="card bg-base-100 border border-base-300 shadow-sm">
-            <div className="card-body">
-              <h2 className="text-lg font-bold mb-4">Recent System Activity</h2>
-              <div className="overflow-x-auto">
-                <table className="table table-sm w-full">
-                  <thead>
-                    <tr>
-                      <th>Event</th>
-                      <th>At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats?.recentActivity?.map((event: any) => (
-                      <tr key={event.id}>
-                        <td className="font-medium text-xs">{event.event_type}</td>
-                        <td className="text-[10px] opacity-50">{new Date(event.at).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                    {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
-                      <tr>
-                        <td colSpan={2} className="text-center py-4 text-base-content/40 italic">
-                          No recent activity recorded.
-                        </td>
-                      </tr>
+                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-base-content/60">
+                      Plan Distribution
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                    {stats?.planDistribution &&
+                      Object.entries(stats.planDistribution).map(([plan, count]) => (
+                        <div key={plan} className="group">
+                          <div className="flex justify-between items-center text-sm mb-3">
+                            <span className="capitalize font-black text-xs tracking-wide text-base-content/70">
+                              {plan}
+                            </span>
+                            <span className="font-bold text-primary">{count} accounts</span>
+                          </div>
+                          <div className="relative h-2.5 w-full bg-base-300 rounded-full overflow-hidden">
+                            <div
+                              className={`absolute inset-y-0 left-0 transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.3)] ${
+                                plan === "pro"
+                                  ? "bg-primary"
+                                  : plan === "business"
+                                    ? "bg-secondary"
+                                    : plan === "enterprise"
+                                      ? "bg-accent"
+                                      : "bg-success"
+                              }`}
+                              style={{
+                                width: `${(count / Math.max(...Object.values(stats.planDistribution), 1)) * 100}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    {!stats?.planDistribution && (
+                      <p className="text-base-content/40 italic py-4">No subscription data available.</p>
                     )}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card bg-base-100/50 backdrop-blur-md border border-base-300/50 shadow-xl shadow-primary/5 rounded-3xl overflow-hidden font-mono">
+                <div className="card-body p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-1.5 rounded-lg bg-primary/5">
+                      <EyeIcon className="h-4 w-4 text-primary/70" />
+                    </div>
+                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-base-content/60">
+                      System Activity Logs
+                    </h2>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="table table-sm w-full">
+                      <thead>
+                        <tr className="border-base-300/50">
+                          <th className="text-[10px] uppercase font-black tracking-widest text-base-content/30">
+                            Event
+                          </th>
+                          <th className="text-[10px] uppercase font-black tracking-widest text-base-content/30">
+                            Timestamp
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {stats?.recentActivity?.map((event: any) => (
+                          <tr
+                            key={event.id}
+                            className="border-base-300/20 group hover:bg-base-200/40 transition-colors"
+                          >
+                            <td className="font-bold text-xs py-3 text-base-content/70">{event.event_type}</td>
+                            <td className="text-[10px] opacity-40">{new Date(event.at).toLocaleString()}</td>
+                          </tr>
+                        ))}
+                        {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
+                          <tr>
+                            <td colSpan={2} className="text-center py-8 text-base-content/30 italic text-xs">
+                              No recent activity recorded.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="card bg-base-100/50 backdrop-blur-md border border-base-300/50 shadow-xl shadow-primary/5 rounded-3xl overflow-hidden">
+                <div className="card-body p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-1.5 rounded-lg bg-primary/5">
+                      <ShieldCheckIcon className="h-4 w-4 text-primary/70" />
+                    </div>
+                    <h2 className="text-xs font-black uppercase tracking-[0.2em] text-base-content/60">
+                      Quick Actions
+                    </h2>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={handleHealthCheck}
+                      disabled={checkingHealth}
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-success/10 text-success group-hover:scale-110 transition-transform">
+                        {checkingHealth ? (
+                          <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                          <ShieldCheckIcon className="h-4 w-4" />
+                        )}
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Health Check
+                        </span>
+                        <span className="text-[10px] text-base-content/40">Run system diagnostics</span>
+                      </div>
+                    </button>
+
+                    <Link
+                      href="/admin/audit-logs"
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                        <EyeIcon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Audit Logs
+                        </span>
+                        <span className="text-[10px] text-base-content/40">View global transactions</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/admin/blocked"
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-error/10 text-error group-hover:scale-110 transition-transform">
+                        <NoSymbolIcon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Blocked List
+                        </span>
+                        <span className="text-[10px] text-base-content/40">Manage restricted access</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/admin/broadcast"
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-accent/10 text-accent group-hover:scale-110 transition-transform">
+                        <MegaphoneIcon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Broadcast
+                        </span>
+                        <span className="text-[10px] text-base-content/40">Notify all vault users</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/admin/settings"
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-secondary/10 text-secondary group-hover:scale-110 transition-transform">
+                        <Cog6ToothIcon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Settings
+                        </span>
+                        <span className="text-[10px] text-base-content/40">Global configuration</span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      href="/status"
+                      className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-start gap-4 h-14 rounded-2xl normal-case group"
+                    >
+                      <div className="p-2 rounded-lg bg-success/10 text-success group-hover:scale-110 transition-transform">
+                        <ServerIcon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start translate-y-[-1px]">
+                        <span className="font-black text-xs text-base-content/80 group-hover:text-primary transition-colors">
+                          Status Board
+                        </span>
+                        <span className="text-[10px] text-base-content/40">Live system health</span>
+                      </div>
+                    </Link>
+
+                    <div className="grid grid-cols-2 gap-3 mt-2">
+                      <Link
+                        href="/debug"
+                        className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-center gap-2 h-12 rounded-xl normal-case group p-0"
+                      >
+                        <CommandLineIcon className="h-3.5 w-3.5 text-base-content/40 group-hover:text-primary transition-colors" />
+                        <span className="font-black text-[9px] uppercase tracking-widest text-base-content/60 group-hover:text-primary">
+                          Debug
+                        </span>
+                      </Link>
+                      <Link
+                        href="/blockexplorer"
+                        className="btn btn-ghost hover:bg-base-200 border border-base-300/50 justify-center gap-2 h-12 rounded-xl normal-case group p-0"
+                      >
+                        <GlobeAltIcon className="h-3.5 w-3.5 text-base-content/40 group-hover:text-primary transition-colors" />
+                        <span className="font-black text-[9px] uppercase tracking-widest text-base-content/60 group-hover:text-primary">
+                          Explorer
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="card bg-base-100 border border-base-300 shadow-sm">
-          <div className="card-body">
-            <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={handleHealthCheck}
-                disabled={checkingHealth}
-                className="btn btn-sm btn-outline justify-start gap-2"
-              >
-                {checkingHealth ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  <ShieldCheckIcon className="h-4 w-4" />
-                )}
-                System Health Check
-              </button>
-              <Link href="/admin/audit-logs" className="btn btn-sm btn-outline justify-start gap-2">
-                <EyeIcon className="h-4 w-4" />
-                View Global Audit Logs
-              </Link>
-              <Link href="/admin/blocked" className="btn btn-sm btn-outline justify-start gap-2">
-                <NoSymbolIcon className="h-4 w-4" />
-                Manage Blocked Addresses
-              </Link>
-              <Link href="/admin/broadcast" className="btn btn-sm btn-outline justify-start gap-2">
-                <ArrowPathIcon className="h-4 w-4" />
-                Broadcast System Update
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {}
       {showHealthModal && healthData && (
@@ -309,18 +464,20 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden group hover:border-primary/50 transition-colors">
-      <div className="card-body p-6">
+    <div className="card bg-base-100/50 backdrop-blur-md border border-base-300/50 shadow-xl shadow-primary/5 overflow-hidden group hover:translate-y-[-4px] hover:border-primary/30 transition-all duration-300 rounded-3xl">
+      <div className="card-body p-8">
         <div
-          className={`rounded-xl bg-${color}/10 p-3 w-fit mb-4 group-hover:scale-110 transition-transform text-${color}`}
+          className={`rounded-xl bg-primary/5 p-3 w-fit mb-6 group-hover:scale-110 transition-transform text-${color} shadow-inner`}
         >
           {icon}
         </div>
-        <span className="text-xs font-bold uppercase tracking-widest text-base-content/50">{label}</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/40 leading-none">
+          {label}
+        </span>
         {loading ? (
-          <div className="h-8 w-24 bg-base-300 animate-pulse rounded mt-1"></div>
+          <div className="h-10 w-32 bg-base-300/50 animate-pulse rounded-lg mt-3"></div>
         ) : (
-          <div className="text-3xl font-black mt-1">{value}</div>
+          <div className="text-3xl font-black mt-2 tracking-tight text-base-content break-all">{value}</div>
         )}
       </div>
     </div>

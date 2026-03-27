@@ -15,15 +15,17 @@ function NavCard({ href, icon, title, description }: { href: string; icon: any; 
   return (
     <Link
       href={href}
-      className="card bg-base-100 border border-base-300 shadow-sm hover:border-primary/30 transition-all hover:shadow-md group"
+      className="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-sm hover:border-primary/30 transition-all hover:shadow-md group rounded-2xl"
     >
-      <div className="card-body flex-row items-center gap-4 py-6">
-        <div className="rounded-xl bg-primary/10 p-3 group-hover:scale-110 transition-transform">{icon}</div>
-        <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-base-content">{title}</h2>
-          <p className="text-xs text-base-content/60">{description}</p>
+      <div className="card-body flex-row items-center gap-5 py-5 px-6">
+        <div className="rounded-xl bg-primary/5 p-3 text-primary group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-300">
+          {icon}
         </div>
-        <span className="text-base-content/20 group-hover:text-primary transition-colors">→</span>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-bold text-base-content text-sm md:text-base">{title}</h2>
+          <p className="text-xs text-base-content/50 mt-0.5">{description}</p>
+        </div>
+        <span className="text-base-content/10 group-hover:text-primary/40 transition-colors text-lg">→</span>
       </div>
     </Link>
   );
@@ -44,59 +46,65 @@ function SettingsContent() {
   }, [searchParams]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-10">
-        <h1 className="text-3xl font-black text-base-content tracking-tight">Settings</h1>
-        <p className="text-sm text-base-content/60 mt-1">Manage your identity, subscription, and developer tools.</p>
+    <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <div className="mb-12">
+        <h1 className="text-3xl font-black text-base-content tracking-tight uppercase">Settings</h1>
+        <p className="text-sm text-base-content/50 mt-2 font-medium">
+          Manage your identity, subscription, and developer tools.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-12">
         <section>
-          <div className="flex items-center gap-2 mb-4 px-1">
-            <UserCircleIcon className="h-4 w-4 text-primary" />
-            <h2 className="text-[10px] uppercase font-black tracking-widest text-base-content/40">
-              Profile & Identity
-            </h2>
+          <div className="flex items-center gap-3 mb-6 px-1">
+            <div className="p-1.5 rounded-lg bg-primary/5">
+              <UserCircleIcon className="h-5 w-5 text-primary/70" />
+            </div>
+            <h2 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/70">Profile & Identity</h2>
           </div>
           <AccountSection />
-          <div className="mt-8">
+          <div className="mt-4">
             <ProfileEditor />
           </div>
         </section>
 
-        <section className="grid grid-cols-1 gap-3">
-          <div className="flex items-center gap-2 mb-1 px-1">
-            <CreditCardIcon className="h-4 w-4 text-primary" />
-            <h2 className="text-[10px] uppercase font-black tracking-widest text-base-content/40">Billing & Growth</h2>
+        <section className="grid grid-cols-1 gap-4">
+          <div className="flex items-center gap-3 mb-2 px-1">
+            <div className="p-1.5 rounded-lg bg-primary/5">
+              <CreditCardIcon className="h-5 w-5 text-primary/70" />
+            </div>
+            <h2 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/70">Billing & Growth</h2>
           </div>
           <NavCard
             href="/billing"
-            icon={<CreditCardIcon className="h-6 w-6 text-primary" />}
+            icon={<CreditCardIcon className="h-5 w-5" />}
             title="Subscription & Usage"
             description="View your plan, billing history, and resource consumption."
           />
           <NavCard
             href="/plans"
-            icon={<PlusIcon className="h-6 w-6 text-primary" />}
+            icon={<PlusIcon className="h-5 w-5" />}
             title="Upgrade Plan"
             description="Explore premium features and scale your evidence vault."
           />
         </section>
 
-        <section className="grid grid-cols-1 gap-3">
-          <div className="flex items-center gap-2 mb-1 px-1">
-            <KeyIcon className="h-4 w-4 text-primary" />
-            <h2 className="text-[10px] uppercase font-black tracking-widest text-base-content/40">Advanced Tools</h2>
+        <section className="grid grid-cols-1 gap-4">
+          <div className="flex items-center gap-3 mb-2 px-1">
+            <div className="p-1.5 rounded-lg bg-primary/5">
+              <KeyIcon className="h-5 w-5 text-primary/70" />
+            </div>
+            <h2 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/70">Advanced Tools</h2>
           </div>
           <NavCard
             href="/settings/api-keys"
-            icon={<KeyIcon className="h-6 w-6 text-primary" />}
+            icon={<KeyIcon className="h-5 w-5" />}
             title="Developer API Keys"
             description="Manage authentication keys for external integrations."
           />
           <NavCard
             href="/team"
-            icon={<UserGroupIcon className="h-6 w-6 text-primary" />}
+            icon={<UserGroupIcon className="h-5 w-5" />}
             title="Team & Organizations"
             description="Collaborate with others and manage access control."
           />
@@ -140,15 +148,15 @@ function AccountSection() {
   };
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
-      <div className="card-body gap-4">
-        <div className="flex items-center gap-4">
-          <div className="rounded-lg bg-primary/10 p-3">
-            <UserCircleIcon className="h-6 w-6 text-primary" />
+    <div className="card bg-base-100/40 border border-base-300/50 shadow-sm overflow-hidden rounded-2xl backdrop-blur-sm">
+      <div className="card-body gap-4 py-5 px-6">
+        <div className="flex items-center gap-5">
+          <div className="rounded-xl bg-primary/5 p-3 text-primary">
+            <UserCircleIcon className="h-5 w-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-base-content">Account</h2>
-            <p className="text-xs text-base-content/60">Manage your identity and wallet link.</p>
+            <h2 className="font-bold text-base-content md:text-lg">Account</h2>
+            <p className="text-xs text-base-content/50 mt-0.5">Manage your identity and wallet link.</p>
           </div>
         </div>
 
@@ -255,20 +263,20 @@ function ProfileEditor() {
   };
 
   return (
-    <div className="card bg-base-100 border border-base-300 shadow-sm overflow-hidden mt-4">
-      <div className="card-body gap-4">
+    <div className="card bg-base-100/40 border border-base-300/50 shadow-sm overflow-hidden mt-4 rounded-2xl backdrop-blur-sm">
+      <div className="card-body gap-4 py-5 px-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="rounded-lg bg-secondary/10 p-3">
-              <UserCircleIcon className="h-6 w-6 text-secondary" />
+          <div className="flex items-center gap-5">
+            <div className="rounded-xl bg-primary/5 p-3 text-primary">
+              <UserCircleIcon className="h-5 w-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-base-content">Public Profile</h2>
-              <p className="text-xs text-base-content/60">How others see you in teams and orgs.</p>
+              <h2 className="font-bold text-base-content md:text-lg">Public Profile</h2>
+              <p className="text-xs text-base-content/50 mt-0.5">How others see you in teams and orgs.</p>
             </div>
           </div>
           {!editing && (
-            <button className="btn btn-sm btn-outline" onClick={() => setEditing(true)}>
+            <button className="btn btn-xs md:btn-sm btn-outline" onClick={() => setEditing(true)}>
               Edit Profile
             </button>
           )}

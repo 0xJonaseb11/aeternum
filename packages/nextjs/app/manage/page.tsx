@@ -2,8 +2,7 @@
 
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { AdjustmentsHorizontalIcon, ShieldCheckIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
-import { AppLogo } from "~~/components/AppLogo";
+import { ShieldCheckIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useVaultScope } from "~~/hooks/vault/useVaultScope";

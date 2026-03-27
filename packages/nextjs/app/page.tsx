@@ -20,7 +20,7 @@ const Home: NextPage = () => {
   const [wordIndex, setWordIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
-  const staticPart = "Security for your ";
+  const staticPart = "SECURITY FOR YOUR ";
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -56,33 +56,43 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col grow w-full min-w-0 bg-base-100 selection:bg-primary/10 selection:text-primary">
-      {/* Premium Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32 w-full">
-        {/* Advanced Background Layers */}
+      <section className="relative overflow-hidden pt-16 pb-24 lg:pt-32 lg:pb-36 w-full">
+        {/* Premium Background Effects — Exactly as on Verification Page */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,_rgba(var(--color-primary-rgb),0.08),transparent_70%)]" />
+          <div className="absolute top-0 left-1/3 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] animate-pulse" />
+          <div className="absolute bottom-0 right-1/3 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[150px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,_rgba(var(--color-primary-rgb),0.12),transparent_70%)]" />
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full max-w-7xl">
-          <div className="max-w-5xl mx-auto text-left">
-            <div className="flex flex-col items-start mb-10 animate-fade-in group">
-              <div className="w-px h-12 bg-gradient-to-b from-transparent to-primary/40 mb-4 group-hover:h-16 transition-all duration-700" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/60">
-                Zero-knowledge evidence vault
-              </span>
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Waved centered feature badge — no distinct pill shape */}
+            <div className="flex flex-col items-center mb-10 md:mb-14 animate-fade-in group cursor-default">
+              <div className="w-px h-6 bg-gradient-to-b from-transparent to-primary/20 mb-4 group-hover:h-10 transition-all duration-700 ease-in-out" />
+              <div className="relative w-full max-w-md">
+                {/* Diffused light wave background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent blur-2xl opacity-60" />
+
+                <div className="relative py-2 flex justify-center text-center">
+                  <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.45em] text-primary/60">
+                    Zero-Knowledge Evidence Vault
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <h1 className="text-4xl md:text-8xl font-black text-base-content mb-8 md:mb-16 leading-[1.3] md:leading-[1.1] flex flex-col items-start uppercase overflow-hidden">
-              <span className="tracking-[0.1em] text-base-content/70 mb-2 md:mb-4">{line1}</span>
-              <span className="text-primary italic drop-shadow-xl min-h-[1.2em] tracking-normal normal-case">
+            <h1
+              suppressHydrationWarning
+              className="text-4xl md:text-7xl font-black text-base-content mb-10 md:mb-16 leading-[1.2] md:leading-[1.1] flex flex-col items-center uppercase overflow-hidden"
+            >
+              <span className="tracking-[0.1em] text-base-content/80 mb-2 md:mb-4">{line1}</span>
+              <span className="text-3xl md:text-6xl text-primary italic drop-shadow-2xl min-h-[1.2em] tracking-tight normal-case">
                 {line2}
                 <span className="inline-block w-[3px] h-[0.9em] bg-primary ml-3 animate-pulse align-middle" />
               </span>
             </h1>
 
-            <p className="text-lg md:text-2xl text-base-content/50 max-w-2xl leading-relaxed mb-12 font-medium">
+            <p className="text-lg md:text-2xl text-base-content/50 max-w-2xl mx-auto leading-relaxed mb-16 font-medium">
               Only you hold the key to your evidence. Encrypt locally, store forever on Arweave, and prove ownership
               without ever revealing the content.
             </p>
@@ -104,10 +114,12 @@ const Home: NextPage = () => {
             </div>
 
             {!connectedAddress && (
-              <div className="mt-12 flex items-center justify-center gap-2 opacity-50 animate-pulse">
-                <div className="h-1 w-1 rounded-full bg-base-content" />
-                <p className="text-xs font-bold uppercase tracking-widest leading-none">Connect your wallet to begin</p>
-                <div className="h-1 w-1 rounded-full bg-base-content" />
+              <div className="mt-16 flex items-center justify-center gap-3 opacity-40 hover:opacity-100 transition-opacity duration-500">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                <p className="text-xs font-bold uppercase tracking-[0.2em] leading-none">
+                  Connect wallet to unlock full encryption
+                </p>
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
               </div>
             )}
           </div>
