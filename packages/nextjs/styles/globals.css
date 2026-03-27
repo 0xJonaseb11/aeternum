@@ -196,3 +196,39 @@
     transition: all 0.2s ease-in-out !important;
   }
 }
+
+/* 
+  Ultra-Aggressive System-Wide Overrides 
+  Ensures the premium "Help Center" look (ring-primary/10) wins against any library/browser defaults.
+*/
+html body input:focus,
+html body textarea:focus,
+html body select:focus,
+html body .input:focus,
+html body .textarea:focus,
+html body .select:focus,
+html body .input-bordered:focus,
+html body .textarea-bordered:focus,
+html body .select-bordered:focus,
+html body .file-input:focus,
+html body .file-input-bordered:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 10%, transparent), var(--shadow-sm) !important;
+  border-color: transparent !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Ensure background and border are consistent too */
+html body .input,
+html body .textarea,
+html body .select,
+html body .input-bordered,
+html body .textarea-bordered,
+html body .select-bordered,
+html body .file-input,
+html body .file-input-bordered {
+  background-color: var(--color-base-100) !important;
+  border-color: var(--color-base-300) !important;
+  border-radius: var(--radius-field) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
