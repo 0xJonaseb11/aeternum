@@ -15,22 +15,18 @@ export const RPC_CHAIN_NAMES: Record<number, string> = {
   [chains.goerli.id]: "eth-goerli",
   [chains.sepolia.id]: "eth-sepolia",
   [chains.optimism.id]: "opt-mainnet",
-  [chains.optimismGoerli.id]: "opt-goerli",
   [chains.optimismSepolia.id]: "opt-sepolia",
   [chains.arbitrum.id]: "arb-mainnet",
-  [chains.arbitrumGoerli.id]: "arb-goerli",
   [chains.arbitrumSepolia.id]: "arb-sepolia",
   [chains.polygon.id]: "polygon-mainnet",
-  [chains.polygonMumbai.id]: "polygon-mumbai",
   [chains.polygonAmoy.id]: "polygon-amoy",
   [chains.astar.id]: "astar-mainnet",
   [chains.polygonZkEvm.id]: "polygonzkevm-mainnet",
   [chains.polygonZkEvmTestnet.id]: "polygonzkevm-testnet",
   [chains.base.id]: "base-mainnet",
-  [chains.baseGoerli.id]: "base-goerli",
   [chains.baseSepolia.id]: "base-sepolia",
   [chains.celo.id]: "celo-mainnet",
-  [chains.celoSepolia.id]: "celo-sepolia",
+  [chains.celoAlfajores.id]: "celo-alfajores",
 };
 
 export const getAlchemyHttpUrl = (chainId: number) => {
@@ -53,9 +49,6 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#1a3a3d",
   },
   [chains.polygon.id]: {
-    color: "#e91e63",
-  },
-  [chains.polygonMumbai.id]: {
     color: "#e91e63",
   },
   [chains.optimismSepolia.id]: {
@@ -82,7 +75,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.celo.id]: {
     color: "#e91e63",
   },
-  [chains.celoSepolia.id]: {
+  [chains.celoAlfajores.id]: {
     color: "#1a3a3d",
   },
   [chains.baseSepolia.id]: {
