@@ -4893,15 +4893,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:~3.0.1":
-  version: 3.0.1
-  resolution: "@react-native-async-storage/async-storage@npm:3.0.1"
+"@react-native-async-storage/async-storage@npm:~3.0.2":
+  version: 3.0.2
+  resolution: "@react-native-async-storage/async-storage@npm:3.0.2"
   dependencies:
     idb: 8.0.3
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: e8a9f1cf48da0e90eb914586d59cc715523160d720354b34c0756ca84a81ce389b14169e7158b93d214c8c17235a89b360a97c327e2b8ca9ed441cacc97aad0a
+  checksum: 4c094b87bd05844c4a330032c052c0fd83d63cc3b11f54b0ee46db5d2a7e18311051e736ae56bdb1d07df2adbcead22c6baba8024f5276b04013a3ef9df00bef
   languageName: node
   linkType: hard
 
@@ -5573,13 +5573,13 @@ __metadata:
     "@irys/upload": ^0.0.15
     "@irys/upload-ethereum": ^0.0.16
     "@rainbow-me/rainbowkit": 2.2.10
-    "@react-native-async-storage/async-storage": ~3.0.1
+    "@react-native-async-storage/async-storage": ~3.0.2
     "@scaffold-ui/components": ^0.1.9
     "@scaffold-ui/debug-contracts": ^0.1.8
     "@scaffold-ui/hooks": ^0.1.7
-    "@supabase/supabase-js": ^2.99.3
+    "@supabase/supabase-js": ^2.100.1
     "@tailwindcss/postcss": 4.2.2
-    "@tanstack/react-query": ~5.91.2
+    "@tanstack/react-query": ~5.95.2
     "@trivago/prettier-plugin-sort-imports": ~6.0.2
     "@types/circomlibjs": ^0.1.6
     "@types/node": ~25.5.0
@@ -5618,7 +5618,7 @@ __metadata:
     typescript: ~5.7.3
     usehooks-ts: ~3.1.0
     vercel: ~50.35.0
-    viem: 2.47.5
+    viem: 2.47.6
     wagmi: 2.19.5
     zod: ^4.3.6
     zustand: ~5.0.12
@@ -6314,21 +6314,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/auth-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/auth-js@npm:2.100.0"
+"@supabase/auth-js@npm:2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/auth-js@npm:2.100.1"
   dependencies:
     tslib: 2.8.1
-  checksum: b1991e90c670110814a5e337297d3ae654622c68b3842c178525bd0dbdca1312b13c352718bd3f54eaf0f7c71ba71be908691a1ec680b9633b7110d9fcafc49c
+  checksum: 204addcaaf042ef305d2dd3d0ccb1bc99a9694e773b75d452ec9a1d78668eb27653793b33d27241f6e7bd810ed6244ce45275be94a581954f793f9fb83a78a65
   languageName: node
   linkType: hard
 
-"@supabase/functions-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/functions-js@npm:2.100.0"
+"@supabase/functions-js@npm:2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/functions-js@npm:2.100.1"
   dependencies:
     tslib: 2.8.1
-  checksum: 1cb9ebaba53008f09157de55203d2ee44354a9cb8d50bb6818c4ab9533925d40f3157935b348b34499a711bd6fe0180b6ecb287231b3f54006709bd6b750ad24
+  checksum: 8b76dcc5549b503baf92be4a4a9b57c4df2862b2ca51b554b6346fd48d25183d0bcb8dfef6b1381302b22740ddfd5ee12db0a8563503c3186dd9bb76c1e6a028
   languageName: node
   linkType: hard
 
@@ -6339,47 +6339,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/postgrest-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/postgrest-js@npm:2.100.0"
+"@supabase/postgrest-js@npm:2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/postgrest-js@npm:2.100.1"
   dependencies:
     tslib: 2.8.1
-  checksum: 296b926a8841a375dd4f31b80348d80850a78c960abf27c0971a6b56f2da62a1f7de07c65180037e9d69962c1baa8744094e5b332953e3ca1b10e841f1b250b9
+  checksum: 09ae151e7a0d684ad2b1ab2a996e9a96a9cd3c3f8099bf72caf4b88b43f38bb1b1c4fc345c9d592ef21509d4a4409754f03048b9e30566183e3eb9eb1b142d4b
   languageName: node
   linkType: hard
 
-"@supabase/realtime-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/realtime-js@npm:2.100.0"
+"@supabase/realtime-js@npm:2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/realtime-js@npm:2.100.1"
   dependencies:
     "@supabase/phoenix": ^0.4.0
     "@types/ws": ^8.18.1
     tslib: 2.8.1
     ws: ^8.18.2
-  checksum: 76fea5531d1b7cdb4f35a35225db0cff8f23307b3b94305386c00445db8c633b3cb31d9b342f5e7efc2ec5b5c956de43b35ae091e1a7b2aec0a4990c63c01c04
+  checksum: 4a955fcdba8ed5ccfe0a09f5f0bff1b4c45bd1185886fa4f9adcede4c49fe9fdd741241ecf2c850595fa9a5ae2053b4d57698c3f21eb28490082af6d25927748
   languageName: node
   linkType: hard
 
-"@supabase/storage-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/storage-js@npm:2.100.0"
+"@supabase/storage-js@npm:2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/storage-js@npm:2.100.1"
   dependencies:
     iceberg-js: ^0.8.1
     tslib: 2.8.1
-  checksum: fb227fc3604a3b78027ab7b4d0ba1952a812dbde21892a05a60b72f42b3a6a1ec11925a3e6561450a98cd72dc4d78d29ee6d8bbe328c030fe4a6197d4459d69b
+  checksum: f11b8e3d972c7f79285bb31f618eba0152de47e9ab7967a66168ae07b6ad94cefd7ee908c25e24999462858d32e1c13c845ff3e78971a89c035f8801f73ce22b
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.99.3":
-  version: 2.100.0
-  resolution: "@supabase/supabase-js@npm:2.100.0"
+"@supabase/supabase-js@npm:^2.100.1":
+  version: 2.100.1
+  resolution: "@supabase/supabase-js@npm:2.100.1"
   dependencies:
-    "@supabase/auth-js": 2.100.0
-    "@supabase/functions-js": 2.100.0
-    "@supabase/postgrest-js": 2.100.0
-    "@supabase/realtime-js": 2.100.0
-    "@supabase/storage-js": 2.100.0
-  checksum: 25ccf79f6f50cb5ab4fcd7122e0a5400d803971fb0bb09dfb21b98f6b339d8cd30352063b1800d891a8ea94a78c48dcce5696807a4bca48b1bea3ba240f050f1
+    "@supabase/auth-js": 2.100.1
+    "@supabase/functions-js": 2.100.1
+    "@supabase/postgrest-js": 2.100.1
+    "@supabase/realtime-js": 2.100.1
+    "@supabase/storage-js": 2.100.1
+  checksum: f1f29a1766a2c1a02fdeaf5f63eab00dc25d0838b96c32d55c3702aca72a065c9dce0d012abed79ea93d99c1c8a7a095ece84f291e7d92077bd4ae3ed4d0f0ce
   languageName: node
   linkType: hard
 
@@ -6572,21 +6572,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.91.2":
-  version: 5.91.2
-  resolution: "@tanstack/query-core@npm:5.91.2"
-  checksum: 415ed176f5229344c8b37dd2483f23b57fe52ff505fd2149da06a5e401663652b88cf171ffc095b28442d02a52f0df99120511b89dd91d84ef710199dae512c2
+"@tanstack/query-core@npm:5.95.2":
+  version: 5.95.2
+  resolution: "@tanstack/query-core@npm:5.95.2"
+  checksum: 25eed48481fbfea07f0f324b5f906acfa6ea8f90cf2b82d476cb5e34055379284ac88fb67e0a6437e4fc3280f67c1d79212a7c26c627f1c03935bd2eaacaf689
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:~5.91.2":
-  version: 5.91.3
-  resolution: "@tanstack/react-query@npm:5.91.3"
+"@tanstack/react-query@npm:~5.95.2":
+  version: 5.95.2
+  resolution: "@tanstack/react-query@npm:5.95.2"
   dependencies:
-    "@tanstack/query-core": 5.91.2
+    "@tanstack/query-core": 5.95.2
   peerDependencies:
     react: ^18 || ^19
-  checksum: 42873cd05b3a787501b979fe545d1f8c49b0b854d1de71dad8a94326e427c1cbaab70f46e9105bd26d605f87338b901a9d20c70774fa0168c8ba967941b293c9
+  checksum: 9e3eac1ce0b561c8d07b0ad1125ca7a11862e779a64df48c0e518338d304a077f866b8780fb53d1577a49a19166c97d83c856f30e99f02d764176770aa992c5a
   languageName: node
   linkType: hard
 
@@ -22415,28 +22415,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:2.47.5, viem@npm:^2.1.1, viem@npm:^2.27.0":
-  version: 2.47.5
-  resolution: "viem@npm:2.47.5"
-  dependencies:
-    "@noble/curves": 1.9.1
-    "@noble/hashes": 1.8.0
-    "@scure/bip32": 1.7.0
-    "@scure/bip39": 1.6.0
-    abitype: 1.2.3
-    isows: 1.0.7
-    ox: 0.14.5
-    ws: 8.18.3
-  peerDependencies:
-    typescript: ">=5.0.4"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: bfc36954576347ac8437da3986c9c5f36e6b2227cc6e5a5e4e0a5c325b06347f2a41b29741546420b3a7b52558608d95acf7c59df2b4753b3a1009e490edd074
-  languageName: node
-  linkType: hard
-
-"viem@npm:>=2.29.0, viem@npm:^2.27.2, viem@npm:^2.31.7":
+"viem@npm:2.47.6, viem@npm:>=2.29.0, viem@npm:^2.27.2, viem@npm:^2.31.7":
   version: 2.47.6
   resolution: "viem@npm:2.47.6"
   dependencies:
@@ -22454,6 +22433,27 @@ __metadata:
     typescript:
       optional: true
   checksum: 3aefa1edc74598affb715f2b2c325db0fad2330e193a94fa7ff0293acd4b24b8a9ea3d082d78dc40c763e051b07853320074a69b1e72621ac339ccb1995ac92b
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.1.1, viem@npm:^2.27.0":
+  version: 2.47.5
+  resolution: "viem@npm:2.47.5"
+  dependencies:
+    "@noble/curves": 1.9.1
+    "@noble/hashes": 1.8.0
+    "@scure/bip32": 1.7.0
+    "@scure/bip39": 1.6.0
+    abitype: 1.2.3
+    isows: 1.0.7
+    ox: 0.14.5
+    ws: 8.18.3
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: bfc36954576347ac8437da3986c9c5f36e6b2227cc6e5a5e4e0a5c325b06347f2a41b29741546420b3a7b52558608d95acf7c59df2b4753b3a1009e490edd074
   languageName: node
   linkType: hard
 
