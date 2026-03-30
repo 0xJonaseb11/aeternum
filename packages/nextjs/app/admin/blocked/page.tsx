@@ -6,11 +6,12 @@ import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 import { ArrowLeftIcon, NoSymbolIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { BlockedItem } from "~~/types/admin";
 
 export default function AdminBlocked() {
   const { session, user } = useSupabaseAuth();
   const { address: adminAddress } = useAccount();
-  const [blocked, setBlocked] = useState<any[]>([]);
+  const [blocked, setBlocked] = useState<BlockedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
 

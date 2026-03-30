@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "~~/lib/supabase";
+import { SystemHealth } from "~~/types/admin";
 
 export async function GET() {
-  const details: any = {
+  const details: SystemHealth["details"] = {
     supabase: "unconfigured",
     stripe: "unconfigured",
     arweave: "unconfigured",

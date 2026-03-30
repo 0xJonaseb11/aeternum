@@ -75,7 +75,7 @@ export default function BillingPage() {
   if (loading) return <div className="p-8 text-center">Loading subscription details…</div>;
 
   const isPaid = data && data.plan !== "free";
-  const limits = data ? getPlanLimits(data.plan as any) : null;
+  const limits = data ? getPlanLimits(data.plan as "free" | "pro" | "business" | "enterprise") : null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

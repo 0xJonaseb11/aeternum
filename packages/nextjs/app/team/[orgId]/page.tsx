@@ -311,7 +311,7 @@ export default function TeamOrgPage() {
               </form>
             </section>
           )}
-          {canManage && <OrgSettingsEditor session={session as any} org={org} fetchOrg={fetchOrg} />}
+          {canManage && <OrgSettingsEditor session={session} org={org} fetchOrg={fetchOrg} />}
         </>
       )}
     </>
@@ -355,8 +355,8 @@ function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; 
       toast.success("Organization updated");
       setEditing(false);
       fetchOrg();
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setSaving(false);
     }

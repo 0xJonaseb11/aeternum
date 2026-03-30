@@ -1,11 +1,9 @@
 "use client";
 
 import { Address } from "@scaffold-ui/components";
-import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import { UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
-import { AppLogo } from "~~/components/AppLogo";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import { EvidenceList } from "~~/components/vault/EvidenceList";
 import { UploadEvidence } from "~~/components/vault/UploadEvidence";
@@ -13,7 +11,7 @@ import deployedContracts from "~~/contracts/deployedContracts";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { useVaultScope } from "~~/hooks/vault/useVaultScope";
 
-const VaultPage: NextPage = () => {
+const VaultPage = () => {
   const { address: connectedAddress, isConnecting, chain } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const { scope, setScope, organizations, loadingOrgs } = useVaultScope();
@@ -21,9 +19,7 @@ const VaultPage: NextPage = () => {
   const currentRoleLabel =
     currentOrg?.myRole != null ? `${currentOrg.myRole.charAt(0).toUpperCase()}${currentOrg.myRole.slice(1)}` : null;
   const isWrongNetwork = chain && chain.id !== targetNetwork.id;
-  const hasVaultContract = Boolean(
-    deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault,
-  );
+
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
@@ -155,7 +151,7 @@ const VaultPage: NextPage = () => {
                 Switch to {targetNetwork.name} to use the Evidence Vault.
               </p>
             </div>
-          ) : connectedAddress && !hasVaultContract ? (
+          ) : connectedAddress && !deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault ? (
             <div className="rounded-2xl border border-base-300 bg-base-100 p-6 sm:p-8 text-center min-w-0">
               <p className="font-bold text-base-content mb-1 text-sm sm:text-base">Vault not available</p>
               <p className="text-base-content/60 text-xs sm:text-sm">Evidence Vault is not deployed on this network.</p>

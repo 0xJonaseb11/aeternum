@@ -11,6 +11,7 @@ import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
   CloudArrowUpIcon,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   KeyIcon,
@@ -116,6 +117,7 @@ export const EvidenceCard = ({
   const { writeContractAsync: vaultContractWrite } = useScaffoldWriteContract({
     contractName: "EvidenceVault",
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { session, user } = useSupabaseAuth();
 
   useEffect(() => {
@@ -163,6 +165,7 @@ export const EvidenceCard = ({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDetails = async () => {
     try {
       const blob = await createCertificatePdf({

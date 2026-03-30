@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { MegaphoneIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { BroadcastItem } from "~~/types/admin";
 
 export const BroadcastBanner = () => {
-  const [broadcast, setBroadcast] = useState<any>(null);
+  const [broadcast, setBroadcast] = useState<BroadcastItem | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

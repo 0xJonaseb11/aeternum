@@ -42,10 +42,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Could not create checkout session" }, { status: 500 });
     }
     return NextResponse.json({ url });
-  } catch (err: any) {
-    logger.error("Stripe checkout uncaught error", { error: err instanceof Error ? err.message : String(err) });
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err : new Error(String(err));
+    logger.error("Stripe checkout uncaught error", { error: error.message });
     return NextResponse.json(
-      { error: err.message || "Internal Server Error", details: err.toString() },
+      { error: error.message || "Internal Server Error", details: String(err) },
       { status: 500 },
     );
   }

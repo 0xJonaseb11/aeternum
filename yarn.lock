@@ -20118,9 +20118,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "se-2@workspace:."
   dependencies:
-    "@openzeppelin/contracts": 5.6.1
-    "@openzeppelin/contracts-upgradeable": 5.6.1
-    "@openzeppelin/hardhat-upgrades": ^3.9.1
     husky: ~9.1.6
     lint-staged: ~16.4.0
   languageName: unknown

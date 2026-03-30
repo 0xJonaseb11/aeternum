@@ -6,11 +6,12 @@ import toast from "react-hot-toast";
 import { useAccount } from "wagmi";
 import { ArrowLeftIcon, Cog6ToothIcon, GlobeAltIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { GlobalSettings } from "~~/types/admin";
 
 export default function AdminSettings() {
   const { session, user } = useSupabaseAuth();
   const { address: adminAddress } = useAccount();
-  const [settings, setSettings] = useState<Record<string, any>>({});
+  const [settings, setSettings] = useState<Partial<GlobalSettings>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -38,7 +39,7 @@ export default function AdminSettings() {
     if (user) void fetchSettings();
   }, [user, fetchSettings]);
 
-  const updateSetting = async (key: string, value: any) => {
+  const updateSetting = async (key: string, value: string | number | boolean) => {
     setSaving(key);
     try {
       const res = await fetch("/api/admin/settings", {

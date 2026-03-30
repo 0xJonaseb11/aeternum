@@ -47,7 +47,7 @@ export const RevokeConfirmationModal = ({
           htmlFor="revoke-confirm-input"
           className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1"
         >
-          Type <span className="text-error italic lowercase">"{REQUIRED_TEXT}"</span> to confirm
+          Type <span className="text-error italic lowercase">&quot;{REQUIRED_TEXT}&quot;</span> to confirm
         </label>
         <input
           id="revoke-confirm-input"
