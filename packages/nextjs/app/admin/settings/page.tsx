@@ -21,7 +21,7 @@ export default function AdminSettings() {
     try {
       const res = await fetch("/api/admin/settings", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": adminAddress || "",
         },
       });

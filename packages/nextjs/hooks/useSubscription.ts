@@ -25,7 +25,7 @@ export function useSubscription() {
     setError(null);
     try {
       const res = await fetch("/api/billing/subscription", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` } ,
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));

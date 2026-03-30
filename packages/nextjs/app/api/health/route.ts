@@ -15,7 +15,7 @@ export async function GET() {
     try {
       const { count, error } = await supabase.from("profiles").select("*", { count: "exact", head: true });
       details.supabase = error ? "error" : "ok";
-      if (!error) details.userCount = count;
+      if (!error) details.userCount = count ?? undefined;
     } catch {
       details.supabase = "error";
     }
@@ -38,7 +38,7 @@ export async function GET() {
 
   details.ipfs = process.env.PINATA_JWT ? "ok" : "unconfigured";
 
-  const allOk = ["supabase", "stripe", "arweave"].every(k => details[k] === "ok");
+  const allOk = (["supabase", "stripe", "arweave"] as const).every(k => details[k] === "ok");
 
   return NextResponse.json(
     {

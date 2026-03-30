@@ -28,7 +28,7 @@ export function useVaultScope() {
     setLoading(true);
     try {
       const res = await fetch("/api/organizations", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       if (!res.ok) {
         setOrganizations([]);
