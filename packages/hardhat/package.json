@@ -34,7 +34,7 @@
     "snarkjs": "^0.7.0"
   },
   "devDependencies": {
-    "@ethersproject/abi": "~5.7.0",
+    "@ethersproject/abi": "~5.8.0",
     "@ethersproject/providers": "~5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "~3.0.0",
     "@nomicfoundation/hardhat-ethers": "~4.0.6",
