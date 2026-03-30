@@ -61,7 +61,6 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "abitype": "1.2.3",
-    "autoprefixer": "^10.4.20",
     "bgipfs": "~0.0.12",
     "eslint": "^9.21.0",
     "eslint-config-next": "^15.5.10",
