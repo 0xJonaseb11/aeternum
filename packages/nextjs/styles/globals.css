@@ -213,7 +213,9 @@ html body .select-bordered:focus,
 html body .file-input:focus,
 html body .file-input-bordered:focus {
   outline: none !important;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 10%, transparent), var(--shadow-sm) !important;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 10%, transparent),
+    var(--shadow-sm) !important;
   border-color: transparent !important;
   transition: all 0.2s ease-in-out !important;
 }
