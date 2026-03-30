@@ -189,7 +189,10 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                             <div className="avatar placeholder">
                               <div className="bg-primary/10 text-primary rounded-xl w-10 border border-primary/10">
                                 {member.avatar_url ? (
-                                  <img src={member.avatar_url} alt={member.full_name || ""} />
+                                  <>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={member.avatar_url} alt={member.full_name || ""} />
+                                  </>
                                 ) : (
                                   <span className="text-sm font-bold">
                                     {(member.full_name || member.email || "M")[0].toUpperCase()}

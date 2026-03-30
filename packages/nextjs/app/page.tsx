@@ -236,12 +236,14 @@ const Home: NextPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-12 opacity-50 hover:opacity-100 transition-opacity duration-1000 grayscale hover:grayscale-0">
             <div className="flex items-center gap-6 group/tech">
               <div className="bg-white p-4 rounded-[1.5rem] shadow-xl shadow-blue-500/10 transition-transform group-hover/tech:scale-110 border border-base-200/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/base-logo.png" alt="Base L2" className="h-12 w-12 object-contain" />
               </div>
               <span className="text-2xl font-black tracking-tighter text-base-content whitespace-nowrap">BASE L2</span>
             </div>
             <div className="flex items-center gap-6 group/tech">
               <div className="bg-white p-4 rounded-[1.5rem] shadow-xl shadow-black/5 transition-transform group-hover/tech:scale-110 border border-base-200/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/arweave.png" alt="Arweave" className="h-12 w-12 object-contain" />
               </div>
               <span className="text-2xl font-black tracking-tighter uppercase text-base-content whitespace-nowrap">
@@ -250,6 +252,7 @@ const Home: NextPage = () => {
             </div>
             <div className="flex items-center gap-6 group/tech">
               <div className="bg-white p-4 rounded-[1.5rem] shadow-xl shadow-primary/10 transition-transform group-hover/tech:scale-110 overflow-hidden border border-base-200/50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/zkproofs.jpeg" alt="ZK-Proof" className="h-12 w-12 object-cover" />
               </div>
               <span className="text-2xl font-black tracking-tighter uppercase text-base-content whitespace-nowrap">
