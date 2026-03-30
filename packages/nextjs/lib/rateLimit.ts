@@ -26,7 +26,7 @@ export async function rateLimit(identifier: string, prefix: string): Promise<boo
 
   // If Supabase is unavailable (misconfigured), fall back to memory limit
   if (!supabase) {
-    let entry = store.get(key);
+    const entry = store.get(key);
     if (!entry || now >= entry.resetAt) {
       store.set(key, { count: 1, resetAt: now + config.windowMs });
       return true;
