@@ -63,8 +63,8 @@ export async function POST(req: NextRequest) {
         (sub.metadata?.plan as PlanId) ||
         (sub.items?.data?.[0]?.price?.id ? planFromPriceId(sub.items.data[0].price.id) : ("pro" as PlanId));
       const status = stripeStatusToOur(sub.status);
-      const periodEnd = (sub as any).current_period_end
-        ? new Date((sub as any).current_period_end * 1000).toISOString()
+      const periodEnd = (sub as unknown as { current_period_end?: number }).current_period_end
+        ? new Date((sub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
         : null;
       const amount = sub.items?.data?.[0]?.price?.unit_amount || 0;
 

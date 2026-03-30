@@ -1,5 +1,7 @@
 "use client";
 
+import { type Session } from "@supabase/supabase-js";
+
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -318,7 +320,7 @@ export default function TeamOrgPage() {
   );
 }
 
-function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; org: Org; fetchOrg: () => void }>) {
+function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: Session | null; org: Org; fetchOrg: () => void }>) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
