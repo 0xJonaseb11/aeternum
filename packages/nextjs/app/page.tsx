@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAccount } from "wagmi";
 import {
   ArrowRightIcon,
   CloudArrowUpIcon,
-  DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   LockClosedIcon,
   ShieldCheckIcon,
@@ -16,7 +15,7 @@ import {
 
 const Home = () => {
   const { address: connectedAddress } = useAccount();
-  const words = ["Digital Truth", "Critical Evidence", "Private Records", "Permanent Legacy"];
+  const words = useMemo(() => ["Digital Truth", "Critical Evidence", "Private Records", "Permanent Legacy"], []);
   const [wordIndex, setWordIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isTyping, setIsTyping] = useState(true);
