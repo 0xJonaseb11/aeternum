@@ -64,7 +64,7 @@
     "autoprefixer": "~10.4.27",
     "bgipfs": "~0.0.12",
     "eslint": "^9.0.0",
-    "eslint-config-next": "~16.0.0",
+    "eslint-config-next": "~16.2.1",
     "eslint-config-prettier": "~10.1.1",
     "eslint-plugin-prettier": "~5.5.5",
     "postcss": "~8.5.8",
@@ -72,7 +72,7 @@
     "tailwindcss": "4.2.2",
     "type-fest": "~5.5.0",
     "typescript": "~5.7.3",
-    "vercel": "~50.35.0"
+    "vercel": "~50.37.3"
   },
   "packageManager": "yarn@3.8.7"
 }
