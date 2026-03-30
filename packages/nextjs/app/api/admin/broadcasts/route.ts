@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isPlatformAdmin } from "~~/lib/rbac/isAdmin";
 import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
+import { BroadcastItem } from "~~/types/admin";
 
 export async function GET(req: NextRequest) {
   const user = await getCurrentUserFromRequest(req);
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 });
     }
 
-    const payload: any = {
+    const payload: Partial<BroadcastItem> = {
       title,
       content,
       status,

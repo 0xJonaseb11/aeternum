@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ClockIcon,
   CloudArrowUpIcon,
@@ -152,10 +153,11 @@ export default function AboutPage() {
               <div className="space-y-6">
                 <div className="glass p-8 rounded-[2rem] border border-base-300 shadow-xl group hover:-translate-y-3 transition-all duration-500 flex flex-col items-center text-center">
                   <div className="bg-white/5 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary transition-all p-2.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src="/arweave.png"
                       alt="Arweave"
+                      width={56}
+                      height={56}
                       className="h-full w-full object-contain grayscale group-hover:grayscale-0 transition-all"
                     />
                   </div>

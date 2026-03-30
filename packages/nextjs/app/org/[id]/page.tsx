@@ -2,6 +2,7 @@
 
 import { use, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeftIcon,
   BuildingOfficeIcon,
@@ -52,8 +53,8 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
       await updateOrg({ name: name || organization.name, description: description || organization.description });
       setIsEditing(false);
       notification.success("Organization updated");
-    } catch (err: any) {
-      notification.error(err.message);
+    } catch (err: unknown) {
+      notification.error(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -63,8 +64,8 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
       await addMember(newMemberId, newMemberRole);
       setNewMemberId("");
       notification.success("Member added");
-    } catch (err: any) {
-      notification.error(err.message);
+    } catch (err: unknown) {
+      notification.error(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -189,10 +190,13 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
                             <div className="avatar placeholder">
                               <div className="bg-primary/10 text-primary rounded-xl w-10 border border-primary/10">
                                 {member.avatar_url ? (
-                                  <>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={member.avatar_url} alt={member.full_name || ""} />
-                                  </>
+                                  <Image
+                                    src={member.avatar_url}
+                                    alt={member.full_name || ""}
+                                    width={40}
+                                    height={40}
+                                    className="rounded-xl"
+                                  />
                                 ) : (
                                   <span className="text-sm font-bold">
                                     {(member.full_name || member.email || "M")[0].toUpperCase()}

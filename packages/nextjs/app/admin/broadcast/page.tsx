@@ -14,11 +14,12 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { BroadcastItem } from "~~/types/admin";
 
 export default function AdminBroadcast() {
   const { session, user } = useSupabaseAuth();
   const { address } = useAccount();
-  const [broadcasts, setBroadcasts] = useState<any[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -92,7 +93,7 @@ export default function AdminBroadcast() {
     }
   };
 
-  const handleEdit = (b: any) => {
+  const handleEdit = (b: BroadcastItem) => {
     setEditingId(b.id);
     setTitle(b.title);
     setContent(b.content);
