@@ -57,7 +57,7 @@
     "verify": "yarn hardhat:verify"
   },
   "devDependencies": {
-    "@types/chai": "~4.3.19",
+    "@types/chai": "~5.2.3",
     "@types/circomlibjs": "^0",
     "@types/react-dom": "^19.2.3",
     "@types/snarkjs": "^0",
