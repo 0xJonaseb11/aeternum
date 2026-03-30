@@ -11,9 +11,10 @@ export interface AuditLogEntry {
 export interface SystemHealth {
   status: "healthy" | "degraded" | "down";
   details: {
-    supabase: "ok" | "error";
-    stripe: "ok" | "error";
-    arweave: "ok" | "error";
+    supabase: "ok" | "error" | "unconfigured";
+    stripe: "ok" | "error" | "unconfigured";
+    arweave: "ok" | "error" | "unconfigured";
+    ipfs: "ok" | "error" | "unconfigured";
     userCount?: number;
   };
 }

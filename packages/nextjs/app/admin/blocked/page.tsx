@@ -24,7 +24,7 @@ export default function AdminBlocked() {
     try {
       const res = await fetch("/api/admin/blocked", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": adminAddress || "",
         },
       });
