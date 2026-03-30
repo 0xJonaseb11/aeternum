@@ -4679,7 +4679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts-upgradeable@npm:^5.6.1":
+"@openzeppelin/contracts-upgradeable@npm:5.6.1, @openzeppelin/contracts-upgradeable@npm:^5.6.1":
   version: 5.6.1
   resolution: "@openzeppelin/contracts-upgradeable@npm:5.6.1"
   peerDependencies:
@@ -4688,7 +4688,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts@npm:^5.6.1":
+"@openzeppelin/contracts@npm:5.6.1, @openzeppelin/contracts@npm:^5.6.1":
   version: 5.6.1
   resolution: "@openzeppelin/contracts@npm:5.6.1"
   checksum: 4a1c1d3f7f59b821cc16661faf16d0d723c7e4d83cad2717c7c9f75c3006e724db28bd27c8a14bebe17c5d29838d12d8e9428675d2892b4e719105ecd0628d58
