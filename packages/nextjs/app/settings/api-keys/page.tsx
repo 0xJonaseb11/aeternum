@@ -26,7 +26,7 @@ export default function ApiKeysPage() {
     setLoading(true);
     try {
       const res = await fetch("/api/api-keys", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       if (!res.ok) throw new Error("Failed to load keys");
       const data = await res.json();
@@ -44,7 +44,7 @@ export default function ApiKeysPage() {
     try {
       const res = await fetch("/api/api-keys", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({ name: "API Key " + (keys.length + 1) }),
       });
       const data = await res.json();
@@ -65,7 +65,7 @@ export default function ApiKeysPage() {
       try {
         const res = await fetch(`/api/api-keys/${id}`, {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${session.access_token}` },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
         });
         if (res.ok) {
           void fetchKeys();
