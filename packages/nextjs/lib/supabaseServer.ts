@@ -40,6 +40,7 @@ export async function getCurrentUserFromRequest(req: NextRequest): Promise<AuthR
 
   if (blockErr) {
     console.error("[Auth] Error checking blocked addresses:", blockErr.message);
+    return { user: null, status: "blocked" };
   }
 
   if (isBlocked) return { user: null, status: "blocked" };

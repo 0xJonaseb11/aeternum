@@ -11,8 +11,6 @@ import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
   CloudArrowUpIcon,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  DocumentMagnifyingGlassIcon,
   FingerPrintIcon,
   KeyIcon,
   MagnifyingGlassIcon,
@@ -821,6 +819,10 @@ export const EvidenceList = ({
   const [matchingFileHashes, setMatchingFileHashes] = useState<Set<string>>(new Set());
   const [isFinding, setIsFinding] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  useEffect(() => {
+    setIndexerPage(1);
+    setEventsPage(1);
+  }, [searchQuery]);
   const [serverSearch, setServerSearch] = useState("");
   const [serverCaseId, setServerCaseId] = useState("");
   const [serverTagsInput, setServerTagsInput] = useState("");
@@ -1112,7 +1114,7 @@ export const EvidenceList = ({
             />
           ))}
         </div>
-        {filtered.length > indexerLimit && (
+        {filtered.length > 0 && (
           <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
             <Pagination
               currentPage={indexerPage}
@@ -1344,7 +1346,7 @@ export const EvidenceList = ({
             />
           ))}
         </div>
-        {supabaseTotal > serverLimit && (
+        {supabaseTotal > 0 && (
           <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
             <Pagination
               currentPage={Math.floor(serverOffset / serverLimit) + 1}
@@ -1413,7 +1415,7 @@ export const EvidenceList = ({
           );
         })}
       </div>
-      {filteredEvents.length > eventsLimit && (
+      {filteredEvents.length > 0 && (
         <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
           <Pagination
             currentPage={eventsPage}
