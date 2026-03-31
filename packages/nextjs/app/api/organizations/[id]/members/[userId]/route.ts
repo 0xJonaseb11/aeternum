@@ -7,8 +7,16 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 type Params = { params: Promise<{ id: string; userId: string }> };
 
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, status } = await getCurrentUserFromRequest(req);
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+  }
+  if (status === "blocked") {
+    return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+  }
+  if (!user || status === "unauthorized") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id: orgId, userId: targetUserId } = await params;
   const membership = await getMembership(user.id, orgId);
   if (!membership) return NextResponse.json({ error: "Not a member" }, { status: 403 });
@@ -36,8 +44,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, status } = await getCurrentUserFromRequest(req);
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+  }
+  if (status === "blocked") {
+    return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+  }
+  if (!user || status === "unauthorized") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id: orgId, userId: targetUserId } = await params;
   const membership = await getMembership(user.id, orgId);
   if (!membership) return NextResponse.json({ error: "Not a member" }, { status: 403 });

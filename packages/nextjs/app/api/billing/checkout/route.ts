@@ -7,8 +7,14 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUserFromRequest(req);
-    if (!user) {
+    const { user, status } = await getCurrentUserFromRequest(req);
+    if (status === "maintenance") {
+      return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+    }
+    if (status === "blocked") {
+      return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+    }
+    if (!user || status === "unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     let body: { plan?: string; priceId?: string };

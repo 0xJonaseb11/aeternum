@@ -18,15 +18,15 @@ import {
   MagnifyingGlassIcon,
   ShareIcon,
   ShieldCheckIcon,
+  StarIcon as StarOutlineIcon,
   UserGroupIcon,
   UserPlusIcon,
   XCircleIcon,
   XMarkIcon,
-  StarIcon as StarOutlineIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
-import { Pagination } from "~~/components/ui/Pagination";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { Pagination } from "~~/components/ui/Pagination";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import {
   useDeployedContractInfo,
@@ -832,6 +832,10 @@ export const EvidenceList = ({
   const [newFolderName, setNewFolderName] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [indexerPage, setIndexerPage] = useState(1);
+  const [indexerLimit, setIndexerLimit] = useState(24);
+  const [eventsPage, setEventsPage] = useState(1);
+  const [eventsLimit, setEventsLimit] = useState(24);
   const queryClient = useQueryClient();
   const { session } = useSupabaseAuth();
   const { data: vaultContract } = useDeployedContractInfo({ contractName: "EvidenceVault" });
@@ -1088,7 +1092,7 @@ export const EvidenceList = ({
           />
         )}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-          {filtered.map(p => (
+          {filtered.slice((indexerPage - 1) * indexerLimit, indexerPage * indexerLimit).map(p => (
             <EvidenceCard
               key={p.id}
               proof={{
@@ -1108,6 +1112,17 @@ export const EvidenceList = ({
             />
           ))}
         </div>
+        {filtered.length > indexerLimit && (
+          <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
+            <Pagination
+              currentPage={indexerPage}
+              totalItems={filtered.length}
+              pageSize={indexerLimit}
+              onPageChange={setIndexerPage}
+              onPageSizeChange={setIndexerLimit}
+            />
+          </div>
+        )}
       </>
     );
   }
@@ -1288,17 +1303,9 @@ export const EvidenceList = ({
               </div>
 
               <div className="flex flex-col gap-1.5 lg:col-span-3">
-                <Pagination
-                  currentPage={Math.floor(serverOffset / serverLimit) + 1}
-                  totalItems={supabaseTotal}
-                  pageSize={serverLimit}
-                  onPageChange={page => setServerOffset((page - 1) * serverLimit)}
-                  onPageSizeChange={size => {
-                    setServerLimit(size);
-                    setServerOffset(0);
-                  }}
-                  className="w-full"
-                />
+                <p className="text-[10px] font-bold uppercase tracking-widest text-base-content/30 px-1">
+                  Showing {supabaseTotal} total result{supabaseTotal !== 1 ? "s" : ""} across all pages.
+                </p>
               </div>
             </div>
           )}
@@ -1314,7 +1321,7 @@ export const EvidenceList = ({
           />
         )}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-          {filteredSupabase.map(p => (
+          {supabaseProofsList.map(p => (
             <EvidenceCard
               key={p.id}
               proof={{
@@ -1337,6 +1344,20 @@ export const EvidenceList = ({
             />
           ))}
         </div>
+        {supabaseTotal > serverLimit && (
+          <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
+            <Pagination
+              currentPage={Math.floor(serverOffset / serverLimit) + 1}
+              totalItems={supabaseTotal}
+              pageSize={serverLimit}
+              onPageChange={page => setServerOffset((page - 1) * serverLimit)}
+              onPageSizeChange={size => {
+                setServerLimit(size);
+                setServerOffset(0);
+              }}
+            />
+          </div>
+        )}
       </>
     );
   }
@@ -1374,7 +1395,7 @@ export const EvidenceList = ({
         />
       )}
       <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 min-w-0">
-        {filteredEvents.map(event => {
+        {filteredEvents.slice((eventsPage - 1) * eventsLimit, eventsPage * eventsLimit).map(event => {
           const fileHash = event.args.fileHash as string;
           return (
             <EvidenceListItem
@@ -1392,6 +1413,17 @@ export const EvidenceList = ({
           );
         })}
       </div>
+      {filteredEvents.length > eventsLimit && (
+        <div className="mt-12 flex justify-center border-t border-base-300 pt-8">
+          <Pagination
+            currentPage={eventsPage}
+            totalItems={filteredEvents.length}
+            pageSize={eventsLimit}
+            onPageChange={setEventsPage}
+            onPageSizeChange={setEventsLimit}
+          />
+        </div>
+      )}
     </>
   );
 };

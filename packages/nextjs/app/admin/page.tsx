@@ -237,14 +237,14 @@ export default function AdminDashboard() {
                         {(stats?.recentActivity ?? [])
                           .slice((activityPage - 1) * activityPageSize, activityPage * activityPageSize)
                           .map(event => (
-                          <tr
-                            key={event.id}
-                            className="border-base-300/20 group hover:bg-base-200/40 transition-colors"
-                          >
-                            <td className="font-bold text-xs py-3 text-base-content/70">{event.event_type}</td>
-                            <td className="text-[10px] opacity-40">{new Date(event.at).toLocaleString()}</td>
-                          </tr>
-                        ))}
+                            <tr
+                              key={event.id}
+                              className="border-base-300/20 group hover:bg-base-200/40 transition-colors"
+                            >
+                              <td className="font-bold text-xs py-3 text-base-content/70">{event.event_type}</td>
+                              <td className="text-[10px] opacity-40">{new Date(event.at).toLocaleString()}</td>
+                            </tr>
+                          ))}
                         {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
                           <tr>
                             <td colSpan={2} className="text-center py-8 text-base-content/30 italic text-xs">

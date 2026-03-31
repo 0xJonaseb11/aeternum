@@ -95,8 +95,8 @@ const Home = () => {
 
             {/* Sub-copy */}
             <p className="text-lg md:text-2xl text-base-content/50 max-w-2xl mx-auto leading-relaxed mb-6 font-medium text-center">
-              Encrypt your evidence locally, anchor it permanently on-chain, and prove ownership, without ever
-              revealing the content.
+              Encrypt your evidence locally, anchor it permanently on-chain, and prove ownership, without ever revealing
+              the content.
             </p>
 
             {/* Rotating subtitle */}
@@ -254,13 +254,27 @@ const Home = () => {
           <div className="flex flex-row flex-wrap items-center justify-center md:justify-between gap-8 md:gap-12 opacity-50 hover:opacity-100 transition-opacity duration-1000 grayscale hover:grayscale-0">
             <div className="flex items-center gap-4 md:gap-6 group/tech">
               <div className="bg-white p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] shadow-xl shadow-blue-500/10 transition-transform group-hover/tech:scale-110 border border-base-200/50 block">
-                <Image src="/base-logo.png" alt="Base L2" width={48} height={48} className="object-contain w-8 h-8 md:w-12 md:h-12" />
+                <Image
+                  src="/base-logo.png"
+                  alt="Base L2"
+                  width={48}
+                  height={48}
+                  className="object-contain w-8 h-8 md:w-12 md:h-12"
+                />
               </div>
-              <span className="text-lg md:text-2xl font-black tracking-tighter text-base-content whitespace-nowrap">BASE L2</span>
+              <span className="text-lg md:text-2xl font-black tracking-tighter text-base-content whitespace-nowrap">
+                BASE L2
+              </span>
             </div>
             <div className="flex items-center gap-4 md:gap-6 group/tech">
               <div className="bg-white p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] shadow-xl shadow-black/5 transition-transform group-hover/tech:scale-110 border border-base-200/50 block">
-                <Image src="/arweave.png" alt="Arweave" width={48} height={48} className="object-contain w-8 h-8 md:w-12 md:h-12" />
+                <Image
+                  src="/arweave.png"
+                  alt="Arweave"
+                  width={48}
+                  height={48}
+                  className="object-contain w-8 h-8 md:w-12 md:h-12"
+                />
               </div>
               <span className="text-lg md:text-2xl font-black tracking-tighter uppercase text-base-content whitespace-nowrap">
                 Arweave
@@ -268,7 +282,13 @@ const Home = () => {
             </div>
             <div className="flex items-center gap-4 md:gap-6 group/tech">
               <div className="bg-white p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] shadow-xl shadow-primary/10 transition-transform group-hover/tech:scale-110 overflow-hidden border border-base-200/50 block">
-                <Image src="/zkproofs.jpeg" alt="ZK-Proof" width={48} height={48} className="object-cover w-8 h-8 md:w-12 md:h-12" />
+                <Image
+                  src="/zkproofs.jpeg"
+                  alt="ZK-Proof"
+                  width={48}
+                  height={48}
+                  className="object-cover w-8 h-8 md:w-12 md:h-12"
+                />
               </div>
               <span className="text-lg md:text-2xl font-black tracking-tighter uppercase text-base-content whitespace-nowrap">
                 ZK-PROOF

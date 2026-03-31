@@ -24,8 +24,14 @@ export async function GET(req: NextRequest) {
   let userId: string | null = userIdParam;
   let organizationId: string | null = organizationIdParam;
   if (userIdParam != null || (organizationIdParam != null && organizationIdParam !== "")) {
-    const user = await getCurrentUserFromRequest(req);
-    if (!user) {
+    const { user, status } = await getCurrentUserFromRequest(req);
+    if (status === "maintenance") {
+      return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+    }
+    if (status === "blocked") {
+      return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+    }
+    if (!user || status === "unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     if (organizationIdParam != null && organizationIdParam !== "") {
@@ -80,8 +86,14 @@ export async function POST(req: NextRequest) {
   const { fileHash, title, description, caseId, tags, notes, folderId, isFeatured } = parsed.data;
 
   if (userId != null || (organizationId != null && organizationId !== "")) {
-    const user = await getCurrentUserFromRequest(req);
-    if (!user) {
+    const { user, status } = await getCurrentUserFromRequest(req);
+    if (status === "maintenance") {
+      return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+    }
+    if (status === "blocked") {
+      return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+    }
+    if (!user || status === "unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     userId = user.id;

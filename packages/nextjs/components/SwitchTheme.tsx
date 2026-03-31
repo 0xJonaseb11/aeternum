@@ -18,9 +18,7 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
     <button
       onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
       className={`btn btn-ghost transition-all duration-300 ${
-        resolvedTheme === "light"
-          ? "text-slate-600 hover:bg-slate-200"
-          : "text-primary hover:bg-slate-700/80"
+        resolvedTheme === "light" ? "text-slate-600 hover:bg-slate-200" : "text-primary hover:bg-slate-700/80"
       } ${className}`}
       aria-label="Toggle Theme"
     >
