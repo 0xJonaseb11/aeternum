@@ -97,7 +97,7 @@ export default function TeamOrgPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
         });
@@ -125,7 +125,7 @@ export default function TeamOrgPage() {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ role: newRole }),
         });
@@ -346,7 +346,7 @@ function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: Sessi
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify(formData),
       });
