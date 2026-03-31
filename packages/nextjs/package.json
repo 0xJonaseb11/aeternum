@@ -46,7 +46,7 @@
     "react-dom": "~19.2.3",
     "react-hot-toast": "~2.6.0",
     "snarkjs": "^0.7.6",
-    "stripe": "^20.4.1",
+    "stripe": "^21.0.1",
     "usehooks-ts": "~3.1.0",
     "viem": "2.47.6",
     "wagmi": "2.12.7",
@@ -61,10 +61,9 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "abitype": "1.2.3",
-    "autoprefixer": "^10.4.20",
     "bgipfs": "~0.0.12",
     "eslint": "^9.21.0",
-    "eslint-config-next": "^15.5.10",
+    "eslint-config-next": "^16.2.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.3",
     "postcss": "~8.5.8",
@@ -72,7 +71,7 @@
     "tailwindcss": "^4.0.0",
     "type-fest": "~5.5.0",
     "typescript": "~5.7.3",
-    "vercel": "~50.35.0"
+    "vercel": "~50.37.3"
   },
   "packageManager": "yarn@4.13.0"
 }
