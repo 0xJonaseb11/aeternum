@@ -145,6 +145,7 @@ export async function GET(req: NextRequest) {
     .from("proofs")
     .select(
       "id, chain_id, owner_address, user_id, file_hash, timestamp, block_number, arweave_tx_id, ipfs_cid, revoked",
+      { count: "exact" },
     )
     .eq("revoked", false)
     .order("timestamp", { ascending: false });
@@ -178,11 +179,27 @@ export async function GET(req: NextRequest) {
     query = query.eq("chain_id", chainId);
   }
 
-  const { data: queryData, error } = await query;
+  const { data: queryData, error, count: totalCount } = await query;
   if (error) {
     logger.error("Supabase proofs GET error", { error: error.message });
     return NextResponse.json({ error: "Failed to fetch proofs" }, { status: 500 });
   }
+
+  // Fetch featured status from evidence table
+  const fileHashes = (queryData ?? []).map(r => r.file_hash);
+  let featuredMap: Record<string, boolean> = {};
+  if (fileHashes.length > 0) {
+    const { data: evidenceData } = await supabase
+      .from("evidence")
+      .select("file_hash, is_featured")
+      .in("file_hash", fileHashes);
+    
+    featuredMap = (evidenceData ?? []).reduce((acc, curr) => {
+      acc[curr.file_hash] = curr.is_featured || false;
+      return acc;
+    }, {} as Record<string, boolean>);
+  }
+
   let data = queryData ?? null;
 
   if (data != null && data.length > 0 && evidenceFileHashes != null) {
@@ -200,9 +217,17 @@ export async function GET(req: NextRequest) {
     arweaveTxId: row.arweave_tx_id,
     ipfsCid: row.ipfs_cid,
     revoked: row.revoked,
+    isFeatured: featuredMap[row.file_hash] || false,
   }));
 
-  return NextResponse.json({ items });
+  // Sort by isFeatured desc, then timestamp desc
+  items.sort((a, b) => {
+    if (a.isFeatured && !b.isFeatured) return -1;
+    if (!a.isFeatured && b.isFeatured) return 1;
+    return 0; // Already sorted by timestamp in SQL query
+  });
+
+  return NextResponse.json({ items, total: totalCount ?? items.length });
 }
 
 export async function POST(req: NextRequest) {

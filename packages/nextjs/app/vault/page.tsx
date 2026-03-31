@@ -1,7 +1,5 @@
 "use client";
 
-import { Address } from "@scaffold-ui/components";
-import { hardhat } from "viem/chains";
 import { useAccount } from "wagmi";
 import { UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
@@ -19,7 +17,6 @@ const VaultPage = () => {
   const currentRoleLabel =
     currentOrg?.myRole != null ? `${currentOrg.myRole.charAt(0).toUpperCase()}${currentOrg.myRole.slice(1)}` : null;
   const isWrongNetwork = chain && chain.id !== targetNetwork.id;
-
 
   return (
     <div className="flex flex-col grow w-full min-w-0">
@@ -83,28 +80,14 @@ const VaultPage = () => {
 
       <section className="py-10 sm:py-14 md:py-18 bg-base-100 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl w-full min-w-0">
-          <div className="flex flex-col gap-4 sm:gap-6 mb-8 sm:mb-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
-              <div className="min-w-0">
-                <h2 className="text-xl sm:text-2xl font-bold text-base-content mb-1 sm:mb-2">Vault overview</h2>
-                <p className="text-sm text-base-content/60">
-                  Use your connected wallet to secure new evidence and browse your existing proofs.
-                </p>
-              </div>
-              {connectedAddress && (
-                <div className="flex items-center gap-3 sm:gap-4 bg-base-100 px-3 sm:px-4 py-2 rounded-xl border border-base-300 shadow-sm w-full md:w-auto min-w-0 overflow-hidden">
-                  <div className="flex flex-col min-w-0 w-full md:w-auto">
-                    <span className="text-[10px] uppercase font-bold text-base-content/40">Connected Wallet</span>
-                    <Address
-                      address={connectedAddress}
-                      chain={targetNetwork}
-                      blockExplorerAddressLink={
-                        targetNetwork.id === hardhat.id ? `/blockexplorer/address/${connectedAddress}` : undefined
-                      }
-                    />
-                  </div>
-                </div>
-              )}
+          <div className="flex flex-col gap-6 mb-10">
+            <div className="mb-2">
+              <h2 className="text-xl sm:text-3xl font-black tracking-tight text-base-content mb-2 uppercase">
+                Vault overview
+              </h2>
+              <p className="text-sm text-base-content/50 font-medium">
+                Use your connected wallet to secure new evidence and browse your existing proofs.
+              </p>
             </div>
             {connectedAddress && (
               <div className="flex flex-wrap items-center gap-2">
@@ -151,7 +134,8 @@ const VaultPage = () => {
                 Switch to {targetNetwork.name} to use the Evidence Vault.
               </p>
             </div>
-          ) : connectedAddress && !deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault ? (
+          ) : connectedAddress &&
+            !deployedContracts[targetNetwork.id as keyof typeof deployedContracts]?.EvidenceVault ? (
             <div className="rounded-2xl border border-base-300 bg-base-100 p-6 sm:p-8 text-center min-w-0">
               <p className="font-bold text-base-content mb-1 text-sm sm:text-base">Vault not available</p>
               <p className="text-base-content/60 text-xs sm:text-sm">Evidence Vault is not deployed on this network.</p>

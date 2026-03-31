@@ -11,7 +11,17 @@ import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { useUserProfile } from "~~/hooks/useUserProfile";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
-function NavCard({ href, icon, title, description }: { href: string; icon: React.ReactNode; title: string; description: string }) {
+function NavCard({
+  href,
+  icon,
+  title,
+  description,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
   return (
     <Link
       href={href}

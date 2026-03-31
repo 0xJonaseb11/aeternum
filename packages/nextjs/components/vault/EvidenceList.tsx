@@ -22,7 +22,10 @@ import {
   UserPlusIcon,
   XCircleIcon,
   XMarkIcon,
+  StarIcon as StarOutlineIcon,
 } from "@heroicons/react/24/outline";
+import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
+import { Pagination } from "~~/components/ui/Pagination";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { ProofListSkeleton } from "~~/components/ui/Skeleton";
 import {
@@ -194,7 +197,9 @@ export const EvidenceCard = ({
 
   return (
     <div
-      className={`card border shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden min-w-0 glass ${isMatching ? "border-primary/50 ring-4 ring-primary/10 bg-primary/5" : "border-base-300/50"}`}
+      className={`card border shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden min-w-0 glass ${
+        isMatching ? "border-primary/50 ring-4 ring-primary/10 bg-primary/5" : "border-base-300/50"
+      } ${metadata?.is_featured ? "border-amber-400/50 bg-amber-400/5 shadow-amber-400/10" : ""}`}
     >
       <div className="card-body p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
@@ -215,8 +220,35 @@ export const EvidenceCard = ({
                 <span>Private Key Match</span>
               </div>
             )}
+            {metadata?.is_featured && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-500 text-[10px] font-bold uppercase tracking-widest border border-amber-400/20 shadow-sm animate-pulse">
+                <StarSolidIcon className="h-3 w-3" />
+                <span>Crucial Evidence</span>
+              </div>
+            )}
           </div>
-          <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                if (!metadata) return;
+                try {
+                  await save({ is_featured: !metadata.is_featured });
+                  notification.success(metadata.is_featured ? "Removed from crucial" : "Marked as crucial evidence");
+                } catch (e) {
+                  console.error(e);
+                  notification.error("Failed to update status");
+                }
+              }}
+              disabled={isSaving}
+              className={`btn btn-ghost btn-xs btn-circle ${
+                metadata?.is_featured ? "text-amber-500 bg-amber-400/10" : "text-base-content/20 hover:text-amber-500"
+              }`}
+              title={metadata?.is_featured ? "Unmark as crucial" : "Mark as crucial"}
+            >
+              {metadata?.is_featured ? <StarSolidIcon className="h-4 w-4" /> : <StarOutlineIcon className="h-4 w-4" />}
+            </button>
+            <p className="text-[10px] text-base-content/40 font-mono font-medium">#{proof.fileHash.slice(2, 10)}</p>
+          </div>
         </div>
 
         <div className="mb-2 min-w-0">
@@ -743,11 +775,11 @@ const SecretFinderSection = ({
         client-side.
       </p>
     </div>
-    <div className="join w-full flex flex-col sm:flex-row gap-2 sm:gap-0 max-w-xl">
+    <div className="grid sm:grid-cols-[1fr,auto] items-stretch gap-3 max-w-2xl">
       <input
         type="password"
         placeholder="0x... or hex secret"
-        className="input input-bordered join-item flex-1 min-w-0 text-xs font-mono w-full sm:w-auto"
+        className="input input-lg input-bordered w-full text-base font-mono rounded-2xl bg-base-100/50"
         value={pastedSecret}
         onChange={e => setPastedSecret(e.target.value)}
       />
@@ -755,14 +787,14 @@ const SecretFinderSection = ({
         type="button"
         onClick={() => onFind(fileHashes)}
         disabled={isFinding || !pastedSecret.trim() || fileHashes.length === 0}
-        className={`btn btn-primary join-item px-4 w-full sm:w-auto ${isFinding ? "loading" : ""}`}
+        className={`btn btn-primary btn-lg px-12 rounded-2xl shadow-xl shadow-primary/20 ${isFinding ? "loading" : ""}`}
       >
         {isFinding ? (
           ""
         ) : (
           <>
-            <MagnifyingGlassIcon className="h-4 w-4" />
-            Find my evidence
+            <MagnifyingGlassIcon className="h-5 w-5" />
+            <span className="whitespace-nowrap">Find my evidence</span>
           </>
         )}
       </button>
@@ -938,8 +970,8 @@ export const EvidenceList = ({
   );
 
   const hasIndexerData = INDEXER_URL && !indexedError && indexedProofs != null && indexedProofs.length > 0;
-  const hasSupabaseData = !supabaseError && supabaseProofs != null && supabaseProofs.length > 0;
-  const hasSupabaseList = !supabaseError && Array.isArray(supabaseProofs);
+  const hasSupabaseData = !supabaseError && supabaseProofs?.items != null && supabaseProofs.items.length > 0;
+  const hasSupabaseList = !supabaseError && supabaseProofs?.items != null && Array.isArray(supabaseProofs.items);
   const hasEventData = events != null && events.length > 0;
 
   const useIndexerData = hasIndexerData;
@@ -1022,17 +1054,20 @@ export const EvidenceList = ({
     fileHash.toLowerCase().includes(searchLower) ||
     (proofId != null && proofId.toLowerCase().includes(searchLower));
 
+  const supabaseProofsList = supabaseProofs?.items ?? [];
+  const supabaseTotal = supabaseProofs?.total ?? 0;
+
   if (useIndexerData && indexedProofs) {
     const activeProofs = indexedProofs.filter(p => !p.revoked);
     const filtered = activeProofs.filter(p => filterProof(p.fileHash));
     const fileHashes = filtered.map(p => p.fileHash);
     return (
       <>
-        <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+        <div className="mb-6 flex flex-col sm:flex-row gap-2 sm:items-center">
           <input
             type="search"
             placeholder="Search by file hash or proof ID…"
-            className="input input-bordered input-sm flex-1 max-w-xs"
+            className="input input-bordered input-lg flex-1 max-w-2xl shadow-sm rounded-2xl"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
@@ -1077,19 +1112,20 @@ export const EvidenceList = ({
     );
   }
 
-  if (useSupabaseData && Array.isArray(supabaseProofs)) {
-    const filteredSupabase = supabaseProofs.filter(p => filterProof(p.fileHash, p.proofId ?? undefined));
+  if (useSupabaseData && Array.isArray(supabaseProofsList)) {
+    // Sorting: Featured first, then by timestamp (we should ideally do this on the server, but client-side fine for current page)
+    const filteredSupabase = supabaseProofsList.filter(p => filterProof(p.fileHash, p.proofId ?? undefined));
     const fileHashes = filteredSupabase.map(p => p.fileHash);
     return (
       <>
         <div className="mb-4 flex flex-col gap-2">
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <div className="relative flex-1 max-w-md group">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/30 group-focus-within:text-primary transition-colors" />
+            <div className="relative flex-1 max-w-2xl group">
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/30 group-focus-within:text-primary transition-colors" />
               <input
                 type="search"
                 placeholder="Search file hash or proof ID…"
-                className="input input-bordered input-sm pl-9 w-full bg-base-100/50 focus:bg-base-100 transition-all border-base-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                className="input input-bordered input-lg pl-12 w-full bg-base-100/50 focus:bg-base-100 transition-all border-base-300 rounded-2xl outline-none"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
@@ -1118,7 +1154,7 @@ export const EvidenceList = ({
               </button>
               {searchLower && (
                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-base-content/40 px-2">
-                  {filteredSupabase.length} of {supabaseProofs.length} results
+                  {filteredSupabase.length} of {supabaseTotal} results
                 </span>
               )}
             </div>
@@ -1251,45 +1287,18 @@ export const EvidenceList = ({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
-                  Pagination
-                </label>
-                <div className="flex items-center gap-2">
-                  <div className="join join-horizontal w-full">
-                    <button
-                      className="btn btn-sm join-item bg-base-100 border-base-300"
-                      disabled={serverOffset === 0}
-                      onClick={() => setServerOffset(Math.max(0, serverOffset - serverLimit))}
-                    >
-                      «
-                    </button>
-                    <div className="btn btn-sm join-item bg-base-100 border-base-300 no-animation pointer-events-none flex-1">
-                      {Math.floor(serverOffset / serverLimit) + 1}
-                    </div>
-                    <button
-                      className="btn btn-sm join-item bg-base-100 border-base-300"
-                      disabled={supabaseProofs && supabaseProofs.length < serverLimit}
-                      onClick={() => setServerOffset(serverOffset + serverLimit)}
-                    >
-                      »
-                    </button>
-                  </div>
-                  <select
-                    className="select select-bordered select-sm bg-base-100/50"
-                    value={serverLimit}
-                    onChange={e => {
-                      setServerLimit(parseInt(e.target.value, 10));
-                      setServerOffset(0);
-                    }}
-                  >
-                    {[10, 25, 50, 100].map(v => (
-                      <option key={v} value={v}>
-                        {v} items
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="flex flex-col gap-1.5 lg:col-span-3">
+                <Pagination
+                  currentPage={Math.floor(serverOffset / serverLimit) + 1}
+                  totalItems={supabaseTotal}
+                  pageSize={serverLimit}
+                  onPageChange={page => setServerOffset((page - 1) * serverLimit)}
+                  onPageSizeChange={size => {
+                    setServerLimit(size);
+                    setServerOffset(0);
+                  }}
+                  className="w-full"
+                />
               </div>
             </div>
           )}
@@ -1340,11 +1349,11 @@ export const EvidenceList = ({
 
   return (
     <>
-      <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+      <div className="mb-6 flex flex-col sm:flex-row gap-3 sm:items-center">
         <input
           type="search"
           placeholder="Search by file hash or proof ID…"
-          className="input input-bordered input-sm flex-1 max-w-xs"
+          className="input input-bordered input-lg flex-1 max-w-2xl shadow-sm rounded-2xl"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />

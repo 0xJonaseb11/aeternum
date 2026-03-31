@@ -25,6 +25,7 @@ export const evidencePostSchema = z.object({
   tags: z.array(z.string().max(100)).max(50).optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
   folderId: z.string().uuid().optional().nullable(),
+  isFeatured: z.boolean().optional().nullable(),
 });
 
 export const folderPostSchema = z.object({

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useAccount } from "wagmi";
 import {
   ArrowRightIcon,
@@ -99,14 +99,14 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link
                 href="/vault"
-                className="btn btn-primary btn-lg px-12 h-16 rounded-2xl text-lg gap-3 shadow-2xl shadow-primary/30 group hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
+                className="btn btn-primary btn-lg px-12 h-16 rounded-2xl text-lg gap-3 shadow-2xl shadow-primary/30 group hover:scale-105 active:scale-95 transition-all w-auto"
               >
                 <span>Access your Vault</span>
                 <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1 shrink-0" />
               </Link>
               <Link
                 href="/verification"
-                className="btn glass btn-lg px-12 h-16 rounded-2xl text-lg border-base-300 hover:bg-base-200 transition-all w-full sm:w-auto"
+                className="btn glass btn-lg px-12 h-16 rounded-2xl text-lg border-base-300 hover:bg-base-200 transition-all w-auto"
               >
                 Verify Evidence
               </Link>
