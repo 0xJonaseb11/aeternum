@@ -5,9 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { CreditCardIcon, KeyIcon, PlusIcon, UserCircleIcon, UserGroupIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  CreditCardIcon,
+  KeyIcon,
+  PlusIcon,
+  UserCircleIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
 import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
+import { resetOnboardingTour } from "~~/components/ui/OnboardingTour";
 import { useUserProfile } from "~~/hooks/useUserProfile";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
@@ -118,6 +126,37 @@ function SettingsContent() {
             title="Team & Organizations"
             description="Collaborate with others and manage access control."
           />
+        </section>
+
+        <section className="grid grid-cols-1 gap-4">
+          <div className="flex items-center gap-3 mb-2 px-1">
+            <div className="p-1.5 rounded-lg bg-primary/5">
+              <ArrowPathIcon className="h-5 w-5 text-primary/70" />
+            </div>
+            <h2 className="text-[10px] uppercase font-black tracking-[0.3em] text-primary/70">Preferences</h2>
+          </div>
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-sm rounded-2xl">
+            <div className="card-body flex-row items-center gap-5 py-5 px-6">
+              <div className="rounded-xl bg-primary/5 p-3 text-primary">
+                <ArrowPathIcon className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="font-bold text-base-content text-sm md:text-base">Restart Onboarding Tour</h2>
+                <p className="text-xs text-base-content/50 mt-0.5">
+                  See the guided walkthrough again on your next visit to the homepage.
+                </p>
+              </div>
+              <button
+                className="btn btn-sm btn-outline btn-primary rounded-xl"
+                onClick={() => {
+                  resetOnboardingTour();
+                  toast.success("Tour reset! Visit the homepage to see it again.");
+                }}
+              >
+                Reset Tour
+              </button>
+            </div>
+          </div>
         </section>
       </div>
     </div>

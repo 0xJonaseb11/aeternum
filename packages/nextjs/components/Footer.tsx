@@ -84,7 +84,11 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm">
               {FOOTER_LINKS.resources.map(({ href, label }) => (
                 <li key={href + label}>
-                  <Link href={href} className="link link-hover text-base-content/70">
+                  <Link
+                    href={href}
+                    id={label === "Billing" ? "footer-billing" : label === "Help Center" ? "footer-help" : undefined}
+                    className="link link-hover text-base-content/70"
+                  >
                     {label}
                   </Link>
                 </li>

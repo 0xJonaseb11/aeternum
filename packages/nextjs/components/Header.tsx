@@ -25,7 +25,7 @@ export const menuLinks: HeaderMenuLink[] = [
   { label: "Pricing", href: "/plans" },
 ];
 
-export const HeaderMenuLinks = () => {
+export const HeaderMenuLinks = ({ useMobile = false }: { useMobile?: boolean }) => {
   const pathname = usePathname();
   const [hash, setHash] = useState("");
 
@@ -46,6 +46,19 @@ export const HeaderMenuLinks = () => {
           <li key={href}>
             <Link
               href={href}
+              id={
+                !useMobile
+                  ? label === "Vault"
+                    ? "nav-vault"
+                    : label === "Manage"
+                      ? "nav-manage"
+                      : label === "Verify"
+                        ? "nav-verify"
+                        : label === "Team"
+                          ? "nav-team"
+                          : undefined
+                  : undefined
+              }
               className={`${
                 isActive
                   ? "text-primary bg-primary/5 after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:bg-primary after:rounded-full"
@@ -102,7 +115,7 @@ export const Header = () => {
                 if (target.closest("a[href]")) burgerMenuRef?.current?.removeAttribute("open");
               }}
             >
-              <HeaderMenuLinks />
+              <HeaderMenuLinks useMobile />
               <li className="menu-title mt-2 pt-2 border-t border-base-300">
                 <span className="text-[10px] uppercase tracking-widest text-base-content/50 font-bold">App</span>
               </li>
@@ -161,6 +174,7 @@ export const Header = () => {
         <div className="navbar-end hidden md:flex items-center justify-end gap-2 lg:gap-3 min-w-0 flex-shrink-0">
           <Link
             href="/settings"
+            id="nav-settings"
             className="btn btn-ghost btn-sm p-2 hover:bg-primary/10 hover:text-primary transition-colors"
             aria-label="Settings"
           >
@@ -168,7 +182,7 @@ export const Header = () => {
           </Link>
           <SwitchTheme className="shrink-0 btn btn-ghost btn-sm p-2" />
           {isLocalNetwork && <FaucetButton />}
-          <div className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
+          <div id="wallet-connect" className="min-w-0 flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
             <PlanBadge />
             <RainbowKitCustomConnectButton />
           </div>
