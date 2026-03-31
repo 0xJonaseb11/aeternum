@@ -23,7 +23,7 @@ export default function NewOrganizationPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify({
           name: name.trim(),
@@ -56,7 +56,7 @@ export default function NewOrganizationPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Create Organization</h1>
           <p className="text-base-content/60 text-sm mt-2">
-            Establish a secure collaborative vault for your team's evidence.
+            Establish a secure collaborative vault for your team&apos;s evidence.
           </p>
         </div>
 

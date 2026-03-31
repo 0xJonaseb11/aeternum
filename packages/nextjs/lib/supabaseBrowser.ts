@@ -28,7 +28,7 @@ export function getSupabaseBrowserClient(): SupabaseClient {
           }),
         }),
       }),
-    } as any;
+    } as unknown as SupabaseClient;
   }
 
   browserClient = createClient(url, anonKey, {

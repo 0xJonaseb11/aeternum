@@ -11,7 +11,7 @@ import { WalletLinkStatus } from "~~/components/auth/WalletLinkStatus";
 import { useUserProfile } from "~~/hooks/useUserProfile";
 import { getSupabaseBrowserClient } from "~~/lib/supabaseBrowser";
 
-function NavCard({ href, icon, title, description }: { href: string; icon: any; title: string; description: string }) {
+function NavCard({ href, icon, title, description }: { href: string; icon: React.ReactNode; title: string; description: string }) {
   return (
     <Link
       href={href}
@@ -255,8 +255,8 @@ function ProfileEditor() {
         toast.success("Profile updated");
         setEditing(false);
       }
-    } catch (e: any) {
-      toast.error(e.message || "Failed to save profile");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Failed to save profile");
     } finally {
       setSaving(false);
     }

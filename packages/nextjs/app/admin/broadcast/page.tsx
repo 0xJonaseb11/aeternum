@@ -14,11 +14,12 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { BroadcastItem } from "~~/types/admin";
 
 export default function AdminBroadcast() {
   const { session, user } = useSupabaseAuth();
   const { address } = useAccount();
-  const [broadcasts, setBroadcasts] = useState<any[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -33,7 +34,7 @@ export default function AdminBroadcast() {
     try {
       const res = await fetch("/api/admin/broadcasts", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
         },
       });
@@ -92,7 +93,7 @@ export default function AdminBroadcast() {
     }
   };
 
-  const handleEdit = (b: any) => {
+  const handleEdit = (b: BroadcastItem) => {
     setEditingId(b.id);
     setTitle(b.title);
     setContent(b.content);
@@ -377,8 +378,8 @@ export default function AdminBroadcast() {
                         </td>
                         <td className="py-4 px-8 text-[10px] opacity-40 group-hover:opacity-80 transition-opacity">
                           {b.status === "sent"
-                            ? `Sent ${new Date(b.sent_at).toLocaleString()}`
-                            : `Draft ${new Date(b.created_at).toLocaleString()}`}
+                            ? `Sent ${b.sent_at ? new Date(b.sent_at).toLocaleString() : "N/A"}`
+                            : `Draft ${b.created_at ? new Date(b.created_at).toLocaleString() : "N/A"}`}
                         </td>
                         <td className="py-4 px-8 text-right">
                           <button

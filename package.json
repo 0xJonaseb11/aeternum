@@ -64,10 +64,5 @@
   "packageManager": "yarn@4.13.0",
   "engines": {
     "node": ">=20.18.3"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts": "5.6.1",
-    "@openzeppelin/contracts-upgradeable": "5.6.1",
-    "@openzeppelin/hardhat-upgrades": "^3.9.1"
   }
 }

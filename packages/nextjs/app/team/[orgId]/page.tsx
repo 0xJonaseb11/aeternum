@@ -1,5 +1,7 @@
 "use client";
 
+import { type Session } from "@supabase/supabase-js";
+
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -95,7 +97,7 @@ export default function TeamOrgPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
         });
@@ -123,7 +125,7 @@ export default function TeamOrgPage() {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ role: newRole }),
         });
@@ -311,14 +313,14 @@ export default function TeamOrgPage() {
               </form>
             </section>
           )}
-          {canManage && <OrgSettingsEditor session={session as any} org={org} fetchOrg={fetchOrg} />}
+          {canManage && <OrgSettingsEditor session={session} org={org} fetchOrg={fetchOrg} />}
         </>
       )}
     </>
   );
 }
 
-function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; org: Org; fetchOrg: () => void }>) {
+function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: Session | null; org: Org; fetchOrg: () => void }>) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -344,7 +346,7 @@ function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; 
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -355,8 +357,8 @@ function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: any; 
       toast.success("Organization updated");
       setEditing(false);
       fetchOrg();
-    } catch (e: any) {
-      toast.error(e.message);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : String(e));
     } finally {
       setSaving(false);
     }

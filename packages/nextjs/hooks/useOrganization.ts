@@ -37,7 +37,7 @@ export function useOrganization(orgId: string | undefined) {
     setIsLoading(true);
     setError(null);
     try {
-      const authHeader = { Authorization: `Bearer ${session.access_token}` };
+      const authHeader = { Authorization: `Bearer ${session?.access_token}` };
 
       const [orgRes, membersRes] = await Promise.all([
         fetch(`/api/organizations/${orgId}`, { headers: authHeader }),
@@ -72,7 +72,7 @@ export function useOrganization(orgId: string | undefined) {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: JSON.stringify(updates),
     });
@@ -91,7 +91,7 @@ export function useOrganization(orgId: string | undefined) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
+        Authorization: `Bearer ${session?.access_token}`,
       },
       body: JSON.stringify({ user_id: userId, role }),
     });
