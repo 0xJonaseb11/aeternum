@@ -7,7 +7,7 @@ let stripe: Stripe | null = null;
 
 export function getStripe(): Stripe | null {
   if (!secretKey) return null;
-  if (!stripe) stripe = new Stripe(secretKey, { apiVersion: "2026-02-25.clover" });
+  if (!stripe) stripe = new Stripe(secretKey, { apiVersion: "2026-03-25.dahlia" });
   return stripe;
 }
 
