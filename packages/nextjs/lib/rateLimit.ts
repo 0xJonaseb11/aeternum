@@ -37,7 +37,10 @@ export async function rateLimit(identifier: string, prefix: string): Promise<boo
 
   try {
     // 1. Prune expired entries for this specific key or globally (randomly)
-    if (Math.random() < 0.1) {
+    // Use Web Crypto API to avoid SonarCloud weak pseudorandom warnings
+    const randomArray = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(randomArray);
+    if (randomArray[0] / 0xffffffff < 0.1) {
       void supabase.from("rate_limits").delete().lt("reset_at", new Date().toISOString());
     }
 
