@@ -152,11 +152,11 @@ const VerificationPage: NextPage = () => {
 
               <div className="max-w-2xl mx-auto">
                 {mode === "proofId" && (
-                  <form onSubmit={handleProofIdSubmit} className="flex flex-col sm:flex-row gap-3">
+                  <form onSubmit={handleProofIdSubmit} className="grid sm:grid-cols-[1fr,auto] items-stretch gap-3">
                     <input
                       type="text"
                       placeholder="Enter verification proof ID..."
-                      className="input input-lg flex-1 rounded-[1.5rem] bg-base-100/50 border-primary/20 focus:border-primary text-lg font-mono"
+                      className="input input-lg w-full rounded-2xl bg-base-100/50 border-primary/20 focus:border-primary text-base font-mono"
                       value={proofId}
                       onChange={e => {
                         setProofId(e.target.value);
@@ -165,7 +165,7 @@ const VerificationPage: NextPage = () => {
                     />
                     <button
                       type="submit"
-                      className="btn btn-primary btn-lg rounded-[1.5rem] px-8 gap-2 shadow-xl shadow-primary/20"
+                      className="btn btn-primary btn-lg rounded-2xl px-12 gap-2 shadow-xl shadow-primary/20"
                     >
                       <MagnifyingGlassIcon className="h-5 w-5" />
                       Verify
@@ -174,11 +174,11 @@ const VerificationPage: NextPage = () => {
                 )}
 
                 {mode === "hash" && (
-                  <form onSubmit={handleHashSubmit} className="flex flex-col sm:flex-row gap-3">
+                  <form onSubmit={handleHashSubmit} className="grid sm:grid-cols-[1fr,auto] items-stretch gap-3">
                     <input
                       type="text"
                       placeholder="Enter 0x... commitment hash"
-                      className="input input-lg flex-1 rounded-[1.5rem] bg-base-100/50 border-primary/20 focus:border-primary text-lg font-mono"
+                      className="input input-lg w-full rounded-2xl bg-base-100/50 border-primary/20 focus:border-primary text-base font-mono"
                       value={commitmentHash}
                       onChange={e => {
                         setCommitmentHash(e.target.value);
@@ -187,7 +187,7 @@ const VerificationPage: NextPage = () => {
                     />
                     <button
                       type="submit"
-                      className="btn btn-primary btn-lg rounded-[1.5rem] px-8 gap-2 shadow-xl shadow-primary/20"
+                      className="btn btn-primary btn-lg rounded-2xl px-12 gap-2 shadow-xl shadow-primary/20"
                       disabled={loading}
                     >
                       {loading ? (
@@ -201,16 +201,16 @@ const VerificationPage: NextPage = () => {
                 )}
 
                 {mode === "file" && (
-                  <div className="relative group">
+                  <div className="relative group flex flex-col sm:flex-row items-stretch gap-3 w-full">
                     <input
                       ref={fileInputRef}
                       type="file"
                       onChange={handleFileSelect}
                       disabled={loading}
-                      className="file-input file-input-lg file-input-primary w-full rounded-[1.5rem] bg-base-100/50 border-primary/20"
+                      className="file-input file-input-lg file-input-primary flex-1 rounded-2xl bg-base-100/50 border-primary/20"
                     />
                     {loading && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-base-100/80 rounded-[1.5rem]">
+                      <div className="absolute inset-0 flex items-center justify-center bg-base-100/80 rounded-2xl z-20">
                         <span className="loading loading-spinner text-primary mr-3"></span>
                         <span className="text-sm font-bold uppercase tracking-widest text-primary">
                           Computing Proof...

@@ -19,9 +19,8 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { Pagination } from "~~/components/ui/Pagination";
 import { AdminStats, SystemHealth } from "~~/types/admin";
-
-
 
 export default function AdminDashboard() {
   const { session, user } = useSupabaseAuth();
@@ -34,6 +33,8 @@ export default function AdminDashboard() {
   const [healthData, setHealthData] = useState<SystemHealth | null>(null);
   const [checkingHealth, setCheckingHealth] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
+  const [activityPage, setActivityPage] = useState(1);
+  const [activityPageSize, setActivityPageSize] = useState(10);
 
   const fetchData = useCallback(async () => {
     if (!session?.access_token) return;
@@ -102,8 +103,8 @@ export default function AdminDashboard() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-            <div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="text-left">
               <div className="flex items-center gap-3 mb-2 px-1">
                 <div className="p-1.5 rounded-lg bg-primary/5">
                   <ShieldCheckIcon className="h-5 w-5 text-primary/70" />
@@ -112,22 +113,24 @@ export default function AdminDashboard() {
                   Platform Operations
                 </h2>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-base-content uppercase">
+              <h1 className="text-3xl md:text-5xl font-black tracking-tight text-base-content uppercase">
                 Owner Dashboard
               </h1>
               <p className="text-sm text-base-content/50 mt-2 font-medium">
                 System-wide activity, usage metrics, and resource allocation.
               </p>
             </div>
-            <button
-              onClick={fetchData}
-              className="btn btn-primary btn-sm rounded-xl px-6 gap-2 shadow-lg shadow-primary/20 group uppercase font-black tracking-widest text-[10px]"
-            >
-              <ArrowPathIcon
-                className={`h-3.5 w-3.5 group-hover:rotate-180 transition-transform ${loading ? "animate-spin" : ""}`}
-              />
-              Refresh Data
-            </button>
+            <div className="flex items-center justify-end">
+              <button
+                onClick={fetchData}
+                className="btn btn-primary btn-sm rounded-xl px-6 gap-2 shadow-lg shadow-primary/20 group uppercase font-black tracking-widest text-[10px] w-full sm:w-auto"
+              >
+                <ArrowPathIcon
+                  className={`h-3.5 w-3.5 group-hover:rotate-180 transition-transform ${loading ? "animate-spin" : ""}`}
+                />
+                Refresh Data
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -231,7 +234,9 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {stats?.recentActivity?.map(event => (
+                        {(stats?.recentActivity ?? [])
+                          .slice((activityPage - 1) * activityPageSize, activityPage * activityPageSize)
+                          .map(event => (
                           <tr
                             key={event.id}
                             className="border-base-300/20 group hover:bg-base-200/40 transition-colors"
@@ -250,6 +255,19 @@ export default function AdminDashboard() {
                       </tbody>
                     </table>
                   </div>
+                  {(stats?.recentActivity?.length ?? 0) > activityPageSize && (
+                    <Pagination
+                      currentPage={activityPage}
+                      totalItems={stats?.recentActivity?.length ?? 0}
+                      pageSize={activityPageSize}
+                      onPageChange={setActivityPage}
+                      onPageSizeChange={size => {
+                        setActivityPageSize(size);
+                        setActivityPage(1);
+                      }}
+                      className="mt-4 border-t border-base-300/30 pt-4"
+                    />
+                  )}
                 </div>
               </div>
             </div>

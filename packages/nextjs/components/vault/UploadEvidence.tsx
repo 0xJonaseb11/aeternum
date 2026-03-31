@@ -46,6 +46,7 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [folderId, setFolderId] = useState("");
+  const [isFeatured, setIsFeatured] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -82,6 +83,7 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
     setDescription("");
     setTags("");
     setFolderId("");
+    setIsFeatured(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -98,6 +100,7 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
               .filter(Boolean)
           : undefined,
         folderId: folderId || null,
+        isFeatured: isFeatured,
       });
       if (uploadResult) setResult(uploadResult);
     } catch (err) {
@@ -311,40 +314,40 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-base-300 space-y-4">
-              <div className="flex flex-col gap-4 bg-base-100/50 p-4 rounded-xl border border-base-300">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+              <div className="flex flex-col gap-4 bg-base-100 p-6 rounded-2xl border border-base-300 shadow-inner">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
                     Evidence Title
                   </label>
                   <input
                     type="text"
                     placeholder="Enter a descriptive title..."
-                    className="input input-bordered input-sm w-full"
+                    className="input input-bordered w-full rounded-2xl"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                   />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
                     Description
                   </label>
                   <textarea
                     placeholder="Optional details about this evidence..."
-                    className="textarea textarea-bordered textarea-sm w-full leading-tight"
-                    rows={2}
+                    className="textarea textarea-bordered w-full leading-tight rounded-2xl"
+                    rows={3}
                     value={description}
                     onChange={e => setDescription(e.target.value)}
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
                       Folder
                     </label>
                     <select
-                      className="select select-bordered select-sm w-full"
+                      className="select select-bordered w-full rounded-2xl"
                       value={folderId}
                       onChange={e => setFolderId(e.target.value)}
                     >
@@ -356,19 +359,37 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
                       ))}
                     </select>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/50 px-1">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-base-content/40 px-1">
                       Tags
                     </label>
                     <input
                       type="text"
                       placeholder="tag1, tag2..."
-                      className="input input-bordered input-sm w-full font-mono"
+                      className="input input-bordered w-full font-mono rounded-2xl"
                       value={tags}
                       onChange={e => setTags(e.target.value)}
                     />
                   </div>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/10 mb-2">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${isFeatured ? "bg-primary text-primary-content transition-colors duration-300" : "bg-base-300 text-base-content/40 transition-colors duration-300"}`}>
+                    <ShieldCheckIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-base-content leading-none">Mark as Crucial</h5>
+                    <p className="text-[10px] text-base-content/50 mt-1">Featured evidence appears at the top of your vault.</p>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  className="toggle toggle-primary toggle-sm"
+                  checked={isFeatured}
+                  onChange={e => setIsFeatured(e.target.checked)}
+                />
               </div>
 
               <div className="flex items-center justify-between mb-2">

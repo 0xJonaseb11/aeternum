@@ -8,16 +8,6 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const isDarkMode = resolvedTheme === "dark";
-
-  const handleToggle = () => {
-    if (isDarkMode) {
-      setTheme("light");
-      return;
-    }
-    setTheme("dark");
-  };
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -25,22 +15,27 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
   if (!mounted) return null;
 
   return (
-    <div className={`flex space-x-2 h-8 items-center justify-center text-sm ${className}`}>
-      <input
-        id="theme-toggle"
-        type="checkbox"
-        className={`toggle transition-all ${
-          isDarkMode
-            ? "bg-slate-700 border-slate-600 hover:bg-slate-600"
-            : "bg-base-300 border-base-300 hover:bg-base-content/10"
-        }`}
-        onChange={handleToggle}
-        checked={isDarkMode}
-      />
-      <label htmlFor="theme-toggle" className={`swap swap-rotate ${!isDarkMode ? "swap-active" : ""}`}>
-        <SunIcon className="swap-on h-5 w-5" />
-        <MoonIcon className="swap-off h-5 w-5" />
-      </label>
-    </div>
+    <button
+      onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
+      className={`btn btn-ghost transition-all duration-300 ${
+        resolvedTheme === "light"
+          ? "text-slate-600 hover:bg-slate-200"
+          : "text-primary hover:bg-slate-700/80"
+      } ${className}`}
+      aria-label="Toggle Theme"
+    >
+      <div className="relative h-5 w-5">
+        <SunIcon
+          className={`absolute inset-0 h-5 w-5 transition-all duration-300 transform ${
+            resolvedTheme === "dark" ? "scale-100 rotate-0 opacity-100" : "scale-0 rotate-90 opacity-0"
+          }`}
+        />
+        <MoonIcon
+          className={`absolute inset-0 h-5 w-5 transition-all duration-300 transform ${
+            resolvedTheme === "light" ? "scale-100 rotate-0 opacity-100" : "scale-0 -rotate-90 opacity-0"
+          }`}
+        />
+      </div>
+    </button>
   );
 };

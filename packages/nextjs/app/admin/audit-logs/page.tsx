@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { Pagination } from "~~/components/ui/Pagination";
 import { AuditLogEntry } from "~~/types/admin";
 
 export default function AdminAuditLogs() {
@@ -13,13 +14,14 @@ export default function AdminAuditLogs() {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
   const [total, setTotal] = useState(0);
 
   const fetchLogs = useCallback(async () => {
     if (!session?.access_token) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/audit-logs?page=${page}&limit=50`, {
+      const res = await fetch(`/api/admin/audit-logs?page=${page}&limit=${pageSize}`, {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
@@ -34,7 +36,7 @@ export default function AdminAuditLogs() {
     } finally {
       setLoading(false);
     }
-  }, [session?.access_token, address, page]);
+  }, [session?.access_token, address, page, pageSize]);
 
   useEffect(() => {
     if (user) void fetchLogs();
@@ -139,31 +141,17 @@ export default function AdminAuditLogs() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mt-8">
-            <div className="text-[10px] uppercase font-black tracking-widest text-base-content/30">
-              Showing <span className="text-primary">{logs.length}</span> of{" "}
-              <span className="text-primary">{total}</span> events
-            </div>
-            <div className="join rounded-2xl border border-base-300/50 bg-base-100/50 backdrop-blur-md overflow-hidden shadow-sm">
-              <button
-                className="join-item btn btn-ghost btn-sm px-4 text-primary hover:bg-primary/10 disabled:opacity-30"
-                disabled={page === 1}
-                onClick={() => setPage(p => p - 1)}
-              >
-                «
-              </button>
-              <button className="join-item btn btn-ghost btn-sm px-6 font-black text-[10px] pointer-events-none uppercase tracking-widest text-base-content/60 border-x border-base-300/50">
-                Page {page}
-              </button>
-              <button
-                className="join-item btn btn-ghost btn-sm px-4 text-primary hover:bg-primary/10 disabled:opacity-30"
-                disabled={logs.length < 50}
-                onClick={() => setPage(p => p + 1)}
-              >
-                »
-              </button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={page}
+            totalItems={total}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={size => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            className="mt-8"
+          />
         </div>
       </section>
     </div>

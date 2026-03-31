@@ -44,6 +44,7 @@ export const useVault = (organizationId?: string | null) => {
       caseId?: string;
       tags?: string[];
       folderId?: string | null;
+      isFeatured?: boolean;
     },
   ) => {
     if (file.size > MAX_FILE_SIZE_BYTES) {
@@ -138,6 +139,7 @@ export const useVault = (organizationId?: string | null) => {
               caseId: metadata?.caseId,
               tags: metadata?.tags,
               folderId: metadata?.folderId,
+              isFeatured: metadata?.isFeatured,
             }),
           });
           if (!res.ok) {

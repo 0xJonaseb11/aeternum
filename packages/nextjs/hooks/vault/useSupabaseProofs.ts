@@ -38,7 +38,7 @@ async function fetchProofsFromSupabase({
   chainId: number;
   accessToken?: string | null;
   searchParams?: ProofsSearchParams;
-}): Promise<SupabaseProofItem[]> {
+}): Promise<{ items: SupabaseProofItem[]; total: number }> {
   const params = new URLSearchParams({ chainId: String(chainId) });
   if (userId) {
     params.set("userId", userId);
@@ -66,8 +66,11 @@ async function fetchProofsFromSupabase({
   if (!res.ok) {
     throw new Error(`Proofs API failed: ${res.status}`);
   }
-  const json = (await res.json()) as { items?: SupabaseProofItem[] };
-  return json.items ?? [];
+  const json = (await res.json()) as { items?: SupabaseProofItem[]; total?: number };
+  return {
+    items: json.items ?? [],
+    total: json.total ?? 0,
+  };
 }
 
 export function useSupabaseProofs(

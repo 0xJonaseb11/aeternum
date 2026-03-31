@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validation failed", details: msg }, { status: 400 });
   }
   let { userId, organizationId } = parsed.data;
-  const { fileHash, title, description, caseId, tags, notes, folderId } = parsed.data;
+  const { fileHash, title, description, caseId, tags, notes, folderId, isFeatured } = parsed.data;
 
   if (userId != null || (organizationId != null && organizationId !== "")) {
     const user = await getCurrentUserFromRequest(req);
@@ -123,6 +123,7 @@ export async function POST(req: NextRequest) {
     tags: tags ?? null,
     notes: notes ?? null,
     folder_id: folderId ?? null,
+    is_featured: isFeatured ?? false,
     updated_at: new Date().toISOString(),
   };
 
@@ -158,6 +159,7 @@ export async function POST(req: NextRequest) {
       case_id: payload.case_id,
       tags: payload.tags,
       notes: payload.notes,
+      is_featured: payload.is_featured,
       updated_at: payload.updated_at,
     })
     .select("*")

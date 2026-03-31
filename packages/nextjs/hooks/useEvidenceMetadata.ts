@@ -13,6 +13,7 @@ export type EvidenceMetadata = {
   tags: string[] | null;
   notes: string | null;
   folder_id: string | null;
+  is_featured: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -44,6 +45,7 @@ async function saveEvidence(input: {
   description?: string;
   folderId?: string | null;
   tags?: string[] | null;
+  is_featured?: boolean;
   accessToken?: string | null;
 }) {
   const headers: HeadersInit = { "Content-Type": "application/json" };
@@ -59,6 +61,7 @@ async function saveEvidence(input: {
       description: input.description,
       folderId: input.folderId ?? undefined,
       tags: input.tags ?? undefined,
+      isFeatured: input.is_featured,
     }),
   });
   if (!res.ok) {
@@ -82,7 +85,13 @@ export function useEvidenceMetadata(fileHash: string | undefined, organizationId
   });
 
   const mutation = useMutation({
-    mutationFn: (input: { title?: string; description?: string; folderId?: string | null; tags?: string[] | null }) =>
+    mutationFn: (input: {
+      title?: string;
+      description?: string;
+      folderId?: string | null;
+      tags?: string[] | null;
+      is_featured?: boolean;
+    }) =>
       saveEvidence({
         fileHash: fileHash!,
         userId,

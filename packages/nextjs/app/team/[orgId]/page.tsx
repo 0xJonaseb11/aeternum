@@ -1,11 +1,10 @@
 "use client";
 
-import { type Session } from "@supabase/supabase-js";
-
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { type Session } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import { TrashIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
@@ -320,7 +319,11 @@ export default function TeamOrgPage() {
   );
 }
 
-function OrgSettingsEditor({ session, org, fetchOrg }: Readonly<{ session: Session | null; org: Org; fetchOrg: () => void }>) {
+function OrgSettingsEditor({
+  session,
+  org,
+  fetchOrg,
+}: Readonly<{ session: Session | null; org: Org; fetchOrg: () => void }>) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useAccount } from "wagmi";
 import { AppLogo } from "~~/components/AppLogo";
-import { SwitchTheme } from "~~/components/SwitchTheme";
 
 const FOOTER_LINKS = {
   product: [
@@ -126,13 +125,10 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-base-300">
           <p className="text-[10px] sm:text-xs text-base-content/40 text-center md:text-left max-w-full">
             © {new Date().getFullYear()} Aeternum. Built for the future of evidence.
           </p>
-          <div className="flex items-center gap-4">
-            <SwitchTheme />
-          </div>
         </div>
       </div>
 
