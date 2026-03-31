@@ -21,7 +21,7 @@ export default function AdminAuditLogs() {
     try {
       const res = await fetch(`/api/admin/audit-logs?page=${page}&limit=50`, {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
         },
       });

@@ -124,7 +124,7 @@ export const useVault = (organizationId?: string | null) => {
         // 2. Save evidence metadata (tags, folders, etc) if provided or just defaults
         try {
           const headers: HeadersInit = { "Content-Type": "application/json" };
-          if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+          if (session?.access_token) headers.Authorization = `Bearer ${session?.access_token}`;
 
           const res = await fetch("/api/evidence", {
             method: "POST",
@@ -152,7 +152,7 @@ export const useVault = (organizationId?: string | null) => {
 
       try {
         const headers: HeadersInit = { "Content-Type": "application/json" };
-        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+        if (session?.access_token) headers.Authorization = `Bearer ${session?.access_token}`;
         void fetch("/api/events", {
           method: "POST",
           headers,

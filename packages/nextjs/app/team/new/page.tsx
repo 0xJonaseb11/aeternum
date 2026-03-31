@@ -24,7 +24,7 @@ export default function TeamNewPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify({ name: name.trim(), slug: slug.trim() || undefined }),
         });
