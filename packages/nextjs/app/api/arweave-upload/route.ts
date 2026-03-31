@@ -8,8 +8,14 @@ import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) {
+  const { user, status } = await getCurrentUserFromRequest(req);
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+  }
+  if (status === "blocked") {
+    return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+  }
+  if (!user || status === "unauthorized") {
     return NextResponse.json(
       { error: "Authentication required. Include Authorization: Bearer <session_token>." },
       { status: 401 },

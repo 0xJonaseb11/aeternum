@@ -376,12 +376,16 @@ export const UploadEvidence = ({ scope }: { scope?: VaultScope }) => {
 
               <div className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/10 mb-2">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${isFeatured ? "bg-primary text-primary-content transition-colors duration-300" : "bg-base-300 text-base-content/40 transition-colors duration-300"}`}>
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg ${isFeatured ? "bg-primary text-primary-content transition-colors duration-300" : "bg-base-300 text-base-content/40 transition-colors duration-300"}`}
+                  >
                     <ShieldCheckIcon className="h-5 w-5" />
                   </div>
                   <div>
                     <h5 className="text-xs font-bold text-base-content leading-none">Mark as Crucial</h5>
-                    <p className="text-[10px] text-base-content/50 mt-1">Featured evidence appears at the top of your vault.</p>
+                    <p className="text-[10px] text-base-content/50 mt-1">
+                      Featured evidence appears at the top of your vault.
+                    </p>
                   </div>
                 </div>
                 <input

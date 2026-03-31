@@ -7,7 +7,7 @@ import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 export async function GET(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
+  const { user } = await getCurrentUserFromRequest(req);
   const walletAddress = req.headers.get("x-wallet-address") || undefined;
 
   if (!isPlatformAdmin(user, walletAddress)) {

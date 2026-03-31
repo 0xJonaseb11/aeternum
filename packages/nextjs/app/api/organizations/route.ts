@@ -5,8 +5,17 @@ import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 export async function GET(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, status } = await getCurrentUserFromRequest(req);
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+  }
+  if (status === "blocked") {
+    return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+  }
+  if (!user || status === "unauthorized") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const orgIds = await getOrganizationIdsForUser(user.id);
   if (orgIds.length === 0) return NextResponse.json({ organizations: [] });
   const supabase = getSupabase();
@@ -31,8 +40,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { user, status } = await getCurrentUserFromRequest(req);
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+  }
+  if (status === "blocked") {
+    return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+  }
+  if (!user || status === "unauthorized") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   let body: { name?: string; slug?: string };
   try {
     body = await req.json();

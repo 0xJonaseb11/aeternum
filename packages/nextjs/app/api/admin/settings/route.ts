@@ -4,8 +4,12 @@ import { getSupabase } from "~~/lib/supabase";
 import { getCurrentUserFromRequest } from "~~/lib/supabaseServer";
 
 export async function GET(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
+  const { user, status } = await getCurrentUserFromRequest(req);
   const walletAddress = req.headers.get("x-wallet-address") || undefined;
+
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance" }, { status: 503 });
+  }
 
   if (!isPlatformAdmin(user, walletAddress)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -27,8 +31,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const user = await getCurrentUserFromRequest(req);
+  const { user, status } = await getCurrentUserFromRequest(req);
   const walletAddress = req.headers.get("x-wallet-address") || undefined;
+
+  if (status === "maintenance") {
+    return NextResponse.json({ error: "System under maintenance" }, { status: 503 });
+  }
 
   if (!isPlatformAdmin(user, walletAddress)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });

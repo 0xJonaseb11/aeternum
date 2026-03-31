@@ -53,7 +53,8 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: "#nav-manage",
     title: "Manage Your Workspace",
-    description: "Organize your evidence, manage team access, and track documentation history from a centralized dashboard.",
+    description:
+      "Organize your evidence, manage team access, and track documentation history from a centralized dashboard.",
     placement: "bottom",
   },
   {
@@ -71,7 +72,8 @@ const TOUR_STEPS: TourStep[] = [
   {
     target: "#footer-help",
     title: "Get Support",
-    description: "Access our documentation or contact our support team if you ever need assistance. We are here to help.",
+    description:
+      "Access our documentation or contact our support team if you ever need assistance. We are here to help.",
     placement: "top",
   },
 ];
@@ -266,7 +268,11 @@ export const OnboardingTour = () => {
   return (
     <div className="fixed inset-0 z-[9999]">
       {/* Overlay with spotlight cutout via SVG mask */}
-      <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }} xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: "none" }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <defs>
           <mask id="spotlight-mask">
             <rect width="100%" height="100%" fill="white" />

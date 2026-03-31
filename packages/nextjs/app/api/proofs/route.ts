@@ -73,8 +73,14 @@ export async function GET(req: NextRequest) {
 
   let userId: string | null = userIdParam;
   if (userIdParam != null || (organizationId != null && organizationId !== "")) {
-    const user = await getCurrentUserFromRequest(req);
-    if (!user) {
+    const { user, status } = await getCurrentUserFromRequest(req);
+    if (status === "maintenance") {
+      return NextResponse.json({ error: "System under maintenance. Please try again later." }, { status: 503 });
+    }
+    if (status === "blocked") {
+      return NextResponse.json({ error: "Account blocked." }, { status: 403 });
+    }
+    if (!user || status === "unauthorized") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     if (organizationId != null && organizationId !== "") {
@@ -193,11 +199,14 @@ export async function GET(req: NextRequest) {
       .from("evidence")
       .select("file_hash, is_featured")
       .in("file_hash", fileHashes);
-    
-    featuredMap = (evidenceData ?? []).reduce((acc, curr) => {
-      acc[curr.file_hash] = curr.is_featured || false;
-      return acc;
-    }, {} as Record<string, boolean>);
+
+    featuredMap = (evidenceData ?? []).reduce(
+      (acc, curr) => {
+        acc[curr.file_hash] = curr.is_featured || false;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
   }
 
   let data = queryData ?? null;
