@@ -1510,7 +1510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint-community/regexpp@npm:^4.12.2":
+"@eslint-community/regexpp@npm:^4.12.2, @eslint-community/regexpp@npm:^4.6.1":
   version: 4.12.2
   resolution: "@eslint-community/regexpp@npm:4.12.2"
   checksum: 1770bc81f676a72f65c7200b5675ff7a349786521f30e66125faaf767fde1ba1c19c3790e16ba8508a62a3933afcfc806a893858b3b5906faf693d862b9e4120
@@ -1543,6 +1543,30 @@ __metadata:
   dependencies:
     "@types/json-schema": ^7.0.15
   checksum: b72cb0843650175f4c5e57ce7b2dcdfc2bb33f827722e4734e0a8166b09e833aea1f1aec259e67120e608d94fa450cfcd83fb3b89648275b0751cfa376d5968b
+  languageName: node
+  linkType: hard
+
+"@eslint/eslintrc@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "@eslint/eslintrc@npm:2.1.4"
+  dependencies:
+    ajv: ^6.12.4
+    debug: ^4.3.2
+    espree: ^9.6.0
+    globals: ^13.19.0
+    ignore: ^5.2.0
+    import-fresh: ^3.2.1
+    js-yaml: ^4.1.0
+    minimatch: ^3.1.2
+    strip-json-comments: ^3.1.1
+  checksum: 10957c7592b20ca0089262d8c2a8accbad14b4f6507e35416c32ee6b4dbf9cad67dfb77096bbd405405e9ada2b107f3797fe94362e1c55e0b09d6e90dd149127
+  languageName: node
+  linkType: hard
+
+"@eslint/js@npm:8.57.1":
+  version: 8.57.1
+  resolution: "@eslint/js@npm:8.57.1"
+  checksum: 2afb77454c06e8316793d2e8e79a0154854d35e6782a1217da274ca60b5044d2c69d6091155234ed0551a1e408f86f09dd4ece02752c59568fa403e60611e880
   languageName: node
   linkType: hard
 
@@ -5155,7 +5179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/base@npm:~1.1.6, @scure/base@npm:~1.1.8":
+"@scure/base@npm:~1.1.0, @scure/base@npm:~1.1.6":
   version: 1.1.9
   resolution: "@scure/base@npm:1.1.9"
   checksum: 120820a37dfe9dfe4cab2b7b7460552d08e67dee8057ed5354eb68d8e3440890ae983ce3bee957d2b45684950b454a2b6d71d5ee77c1fd3fddc022e2a510337f
@@ -5170,6 +5194,27 @@ __metadata:
     "@noble/hashes": ~1.4.0
     "@scure/base": ~1.1.6
   checksum: eff491651cbf2bea8784936de75af5fc020fc1bbb9bcb26b2cfeefbd1fb2440ebfaf30c0733ca11c0ae1e272a2ef4c3c34ba5c9fb3e1091c3285a4272045b0c6
+  languageName: node
+  linkType: hard
+
+"@scure/bip32@npm:1.7.0, @scure/bip32@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@scure/bip32@npm:1.7.0"
+  dependencies:
+    "@noble/curves": ~1.9.0
+    "@noble/hashes": ~1.8.0
+    "@scure/base": ~1.2.5
+  checksum: c83adca5a74ec5c4ded8ba93900d0065e4767c4759cf24c2674923aef01d45ba56f171574e3519f2341be99f53a333f01b674eb6cfeb6fa8379607c6d1bc90b5
+  languageName: node
+  linkType: hard
+
+"@scure/bip39@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@scure/bip39@npm:1.1.1"
+  dependencies:
+    "@noble/hashes": ~1.2.0
+    "@scure/base": ~1.1.0
+  checksum: fbb594c50696fa9c14e891d872f382e50a3f919b6c96c55ef2fb10c7102c546dafb8f099a62bd114c12a00525b595dcf7381846f383f0ddcedeaa6e210747d2f
   languageName: node
   linkType: hard
 
@@ -5220,7 +5265,7 @@ __metadata:
     "@openzeppelin/hardhat-upgrades": ^3.9.1
     "@typechain/ethers-v6": ^0.5.1
     "@typechain/hardhat": ^9.1.0
-    "@types/chai": ^4.3.20
+    "@types/chai": ^5.2.3
     "@types/eslint": ^8.56.12
     "@types/mocha": ^10.0.10
     "@types/node": ^25.5.0
@@ -5266,7 +5311,7 @@ __metadata:
     "@scaffold-ui/components": ^0.1.9
     "@scaffold-ui/debug-contracts": ^0.1.8
     "@scaffold-ui/hooks": ^0.1.7
-    "@supabase/supabase-js": ^2.100.1
+    "@supabase/supabase-js": ^2.101.0
     "@tailwindcss/postcss": ^4.0.0
     "@tanstack/react-query": ~5.95.2
     "@trivago/prettier-plugin-sort-imports": ~6.0.2
@@ -5284,8 +5329,8 @@ __metadata:
     daisyui: ^5.0.0
     dotenv: ^17.3.1
     eslint: ^10.1.0
-    eslint-config-next: ^16.2.1
-    eslint-config-prettier: ^10.1.8
+    eslint-config-next: ^15.5.10
+    eslint-config-prettier: ^9.1.0
     eslint-plugin-prettier: ^5.2.3
     jspdf: ^4.2.1
     kubo-rpc-client: ~6.1.0
@@ -5306,9 +5351,9 @@ __metadata:
     typescript: ~6.0.2
     usehooks-ts: ~3.1.0
     vercel: ~50.35.0
-    viem: 2.21.7
+    viem: 2.47.6
     wagmi: 3.6.0
-    zod: ^4.3.6
+    zod: ^3.24.2
     zustand: ^5.0.3
   languageName: unknown
   linkType: soft
@@ -6156,37 +6201,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@streamparser/json-node@npm:^0.0.22":
-  version: 0.0.22
-  resolution: "@streamparser/json-node@npm:0.0.22"
-  dependencies:
-    "@streamparser/json": ^0.0.22
-  checksum: c4b328bd4587984f022814a1a8085803357da2dd27a0eeea1e1efbaa2943a4c94e86552b2d1daa9171f268a33446838ed9cad3840f5e26920204db9bdd8f985a
-  languageName: node
-  linkType: hard
-
-"@streamparser/json@npm:^0.0.22":
-  version: 0.0.22
-  resolution: "@streamparser/json@npm:0.0.22"
-  checksum: 66466b751d175c9dbe0f23209615f4b208e8e391abe95283cb715abd4368c04d96ef779839e5165153ffb63f08024b82e2cd3f46c82f335f4e94dc61bace079a
-  languageName: node
-  linkType: hard
-
-"@supabase/auth-js@npm:2.100.0":
-  version: 2.100.0
-  resolution: "@supabase/auth-js@npm:2.100.0"
+"@supabase/auth-js@npm:2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/auth-js@npm:2.101.0"
   dependencies:
     tslib: 2.8.1
-  checksum: 204addcaaf042ef305d2dd3d0ccb1bc99a9694e773b75d452ec9a1d78668eb27653793b33d27241f6e7bd810ed6244ce45275be94a581954f793f9fb83a78a65
+  checksum: cf3b592085c434912bc4fc1315e60a95e85ae43ab2bcb52a1d89042c7d9b6aeaf8967a231c254c0afe7c2593c382fa780e819eb91604709932eab3c869c5636c
   languageName: node
   linkType: hard
 
-"@supabase/functions-js@npm:2.100.1":
-  version: 2.100.1
-  resolution: "@supabase/functions-js@npm:2.100.1"
+"@supabase/functions-js@npm:2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/functions-js@npm:2.101.0"
   dependencies:
     tslib: 2.8.1
-  checksum: 8b76dcc5549b503baf92be4a4a9b57c4df2862b2ca51b554b6346fd48d25183d0bcb8dfef6b1381302b22740ddfd5ee12db0a8563503c3186dd9bb76c1e6a028
+  checksum: b3452a9b1c66509aa467166c18f00230dec05487ff0e67cf7972573680e8d7e9afa7cc23e628aedae47b15f1b4fef6b8c60089f8e1a65e6c4351670361f884f9
   languageName: node
   linkType: hard
 
@@ -6197,47 +6226,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/postgrest-js@npm:2.100.1":
-  version: 2.100.1
-  resolution: "@supabase/postgrest-js@npm:2.100.1"
+"@supabase/postgrest-js@npm:2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/postgrest-js@npm:2.101.0"
   dependencies:
     tslib: 2.8.1
-  checksum: 09ae151e7a0d684ad2b1ab2a996e9a96a9cd3c3f8099bf72caf4b88b43f38bb1b1c4fc345c9d592ef21509d4a4409754f03048b9e30566183e3eb9eb1b142d4b
+  checksum: 2c92c6c6f6c2160cdc756aefb1045beb6b53b0adc33b92c7f7e14074db723e336e8d920c77d3e098d1fe9fa0c0d3a5b6c1fb100db434bd52246ce5018994d78c
   languageName: node
   linkType: hard
 
-"@supabase/realtime-js@npm:2.100.1":
-  version: 2.100.1
-  resolution: "@supabase/realtime-js@npm:2.100.1"
+"@supabase/realtime-js@npm:2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/realtime-js@npm:2.101.0"
   dependencies:
     "@supabase/phoenix": ^0.4.0
     "@types/ws": ^8.18.1
     tslib: 2.8.1
     ws: ^8.18.2
-  checksum: 4a955fcdba8ed5ccfe0a09f5f0bff1b4c45bd1185886fa4f9adcede4c49fe9fdd741241ecf2c850595fa9a5ae2053b4d57698c3f21eb28490082af6d25927748
+  checksum: ce4d72f92b1d49de4bc356193d406f3f662679b97f068ced1d466c6414fa4bff70801b92843d2af50763de10d7497fe471926b6162c67c77d16493122013d563
   languageName: node
   linkType: hard
 
-"@supabase/storage-js@npm:2.100.1":
-  version: 2.100.1
-  resolution: "@supabase/storage-js@npm:2.100.1"
+"@supabase/storage-js@npm:2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/storage-js@npm:2.101.0"
   dependencies:
     iceberg-js: ^0.8.1
     tslib: 2.8.1
-  checksum: f11b8e3d972c7f79285bb31f618eba0152de47e9ab7967a66168ae07b6ad94cefd7ee908c25e24999462858d32e1c13c845ff3e78971a89c035f8801f73ce22b
+  checksum: ce198224cf4642e9b8b24e977789e6ca28a756b69a4dd5fe12a79377a153098e475f0fb8494815766af8980b5f2d896de97923453503966f6ec803924f1452bf
   languageName: node
   linkType: hard
 
-"@supabase/supabase-js@npm:^2.100.1":
-  version: 2.100.1
-  resolution: "@supabase/supabase-js@npm:2.100.1"
+"@supabase/supabase-js@npm:^2.101.0":
+  version: 2.101.0
+  resolution: "@supabase/supabase-js@npm:2.101.0"
   dependencies:
-    "@supabase/auth-js": 2.100.1
-    "@supabase/functions-js": 2.100.1
-    "@supabase/postgrest-js": 2.100.1
-    "@supabase/realtime-js": 2.100.1
-    "@supabase/storage-js": 2.100.1
-  checksum: f1f29a1766a2c1a02fdeaf5f63eab00dc25d0838b96c32d55c3702aca72a065c9dce0d012abed79ea93d99c1c8a7a095ece84f291e7d92077bd4ae3ed4d0f0ce
+    "@supabase/auth-js": 2.101.0
+    "@supabase/functions-js": 2.101.0
+    "@supabase/postgrest-js": 2.101.0
+    "@supabase/realtime-js": 2.101.0
+    "@supabase/storage-js": 2.101.0
+  checksum: 335cc63c7b362179d202a5f39d11a7b6a2cc319cfe044ca36d8b00011f9357a0ab5957b6a1c610a90ef020a642ebbb1692bd1afbb7a9e6bf4d608ed584ef015d
   languageName: node
   linkType: hard
 
@@ -6596,10 +6625,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.20":
-  version: 4.3.20
-  resolution: "@types/chai@npm:4.3.20"
-  checksum: 7c5b0c9148f1a844a8d16cb1e16c64f2e7749cab2b8284155b9e494a6b34054846e22fb2b38df6b290f9bf57e6beebb2e121940c5896bc086ad7bab7ed429f06
+"@types/chai-as-promised@npm:^7.1.3":
+  version: 7.1.8
+  resolution: "@types/chai-as-promised@npm:7.1.8"
+  dependencies:
+    "@types/chai": "*"
+  checksum: f0e5eab451b91bc1e289ed89519faf6591932e8a28d2ec9bbe95826eb73d28fe43713633e0c18706f3baa560a7d97e7c7c20dc53ce639e5d75bac46b2a50bf21
+  languageName: node
+  linkType: hard
+
+"@types/chai@npm:*, @types/chai@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "@types/chai@npm:5.2.3"
+  dependencies:
+    "@types/deep-eql": "*"
+    assertion-error: ^2.0.1
+  checksum: eb4c2da9ec38b474a983f39bfb5ec4fbcceb5e5d76d184094d2cbc4c41357973eb5769c8972cedac665a233251b0ed754f1e338fcf408d381968af85cdecc596
   languageName: node
   linkType: hard
 
@@ -8177,7 +8218,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.11.0, acorn@npm:^8.16.0, acorn@npm:^8.4.1, acorn@npm:^8.6.0":
+"acorn@npm:^8.11.0, acorn@npm:^8.16.0, acorn@npm:^8.4.1, acorn@npm:^8.6.0, acorn@npm:^8.9.0":
   version: 8.16.0
   resolution: "acorn@npm:8.16.0"
   bin:
@@ -11643,6 +11684,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-scope@npm:^7.2.2":
+  version: 7.2.2
+  resolution: "eslint-scope@npm:7.2.2"
+  dependencies:
+    esrecurse: ^4.3.0
+    estraverse: ^5.2.0
+  checksum: ec97dbf5fb04b94e8f4c5a91a7f0a6dd3c55e46bfc7bbcd0e3138c3a76977570e02ed89a1810c778dcd72072ff0e9621ba1379b4babe53921d71e2e4486fda3e
+  languageName: node
+  linkType: hard
+
 "eslint-scope@npm:^9.1.2":
   version: 9.1.2
   resolution: "eslint-scope@npm:9.1.2"
@@ -11714,6 +11765,65 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint@npm:^8.57.1":
+  version: 8.57.1
+  resolution: "eslint@npm:8.57.1"
+  dependencies:
+    "@eslint-community/eslint-utils": ^4.2.0
+    "@eslint-community/regexpp": ^4.6.1
+    "@eslint/eslintrc": ^2.1.4
+    "@eslint/js": 8.57.1
+    "@humanwhocodes/config-array": ^0.13.0
+    "@humanwhocodes/module-importer": ^1.0.1
+    "@nodelib/fs.walk": ^1.2.8
+    "@ungap/structured-clone": ^1.2.0
+    ajv: ^6.12.4
+    chalk: ^4.0.0
+    cross-spawn: ^7.0.2
+    debug: ^4.3.2
+    doctrine: ^3.0.0
+    escape-string-regexp: ^4.0.0
+    eslint-scope: ^7.2.2
+    eslint-visitor-keys: ^3.4.3
+    espree: ^9.6.1
+    esquery: ^1.4.2
+    esutils: ^2.0.2
+    fast-deep-equal: ^3.1.3
+    file-entry-cache: ^6.0.1
+    find-up: ^5.0.0
+    glob-parent: ^6.0.2
+    globals: ^13.19.0
+    graphemer: ^1.4.0
+    ignore: ^5.2.0
+    imurmurhash: ^0.1.4
+    is-glob: ^4.0.0
+    is-path-inside: ^3.0.3
+    js-yaml: ^4.1.0
+    json-stable-stringify-without-jsonify: ^1.0.1
+    levn: ^0.4.1
+    lodash.merge: ^4.6.2
+    minimatch: ^3.1.2
+    natural-compare: ^1.4.0
+    optionator: ^0.9.3
+    strip-ansi: ^6.0.1
+    text-table: ^0.2.0
+  bin:
+    eslint: bin/eslint.js
+  checksum: e2489bb7f86dd2011967759a09164e65744ef7688c310bc990612fc26953f34cc391872807486b15c06833bdff737726a23e9b4cdba5de144c311377dc41d91b
+  languageName: node
+  linkType: hard
+
+"espree@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "espree@npm:11.2.0"
+  dependencies:
+    acorn: ^8.16.0
+    acorn-jsx: ^5.3.2
+    eslint-visitor-keys: ^5.0.1
+  checksum: 7545dc501ab5cff558af1aa290c7e586d7d2a83c9ecdcb5f2c8ba7ee6634b70f4083d1bed198ec17ddf11d3265751aa78e315b4d4c7506711066a4ef38c1084a
+  languageName: node
+  linkType: hard
+
 "espree@npm:^11.2.0":
   version: 11.2.0
   resolution: "espree@npm:11.2.0"
@@ -11755,7 +11865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esquery@npm:^1.7.0":
+"esquery@npm:^1.4.2, esquery@npm:^1.7.0":
   version: 1.7.0
   resolution: "esquery@npm:1.7.0"
   dependencies:
@@ -12959,10 +13069,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:16.4.0":
-  version: 16.4.0
-  resolution: "globals@npm:16.4.0"
-  checksum: 934180f5c6cbb26f8b2832caa255050fface970eee45bde8757fabba384807c85640a12716aa5bcc47d781807839fee470c8c1f6159c6b8dc877668c56103880
+"globals@npm:^13.19.0":
+  version: 13.24.0
+  resolution: "globals@npm:13.24.0"
+  dependencies:
+    type-fest: ^0.20.2
+  checksum: 56066ef058f6867c04ff203b8a44c15b038346a62efbc3060052a1016be9f56f4cf0b2cd45b74b22b81e521a889fc7786c73691b0549c2f3a6e825b3d394f43c
   languageName: node
   linkType: hard
 
@@ -21053,6 +21165,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~6.0.2":
+  version: 6.0.2
+  resolution: "typescript@npm:6.0.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: a95632e5e4f7b9e7d9e9e9b79b4f147b45181258e7cae4c9f9f2a24176aff688d25e798cddf78cc39cb95423c8c63b36fd4ed5ac4028d37667dcc62a1e89e9e7
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@npm%3Atypescript@5.9.3#~builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#~builtin<compat/typescript>::version=5.9.3&hash=5786d5"
@@ -21060,6 +21182,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: a5a6dc399d3761ded54192031f11d3ad5df8001c7febe3fbbc8098efcb552cdf8f2f402b3618c56dafcd04fef63dee005f4900f608e185404caedc46480539ed
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~6.0.2#~builtin<compat/typescript>":
+  version: 6.0.2
+  resolution: "typescript@patch:typescript@npm%3A6.0.2#~builtin<compat/typescript>::version=6.0.2&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 9f29a9339aa66f5e13485c596c8d4d086fb95960f8be8a23ea6ef33afe61f7c465d330a6f77911bb8613f231c2ebf131763a82d277cefa61147b24af2073f0c4
   languageName: node
   linkType: hard
 
@@ -22196,9 +22328,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.5.1":
-  version: 7.5.10
-  resolution: "ws@npm:7.5.10"
+"ws@npm:8.18.3, ws@npm:~8.18.3":
+  version: 8.18.3
+  resolution: "ws@npm:8.18.3"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -22211,24 +22343,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.18.0":
-  version: 8.20.0
-  resolution: "ws@npm:8.20.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 2b31d24a53690770564a033c21ea48390f84d23fbc5abc14b2bbec4e112846f2f3ca66caee769a73fb8bc89ba16b452a6911a553e9742bbc75bccb79e203953e
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.18.2, ws@npm:^8.18.3":
-  version: 8.19.0
-  resolution: "ws@npm:8.19.0"
+"ws@npm:^7.4.6, ws@npm:^7.5.1":
+  version: 7.5.10
+  resolution: "ws@npm:7.5.10"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ^5.0.2
