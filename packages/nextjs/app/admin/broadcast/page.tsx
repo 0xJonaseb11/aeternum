@@ -34,7 +34,7 @@ export default function AdminBroadcast() {
     try {
       const res = await fetch("/api/admin/broadcasts", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
         },
       });
@@ -378,8 +378,8 @@ export default function AdminBroadcast() {
                         </td>
                         <td className="py-4 px-8 text-[10px] opacity-40 group-hover:opacity-80 transition-opacity">
                           {b.status === "sent"
-                            ? `Sent ${new Date(b.sent_at).toLocaleString()}`
-                            : `Draft ${new Date(b.created_at).toLocaleString()}`}
+                            ? `Sent ${b.sent_at ? new Date(b.sent_at).toLocaleString() : "N/A"}`
+                            : `Draft ${b.created_at ? new Date(b.created_at).toLocaleString() : "N/A"}`}
                         </td>
                         <td className="py-4 px-8 text-right">
                           <button

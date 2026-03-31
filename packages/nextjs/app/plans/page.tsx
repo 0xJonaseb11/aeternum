@@ -71,7 +71,7 @@ export default function PlansPage() {
         const base = typeof window !== "undefined" ? window.location.origin : "";
         const res = await fetch("/api/billing/checkout", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
           body: JSON.stringify({
             plan,
             priceId,

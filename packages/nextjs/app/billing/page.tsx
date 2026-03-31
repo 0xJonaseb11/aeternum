@@ -26,7 +26,7 @@ export default function BillingPage() {
     setLoading(true);
     try {
       const res = await fetch("/api/billing/subscription", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       if (!res.ok) throw new Error("Failed to load subscription");
       const d = await res.json();
@@ -48,7 +48,7 @@ export default function BillingPage() {
     try {
       const res = await fetch("/api/billing/portal", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({
           returnUrl: window.location.href,
         }),
