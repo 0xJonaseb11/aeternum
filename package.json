@@ -7,13 +7,6 @@
       "packages/*"
     ]
   },
-  "resolutions": {
-    "react": "~19.2.3",
-    "react-dom": "~19.2.3",
-    "eslint-plugin-react": "7.33.2",
-    "@wagmi/core": "~2.22.1",
-    "@wagmi/connectors": "~5.11.2"
-  },
   "scripts": {
     "account": "yarn hardhat:account",
     "account:generate": "yarn workspace @se-2/hardhat account:generate",
@@ -39,40 +32,37 @@
     "hardhat:lint": "yarn workspace @se-2/hardhat lint",
     "hardhat:lint-staged": "yarn workspace @se-2/hardhat lint-staged",
     "hardhat:test": "yarn workspace @se-2/hardhat test",
+    "hardhat:upgrade:all": "yarn workspace @se-2/hardhat upgrade:all",
     "hardhat:verify": "yarn workspace @se-2/hardhat verify",
     "postinstall": "husky install",
     "ipfs": "yarn workspace @se-2/nextjs ipfs",
     "lint": "yarn next:lint && yarn hardhat:lint",
     "next:build": "yarn workspace @se-2/nextjs build",
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
+    "next:verify": "yarn next:build && yarn next:check-types",
     "next:format": "yarn workspace @se-2/nextjs format",
     "next:lint": "yarn workspace @se-2/nextjs lint",
     "next:serve": "yarn workspace @se-2/nextjs serve",
     "precommit": "lint-staged",
     "start": "yarn workspace @se-2/nextjs dev",
     "test": "yarn hardhat:test",
+    "upgrade:all": "yarn hardhat:upgrade:all",
     "vercel": "yarn workspace @se-2/nextjs vercel",
     "vercel:login": "yarn workspace @se-2/nextjs vercel:login",
     "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
     "verify": "yarn hardhat:verify"
   },
   "devDependencies": {
-    "@types/chai": "~4.3.19",
-    "@types/circomlibjs": "^0",
-    "@types/react-dom": "^19.2.3",
-    "@types/snarkjs": "^0",
     "husky": "~9.1.6",
     "lint-staged": "~16.4.0"
   },
-  "packageManager": "yarn@3.8.7",
+  "resolutions": {
+    "@rainbow-me/rainbowkit": "2.1.7",
+    "wagmi": "2.12.7",
+    "viem": "2.21.7"
+  },
+  "packageManager": "yarn@4.13.0",
   "engines": {
     "node": ">=20.18.3"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
-    "circomlibjs": "^0.1.7",
-    "dotenv": "^17.3.1",
-    "snarkjs": "^0.7.6"
   }
 }

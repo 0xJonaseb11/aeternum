@@ -19,18 +19,9 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { AdminStats, SystemHealth } from "~~/types/admin";
 
-type AdminStats = {
-  totalProofs: number;
-  totalOrgs: number;
-  totalUsers: number;
-  activeSubscriptions: number;
-  mrr: number;
-  irysBalance: string;
-  pendingInvites: number;
-  planDistribution: Record<string, number>;
-  recentActivity: any[];
-};
+
 
 export default function AdminDashboard() {
   const { session, user } = useSupabaseAuth();
@@ -40,7 +31,7 @@ export default function AdminDashboard() {
 
   const { address } = useAccount();
 
-  const [healthData, setHealthData] = useState<any>(null);
+  const [healthData, setHealthData] = useState<SystemHealth | null>(null);
   const [checkingHealth, setCheckingHealth] = useState(false);
   const [showHealthModal, setShowHealthModal] = useState(false);
 
@@ -50,7 +41,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch("/api/admin/stats", {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
         },
       });
@@ -240,7 +231,7 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {stats?.recentActivity?.map((event: any) => (
+                        {stats?.recentActivity?.map(event => (
                           <tr
                             key={event.id}
                             className="border-base-300/20 group hover:bg-base-200/40 transition-colors"
@@ -457,9 +448,9 @@ function StatCard({
   loading,
   color,
 }: {
-  icon: any;
+  icon: React.ReactNode;
   label: string;
-  value: any;
+  value: string | number;
   loading: boolean;
   color: string;
 }) {

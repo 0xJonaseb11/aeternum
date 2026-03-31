@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { AuditLogEntry } from "~~/types/admin";
 
 export default function AdminAuditLogs() {
   const { session, user } = useSupabaseAuth();
   const { address } = useAccount();
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -20,7 +21,7 @@ export default function AdminAuditLogs() {
     try {
       const res = await fetch(`/api/admin/audit-logs?page=${page}&limit=50`, {
         headers: {
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session?.access_token}`,
           "x-wallet-address": address || "",
         },
       });

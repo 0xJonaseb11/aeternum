@@ -26,7 +26,7 @@ export default function BillingPage() {
     setLoading(true);
     try {
       const res = await fetch("/api/billing/subscription", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${session?.access_token}` },
       });
       if (!res.ok) throw new Error("Failed to load subscription");
       const d = await res.json();
@@ -48,7 +48,7 @@ export default function BillingPage() {
     try {
       const res = await fetch("/api/billing/portal", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
         body: JSON.stringify({
           returnUrl: window.location.href,
         }),
@@ -75,7 +75,7 @@ export default function BillingPage() {
   if (loading) return <div className="p-8 text-center">Loading subscription details…</div>;
 
   const isPaid = data && data.plan !== "free";
-  const limits = data ? getPlanLimits(data.plan as any) : null;
+  const limits = data ? getPlanLimits(data.plan as "free" | "pro" | "business" | "enterprise") : null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

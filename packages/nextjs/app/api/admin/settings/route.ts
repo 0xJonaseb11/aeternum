@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const settings = data.reduce((acc: any, curr) => {
+  const settings = data.reduce((acc: Record<string, string | number | boolean>, curr) => {
     acc[curr.key] = curr.value;
     return acc;
   }, {});

@@ -56,16 +56,14 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
     case "customer.subscription.created":
     case "customer.subscription.updated": {
-      const sub = event.data.object as Stripe.Subscription;
+      const sub = event.data.object as Stripe.Subscription & { current_period_end: number };
       const userId = sub.metadata?.user_id;
       if (!userId) break;
       const plan =
         (sub.metadata?.plan as PlanId) ||
         (sub.items?.data?.[0]?.price?.id ? planFromPriceId(sub.items.data[0].price.id) : ("pro" as PlanId));
       const status = stripeStatusToOur(sub.status);
-      const periodEnd = (sub as any).current_period_end
-        ? new Date((sub as any).current_period_end * 1000).toISOString()
-        : null;
+      const periodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null;
       const amount = sub.items?.data?.[0]?.price?.unit_amount || 0;
 
       const { data: existing, error: fetchError } = await supabase

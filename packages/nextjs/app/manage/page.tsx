@@ -9,6 +9,7 @@ import { useVaultScope } from "~~/hooks/vault/useVaultScope";
 
 const ManagePage: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { targetNetwork } = useTargetNetwork();
   const { scope, setScope, organizations, loadingOrgs } = useVaultScope();
 
