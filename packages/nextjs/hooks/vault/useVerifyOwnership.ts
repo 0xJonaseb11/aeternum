@@ -36,7 +36,7 @@ export function useVerifyOwnership(organizationId?: string | null) {
       if (verified) {
         try {
           const headers: HeadersInit = { "Content-Type": "application/json" };
-          if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+          if (session?.access_token) headers.Authorization = `Bearer ${session?.access_token}`;
           void fetch("/api/events", {
             method: "POST",
             headers,

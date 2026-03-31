@@ -48,9 +48,9 @@ export const Footer = () => {
   const adminWallets = (process.env.NEXT_PUBLIC_ADMIN_WALLETS || "").toLowerCase().split(",").filter(Boolean);
   const isAdmin = address && adminWallets.includes(address.toLowerCase());
 
-  const companyLinks = [...FOOTER_LINKS.company];
+  const companyLinks: Array<{ href: string; label: string; external?: boolean }> = [...FOOTER_LINKS.company];
   if (isAdmin) {
-    companyLinks.push({ href: "/admin", label: "Admin" } as any);
+    companyLinks.push({ href: "/admin", label: "Admin" });
   }
 
   return (
