@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import ContactForm from "~~/components/ContactForm";
 import { useSupabaseAuth } from "~~/components/auth/SupabaseAuthProvider";
+import { useSubscription } from "~~/hooks/useSubscription";
 
 const PLAN_FEATURES: Record<string, string[]> = {
   free: [
@@ -58,6 +59,7 @@ const PLAN_PRICES: Record<string, { displayPrice: string; unit: string; priceId?
 
 export default function PlansPage() {
   const { session } = useSupabaseAuth();
+  const { subscription } = useSubscription();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const startCheckout = useCallback(
@@ -121,27 +123,35 @@ export default function PlansPage() {
           {DISPLAY_PLANS.map(({ id, name, basePlan }) => {
             const features = PLAN_FEATURES[basePlan || id] || [];
             const price = PLAN_PRICES[id];
+            const isCurrentPlan = subscription?.plan === id;
 
             return (
               <div
                 key={id}
                 className={`relative flex flex-col p-6 rounded-3xl border transition-all duration-300 ${
-                  id === "business"
-                    ? "border-primary bg-primary/5 shadow-2xl scale-105 z-10"
-                    : "border-base-300 bg-base-100 hover:border-primary/30 shadow-sm"
+                  isCurrentPlan
+                    ? "border-primary bg-primary/10 shadow-2xl scale-105 z-10"
+                    : id === "business"
+                      ? "border-primary bg-primary/5 shadow-2xl scale-105 z-10"
+                      : "border-base-300 bg-base-100 hover:border-primary/30 shadow-sm"
                 }`}
               >
-                {id === "business" && (
+                {isCurrentPlan && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap shadow-lg animate-pulse">
+                    Current Plan
+                  </div>
+                )}
+                {!isCurrentPlan && id === "business" && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
                     Recommended
                   </div>
                 )}
-                {id === "pro" && (
+                {!isCurrentPlan && id === "pro" && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary text-secondary-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
                     Most Popular
                   </div>
                 )}
-                {id === "enterprise_quarterly" && (
+                {!isCurrentPlan && id === "enterprise_quarterly" && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent text-accent-content text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap">
                     Best Deal
                   </div>
@@ -172,14 +182,14 @@ export default function PlansPage() {
 
                 <button
                   onClick={() => startCheckout(basePlan || id, price?.priceId)}
-                  disabled={loadingPlan !== null || id === "free"}
-                  className={`btn btn-sm btn-block ${id === "business" ? "btn-primary" : "btn-outline"} ${
+                  disabled={loadingPlan !== null || isCurrentPlan || (id === "free" && !subscription)}
+                  className={`btn btn-sm btn-block ${isCurrentPlan || id === "business" ? "btn-primary" : "btn-outline"} ${
                     loadingPlan === (price?.priceId ? `${basePlan || id}-${price.priceId}` : basePlan || id)
                       ? "loading"
                       : ""
                   }`}
                 >
-                  {id === "free" ? "Default Plan" : `Upgrade`}
+                  {isCurrentPlan ? "Active Sub" : id === "free" ? "Default Plan" : `Upgrade`}
                 </button>
               </div>
             );

@@ -58,7 +58,7 @@ export const BroadcastBanner = () => {
           <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 shrink-0">Announcement</span>
           <div className="h-3 w-px bg-current opacity-20 hidden sm:block"></div>
           <span className="text-sm font-black truncate">{broadcast.title}</span>
-          <span className="text-sm opacity-90 truncate font-medium">— {broadcast.content}</span>
+          <span className="text-sm opacity-90 truncate font-medium">, {broadcast.content}</span>
         </div>
       </div>
       <button
