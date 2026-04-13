@@ -23,7 +23,7 @@
     "verify": "hardhat etherscan-verify"
   },
   "dependencies": {
-    "@inquirer/password": "^5.0.10",
+    "@inquirer/password": "^5.0.11",
     "@openzeppelin/contracts": "^5.6.1",
     "@openzeppelin/contracts-upgradeable": "^5.6.1",
     "@typechain/ethers-v6": "~0.5.1",
