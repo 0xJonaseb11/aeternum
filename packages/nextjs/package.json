@@ -57,21 +57,21 @@
     "@tailwindcss/postcss": "^4.0.0",
     "@trivago/prettier-plugin-sort-imports": "~6.0.2",
     "@types/circomlibjs": "^0.1.6",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "abitype": "1.2.3",
     "bgipfs": "~0.0.12",
-    "eslint": "^10.1.0",
-    "eslint-config-next": "^16.2.1",
+    "eslint": "^10.2.0",
+    "eslint-config-next": "^16.2.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.2.3",
-    "postcss": "~8.5.8",
-    "prettier": "^3.5.1",
+    "postcss": "~8.5.9",
+    "prettier": "^3.8.2",
     "tailwindcss": "^4.0.0",
     "type-fest": "~5.5.0",
     "typescript": "~6.0.2",
-    "vercel": "~51.0.0"
+    "vercel": "~50.44.0"
   },
   "packageManager": "yarn@4.13.0"
 }
