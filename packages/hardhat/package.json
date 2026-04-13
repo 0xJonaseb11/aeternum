@@ -23,13 +23,13 @@
     "verify": "hardhat etherscan-verify"
   },
   "dependencies": {
-    "@inquirer/password": "^5.0.10",
+    "@inquirer/password": "^5.0.11",
     "@openzeppelin/contracts": "^5.6.1",
     "@openzeppelin/contracts-upgradeable": "^5.6.1",
     "@typechain/ethers-v6": "~0.5.1",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
-    "dotenv": "~17.3.1",
+    "dotenv": "~17.4.2",
     "envfile": "~7.1.0",
     "qrcode": "~1.5.4",
     "snarkjs": "^0.7.0"
@@ -46,7 +46,7 @@
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^5.2.3",
-    "@types/eslint": "^8.56.12",
+    "@types/eslint": "^9.6.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.6.0",
     "@types/prettier": "^3.0.0",
