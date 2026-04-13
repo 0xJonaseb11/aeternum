@@ -29,7 +29,7 @@
     "@typechain/ethers-v6": "~0.5.1",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
-    "dotenv": "~17.3.1",
+    "dotenv": "~17.4.2",
     "envfile": "~7.1.0",
     "qrcode": "~1.5.4",
     "snarkjs": "^0.7.0"
