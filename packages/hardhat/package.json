@@ -42,7 +42,7 @@
     "@nomicfoundation/hardhat-network-helpers": "^3.0.4",
     "@nomicfoundation/hardhat-toolbox": "^7.0.0",
     "@nomicfoundation/hardhat-verify": "^3.0.13",
-    "@openzeppelin/hardhat-upgrades": "^3.9.1",
+    "@openzeppelin/hardhat-upgrades": "^4.0.1",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^5.2.3",
